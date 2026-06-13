@@ -87,9 +87,9 @@ export const ENEMY_SPRITES: Record<string, string | null> = {
 // ── Bunker / battle character sprites ─────────────────────────────────────────
 export const CHARACTER_SPRITES: Record<string, string | null> = {
   "self":   `${B}art/char-self.png`,
-  "mundo":  null,
-  "ornn":   null,
-  "norra":  null,
+  "mundo":  `${B}art/char-mundo.png`,
+  "ornn":   `${B}art/char-ornn.png`,
+  "norra":  `${B}art/char-norra.png`,
   "battle": `${B}art/char-self.png`,
 };
 

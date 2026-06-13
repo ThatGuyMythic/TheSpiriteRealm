@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useGame, effectiveMaxHp } from "@/game/state";
 import { C, PixelButton, StatChip, PTitle } from "@/components/PixelUI";
 import { PixelPortrait } from "@/components/CardArt";
+import { CHARACTER_SPRITES } from "@/assets/sprites";
 
 // ── Room icons ─────────────────────────────────────────────────────────────────
 const ROOM_ICON: Record<string, string> = {
@@ -256,30 +257,58 @@ export default function BunkerScreen() {
 
         {/* Characters row */}
         <div>
-          <span className="pixel-text" style={{ color: C.textDim, fontSize: 12, display: "block", marginBottom: 6 }}>
+          <span className="pixel-text" style={{ color: C.textDim, fontSize: 13, display: "block", marginBottom: 8, letterSpacing: 2 }}>
             RESIDENTS
           </span>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 4 }}>
             {player.characters.map(c => {
               const info     = NPC_INFO[c.id] ?? NPC_INFO["self"];
               const isActive = activeNpc === c.id;
+              const imgSrc   = CHARACTER_SPRITES[c.id] ?? null;
               return (
                 <div key={c.id}
                   onClick={() => c.unlocked && cycleDialogue(c.id)}
                   style={{
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-                    backgroundColor: isActive ? info.color + "22" : C.bg2,
-                    border: `2px solid ${c.unlocked ? (isActive ? info.color : info.color + "55") : "#222"}`,
-                    padding: "8px 10px", cursor: c.unlocked ? "pointer" : "default",
-                    opacity: c.unlocked ? 1 : 0.45, minWidth: 60, flex: "0 0 auto",
+                    flexShrink: 0, width: 180,
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                    backgroundColor: isActive ? info.color + "18" : C.bg2,
+                    border: `2px solid ${c.unlocked ? (isActive ? info.color : info.color + "44") : "#222"}`,
+                    padding: "0 0 10px",
+                    cursor: c.unlocked ? "pointer" : "default",
+                    opacity: c.unlocked ? 1 : 0.45,
                     transition: "border-color 0.15s, background-color 0.15s",
+                    overflow: "hidden",
                   }}
                 >
-                  <PixelPortrait name={c.id} size={44} isPlayer={c.id === "self"} />
-                  <span className="pixel-text" style={{ color: c.unlocked ? info.color : C.textDim, fontSize: 11 }}>
+                  {/* Portrait image — fills width, fixed height */}
+                  <div style={{ width: "100%", height: 220, overflow: "hidden", backgroundColor: "#000", position: "relative" }}>
+                    {imgSrc ? (
+                      <img
+                        src={imgSrc}
+                        alt={c.name}
+                        style={{
+                          width: "100%", height: "100%",
+                          objectFit: "cover",
+                          objectPosition: "center top",
+                          imageRendering: "pixelated",
+                          mixBlendMode: "screen",
+                        }}
+                      />
+                    ) : (
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <PixelPortrait name={c.id} size={160} isPlayer={c.id === "self"} />
+                      </div>
+                    )}
+                    {!c.unlocked && (
+                      <div style={{ position: "absolute", inset: 0, backgroundColor: "#000000AA", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span className="pixel-text" style={{ color: "#555", fontSize: 18 }}>LOCKED</span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="pixel-text" style={{ color: c.unlocked ? info.color : C.textDim, fontSize: 16, marginTop: 6 }}>
                     {c.name}
                   </span>
-                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 9 }}>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>
                     {c.unlocked ? info.title : "[LOCKED]"}
                   </span>
                 </div>

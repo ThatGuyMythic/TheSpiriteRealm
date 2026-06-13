@@ -15,15 +15,15 @@ function HpBar({ hp, maxHp, color, height = 10 }: { hp: number; maxHp: number; c
   );
 }
 
-// Fill the entire container — no fixed pixel dims
+// Fill the entire container — objectFit cover so sprite fills the cell edge-to-edge
 function SpriteFill({ name, isPlayer }: { name: string; isPlayer?: boolean }) {
   const map    = isPlayer ? CHARACTER_SPRITES : ENEMY_SPRITES;
   const imgSrc = (map[name] ?? (isPlayer ? map["battle"] : null)) ?? null;
   return imgSrc ? (
     <img src={imgSrc} alt={name} style={{
       width: "100%", height: "100%",
-      objectFit: "contain",
-      objectPosition: "bottom center",
+      objectFit: "cover",
+      objectPosition: "center center",
       imageRendering: "pixelated",
       display: "block",
       mixBlendMode: "screen",
@@ -261,7 +261,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
       backgroundColor: "#04060A",
       display: "grid",
       gridTemplateColumns: "1fr 1fr",
-      gridTemplateRows: "3fr 3fr 2fr",
+      gridTemplateRows: "5fr 5fr 2fr",
       zIndex: 100,
       overflow: "hidden",
     }}>
@@ -514,18 +514,20 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
       }}>
         {!jwc.finished ? (
           <>
-            {/* STRIKE / BLOCK / RESERVE — each with optional remove button below */}
-            <div style={{ display: "flex", gap: 12, flex: 1 }}>
-              {/* STRIKE */}
-              <button onClick={jwcAttack} disabled={noSp} style={{
-                flex: 1, cursor: noSp ? "not-allowed" : "pointer",
-                backgroundColor: noSp ? "#1A0808" : "#3A0808",
-                border: `3px solid ${noSp ? "#300" : C.redBright}`,
-                color: noSp ? "#500" : C.redBright,
-                fontFamily: "'VT323', monospace", fontSize: 44, letterSpacing: 1,
-              }}>STRIKE</button>
+            {/* STRIKE / BLOCK / RESERVE — equal-width columns, each with optional remove button below */}
+            <div style={{ display: "flex", gap: 12, flex: 1, minHeight: 0 }}>
+              {/* STRIKE column */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+                <button onClick={jwcAttack} disabled={noSp} style={{
+                  flex: 1, width: "100%", cursor: noSp ? "not-allowed" : "pointer",
+                  backgroundColor: noSp ? "#1A0808" : "#3A0808",
+                  border: `3px solid ${noSp ? "#300" : C.redBright}`,
+                  color: noSp ? "#500" : C.redBright,
+                  fontFamily: "'VT323', monospace", fontSize: 44, letterSpacing: 1,
+                }}>STRIKE</button>
+              </div>
 
-              {/* BLOCK + optional remove */}
+              {/* BLOCK column */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
                 <button onClick={jwcDefend} disabled={noSp}
                   onContextMenu={ev => { ev.preventDefault(); if (pendingDef > 0) jwcUnqueueDef(); }}
@@ -538,14 +540,14 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   }}>BLOCK</button>
                 {pendingDef > 0 && (
                   <button onClick={jwcUnqueueDef} style={{
-                    width: "100%", cursor: "pointer",
+                    width: "100%", cursor: "pointer", flexShrink: 0,
                     backgroundColor: "#001018", border: `2px solid ${C.cyan}66`,
-                    color: C.cyan + "CC", fontFamily: "'VT323', monospace", fontSize: 22, padding: "4px 0",
+                    color: C.cyan + "CC", fontFamily: "'VT323', monospace", fontSize: 22, padding: "6px 0",
                   }}>↩ REMOVE ×{pendingDef}</button>
                 )}
               </div>
 
-              {/* RESERVE + optional remove */}
+              {/* RESERVE column */}
               <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
                 <button onClick={jwcReserve} disabled={noSp}
                   onContextMenu={ev => { ev.preventDefault(); if (spReserved > 0) jwcUnqueueReserve(); }}
@@ -558,9 +560,9 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   }}>RESERVE</button>
                 {spReserved > 0 && (
                   <button onClick={jwcUnqueueReserve} style={{
-                    width: "100%", cursor: "pointer",
+                    width: "100%", cursor: "pointer", flexShrink: 0,
                     backgroundColor: "#181000", border: `2px solid ${C.yellow}66`,
-                    color: C.yellow + "CC", fontFamily: "'VT323', monospace", fontSize: 22, padding: "4px 0",
+                    color: C.yellow + "CC", fontFamily: "'VT323', monospace", fontSize: 22, padding: "6px 0",
                   }}>↩ REMOVE ×{spReserved}</button>
                 )}
               </div>
