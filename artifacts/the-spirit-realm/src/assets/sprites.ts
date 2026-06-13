@@ -41,15 +41,15 @@ export const CARD_SPRITES: Record<string, string | null> = {
   "Rust Bot":       `${B}art/card-rust-bot.png`,
   "Iron Cleric":    `${B}art/card-iron-cleric.png`,
   "Pit Lord":       `${B}art/card-pit-lord.png`,
-  // ── Still need sprites ────────────────────────────────────────────────────
-  "Goblin Bomb":    null,
-  "Ancient Sprout": null,
-  "Bone Archer":    null,
-  "Glass Tyrant":   null,
-  "Dust Cloak":     null,
-  "Coil Katana":    null,
-  "Mercy Dagger":   null,
-  "Brass Hunter":   null,
+  // ── Generated sprites (batch 3 — final 8 cards) ───────────────────────────
+  "Goblin Bomb":    `${B}art/card-goblin-bomb.png`,
+  "Ancient Sprout": `${B}art/card-ancient-sprout.png`,
+  "Bone Archer":    `${B}art/card-bone-archer.png`,
+  "Glass Tyrant":   `${B}art/card-glass-tyrant.png`,
+  "Dust Cloak":     `${B}art/card-dust-cloak.png`,
+  "Coil Katana":    `${B}art/card-coil-katana.png`,
+  "Mercy Dagger":   `${B}art/card-mercy-dagger.png`,
+  "Brass Hunter":   `${B}art/card-brass-hunter.png`,
 };
 
 // ── Combat enemy sprites ──────────────────────────────────────────────────────
