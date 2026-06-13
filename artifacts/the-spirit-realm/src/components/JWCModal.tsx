@@ -15,18 +15,17 @@ function HpBar({ hp, maxHp, color, height = 10 }: { hp: number; maxHp: number; c
   );
 }
 
-// Fill the entire container — objectFit cover so sprite fills the cell edge-to-edge
+// Fill the entire container — objectFit contain so transparent sprites show properly
 function SpriteFill({ name, isPlayer, animClass }: { name: string; isPlayer?: boolean; animClass?: string }) {
   const map    = isPlayer ? CHARACTER_SPRITES : ENEMY_SPRITES;
   const imgSrc = (map[name] ?? (isPlayer ? map["battle"] : null)) ?? null;
   return imgSrc ? (
     <img src={imgSrc} alt={name} className={animClass} style={{
       width: "100%", height: "100%",
-      objectFit: "cover",
+      objectFit: "contain",
       objectPosition: "center center",
       imageRendering: "pixelated",
       display: "block",
-      mixBlendMode: "screen",
     }} />
   ) : (
     <div className={animClass} style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -124,7 +123,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
         <div style={{
           flex: 1, display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "2fr 2fr 1.6fr",
+          gridTemplateRows: "3fr 3fr 2.2fr",
           overflow: "hidden",
           borderBottom: `3px solid ${accent}`,
         }}>
@@ -230,11 +229,18 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
             ))}
           </div>
 
-          {/* [2,1] Buttons */}
-          <div style={{ backgroundColor: "#030A03", padding: "4px 5px", display: "flex", flexDirection: "column", gap: 3 }}>
+          {/* [2,1] Buttons — End Turn big, 3 action buttons fill rest */}
+          <div style={{ backgroundColor: "#030A03", padding: "3px 4px", display: "flex", flexDirection: "column", gap: 3, height: "100%" }}>
             {!jwc.finished ? (
               <>
-                <div style={{ display: "flex", gap: 3, flex: 1 }}>
+                <button onClick={jwcEndRound} style={{
+                  padding: "10px 0", flexShrink: 0,
+                  backgroundColor: totalPending > 0 || spReserved > 0 ? "#083008" : "#0A0A0A",
+                  border: `2px solid ${totalPending > 0 || spReserved > 0 ? C.green : "#333"}`,
+                  color: totalPending > 0 || spReserved > 0 ? C.green : "#444",
+                  fontFamily: "'VT323', monospace", fontSize: 18, cursor: "pointer", width: "100%",
+                }}>{totalPending > 0 || spReserved > 0 ? "END TURN ▶ RESOLVE" : "END TURN — PASS"}</button>
+                <div style={{ display: "flex", gap: 3, flex: 1, minHeight: 0 }}>
                   {(["STRIKE", "BLOCK", "RSRV"] as const).map((label) => {
                     const handler = label === "STRIKE" ? jwcAttack : label === "BLOCK" ? handleDefend : handleReserve;
                     const remover = label === "BLOCK" ? jwcUnqueueDef : label === "RSRV" ? jwcUnqueueReserve : null;
@@ -244,9 +250,9 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                     return (
                       <div key={label} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
                         <button onClick={handler} disabled={noSp} style={{
-                          width: "100%", cursor: noSp ? "not-allowed" : "pointer",
+                          flex: 1, width: "100%", cursor: noSp ? "not-allowed" : "pointer",
                           backgroundColor: noSp ? bg + "33" : bg, border: `2px solid ${noSp ? col + "33" : col}`,
-                          color: noSp ? col + "44" : col, fontFamily: "'VT323', monospace", fontSize: 14,
+                          color: noSp ? col + "44" : col, fontFamily: "'VT323', monospace", fontSize: 16,
                         }}>{label}</button>
                         {remover && queuedN > 0 && (
                           <button onClick={remover} style={{
@@ -259,13 +265,6 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                     );
                   })}
                 </div>
-                <button onClick={jwcEndRound} style={{
-                  padding: "7px 0",
-                  backgroundColor: totalPending > 0 || spReserved > 0 ? "#083008" : "#0A0A0A",
-                  border: `2px solid ${totalPending > 0 || spReserved > 0 ? C.green : "#333"}`,
-                  color: totalPending > 0 || spReserved > 0 ? C.green : "#444",
-                  fontFamily: "'VT323', monospace", fontSize: 15, cursor: "pointer",
-                }}>{totalPending > 0 || spReserved > 0 ? "END TURN — RESOLVE" : "END TURN — PASS"}</button>
               </>
             ) : (
               <>

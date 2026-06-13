@@ -36,10 +36,12 @@ function InfoRow({ label, desc }: { label: string; desc: string }) {
 }
 
 export default function SettingsScreen() {
-  const { player, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth } = useGame();
+  const { player, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugGiveOpKit } = useGame();
   const [msg, setMsg]                   = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
   const [tab, setTab]                   = useState<SettingsTab>("beginner");
+  const [debugPw, setDebugPw]           = useState("");
+  const [debugUnlocked, setDebugUnlocked] = useState(false);
 
   function flash(m: string) { setMsg(m); setTimeout(() => setMsg(""), 2000); }
 
@@ -226,19 +228,58 @@ export default function SettingsScreen() {
             </Section>
 
             <Section title="DEBUG TOOLS" color="#8060C0">
-              <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
-                Testing shortcuts — no cheating in the spirit realm... well, maybe a little.
-              </span>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                <PixelButton small color="#201040" textColor="#B090E0"
-                  onClick={() => { debugGiveMoney(500); flash("+$500 added."); }}>+$500</PixelButton>
-                <PixelButton small color="#201040" textColor="#B090E0"
-                  onClick={() => { debugGiveMoney(2000); flash("+$2000 added."); }}>+$2000</PixelButton>
-                <PixelButton small color="#201040" textColor="#B090E0"
-                  onClick={() => { debugGiveMetals(10); flash("+10 metals added."); }}>+10M</PixelButton>
-                <PixelButton small color="#201040" textColor="#B090E0"
-                  onClick={() => { debugGiveMetals(50); flash("+50 metals added."); }}>+50M</PixelButton>
-              </div>
+              {!debugUnlocked ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
+                    Enter password to unlock debug tools:
+                  </span>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <input
+                      type="password"
+                      value={debugPw}
+                      onChange={e => setDebugPw(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === "Enter") {
+                          if (debugPw === "Fizzylikesyummitop") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
+                          else { flash("Wrong password."); setDebugPw(""); }
+                        }
+                      }}
+                      placeholder="password..."
+                      style={{
+                        flex: 1, backgroundColor: "#0A0A18", border: "1px solid #5040A0",
+                        color: "#B090E0", fontFamily: "'VT323', monospace", fontSize: 14,
+                        padding: "4px 8px", outline: "none",
+                      }}
+                    />
+                    <PixelButton small color="#201040" textColor="#B090E0" onClick={() => {
+                      if (debugPw === "Fizzylikesyummitop") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
+                      else { flash("Wrong password."); setDebugPw(""); }
+                    }}>ENTER</PixelButton>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <span className="pixel-text" style={{ color: "#B090E0", fontSize: 12 }}>
+                    ★ DEBUG UNLOCKED — Testing shortcuts active.
+                  </span>
+                  <div style={{ backgroundColor: "#120820", border: `2px solid #FFD700`, padding: "8px 10px", marginBottom: 4 }}>
+                    <span className="pixel-text" style={{ color: "#FFD700", fontSize: 15, display: "block", marginBottom: 6 }}>
+                      ★ OP KIT — 1,000,000 damage + $9,999,999 + 9,999 metals
+                    </span>
+                    <PixelButton color="#FFD700" textColor="#000" onClick={() => { debugGiveOpKit(); flash("★ OP KIT equipped! Enjoy your godhood."); }}>
+                      ★ GIVE OP KIT
+                    </PixelButton>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                    <PixelButton small color="#201040" textColor="#B090E0"
+                      onClick={() => { debugGiveMoney(500); flash("+$500 added."); }}>+$500</PixelButton>
+                    <PixelButton small color="#201040" textColor="#B090E0"
+                      onClick={() => { debugGiveMoney(2000); flash("+$2000 added."); }}>+$2000</PixelButton>
+                    <PixelButton small color="#201040" textColor="#B090E0"
+                      onClick={() => { debugGiveMetals(10); flash("+10 metals added."); }}>+10M</PixelButton>
+                    <PixelButton small color="#201040" textColor="#B090E0"
+                      onClick={() => { debugGiveMetals(50); flash("+50 metals added."); }}>+50M</PixelButton>
+                  </div>
               <div>
                 <span className="pixel-text" style={{ color: C.textDim, fontSize: 12, display: "block", marginBottom: 4 }}>
                   Move to tile type (jumps to nearest of that type forward):
@@ -266,6 +307,8 @@ export default function SettingsScreen() {
                   ⟳ FORCE REBIRTH
                 </PixelButton>
               </div>
+                </>
+              )}
             </Section>
           </>
         )}

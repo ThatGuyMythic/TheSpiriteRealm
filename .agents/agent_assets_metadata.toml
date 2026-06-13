@@ -312,3 +312,45 @@ id = "fsvcp2rbEP2xa944VmUHD"
 uri = "file://attached_assets/generated_images/pixel_art_brass_hunter_1def.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "WTgtRk-r1omLn6bQKV2vI"
+uri = "file://attached_assets/generated_images/pixel_art_young_thief_6434.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Nodan99N_RJRWzHJNgVBg"
+uri = "file://attached_assets/generated_images/pixel_art_goblin_runt_e337.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "UJRtMLMWzVsnAtbkStRrQ"
+uri = "file://attached_assets/generated_images/pixel_art_goblin_shaman_ca4e.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "yGMTCdLeK96UVPH3sUL8H"
+uri = "file://attached_assets/generated_images/pixel_art_slimeling_monster_492b.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "h_xSQt12UxD8MJjqYUf7o"
+uri = "file://attached_assets/generated_images/pixel_art_acid_blob_2d7c.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LlRkmeUpUae9OLrAMLExc"
+uri = "file://attached_assets/generated_images/pixel_art_goo_titan_4ad8.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "48lWmhq_qs9kghjXXPXPz"
+uri = "file://attached_assets/generated_images/pixel_art_blob_king_aef0.png"
+type = "image"
+title = "generated_image"

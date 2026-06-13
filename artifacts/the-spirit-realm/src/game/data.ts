@@ -640,38 +640,38 @@ export const DCC_THEME_COLORS: Record<DCCTheme, string> = {
   demons:    "#D94040",
 };
 
-interface CardTemplate { name: string; cost: number; power: number }
+interface CardTemplate { name: string; cost: number; power: number; text?: string }
 
 const DCC_CARD_POOL: Record<DCCTheme, CardTemplate[]> = {
   slimes: [
-    { name: "Slimeling",     cost: 1, power: 4 },
-    { name: "Acid Blob",     cost: 2, power: 7 },
-    { name: "Goo Titan",     cost: 4, power: 12 },
-    { name: "Blob King",     cost: 6, power: 18 },
+    { name: "Slimeling",     cost: 1, power: 4,  text: "+1 per ally here" },
+    { name: "Acid Blob",     cost: 2, power: 7,  text: "Bleed: foe −2" },
+    { name: "Goo Titan",     cost: 4, power: 12, text: "+2 per ally here" },
+    { name: "Blob King",     cost: 6, power: 18, text: "if paired +6 power" },
   ],
   skeletons: [
-    { name: "Bone Walker",   cost: 1, power: 4 },
-    { name: "Skull Mage",    cost: 2, power: 7 },
-    { name: "Risen Guard",   cost: 3, power: 10 },
-    { name: "Lich Spawn",    cost: 5, power: 15 },
+    { name: "Bone Walker",   cost: 1, power: 4,  text: "+2 if rightmost lane" },
+    { name: "Skull Mage",    cost: 2, power: 7,  text: "Curse: if paired +4" },
+    { name: "Risen Guard",   cost: 3, power: 10, text: "+2 per ally here" },
+    { name: "Lich Spawn",    cost: 5, power: 15, text: "Lone: ×2 power" },
   ],
   goblins: [
-    { name: "Goblin Runt",   cost: 1, power: 4 },
-    { name: "Goblin Shaman", cost: 2, power: 7 },
-    { name: "Warchief",      cost: 4, power: 12 },
-    { name: "Goblin Bomb",   cost: 3, power: 9 },
+    { name: "Goblin Runt",   cost: 1, power: 4,  text: "+1 per ally here" },
+    { name: "Goblin Shaman", cost: 2, power: 7,  text: "Hex: Bleed foe −3" },
+    { name: "Warchief",      cost: 4, power: 12, text: "Rally: +2 per ally here" },
+    { name: "Goblin Bomb",   cost: 3, power: 9,  text: "BOOM: if paired +6" },
   ],
   plants: [
-    { name: "Vine Lurker",    cost: 1, power: 4 },
-    { name: "Thorn Sprite",   cost: 2, power: 7 },
-    { name: "Root Golem",     cost: 4, power: 12 },
-    { name: "Ancient Sprout", cost: 5, power: 15 },
+    { name: "Vine Lurker",   cost: 1, power: 4,  text: "+2 if rightmost lane" },
+    { name: "Thorn Sprite",  cost: 2, power: 7,  text: "Thorns: Bleed foe −3" },
+    { name: "Root Golem",    cost: 4, power: 12, text: "+2 per ally here" },
+    { name: "Ancient Sprout",cost: 5, power: 15, text: "Ancient: if paired +6" },
   ],
   demons: [
-    { name: "Fire Imp",       cost: 1, power: 5 },
-    { name: "Shadow Fiend",   cost: 2, power: 8 },
-    { name: "Demon Knight",   cost: 4, power: 13 },
-    { name: "Pit Lord",       cost: 6, power: 20 },
+    { name: "Fire Imp",      cost: 1, power: 5,  text: "Bleed: foe −3 power" },
+    { name: "Shadow Fiend",  cost: 2, power: 8,  text: "Lone: ×2 power" },
+    { name: "Demon Knight",  cost: 4, power: 13, text: "+2 per ally here" },
+    { name: "Pit Lord",      cost: 6, power: 20, text: "if paired +8 power" },
   ],
 };
 
@@ -698,7 +698,8 @@ export function pickDCCRewardCard(dccLevel: number): Card {
     id:    `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     name:  t.name,
     cost:  t.cost,
-    power: t.power + cycle * 4,
+    power: t.power + Math.floor(dccLevel * 0.8) + cycle * 2,
+    text:  t.text,
   };
 }
 
@@ -707,7 +708,16 @@ export function buildDCCEnemyDeck(dccLevel: number): Card[] {
   const pool  = DCC_CARD_POOL[theme];
   const scale = dccLevel;
   return pool.flatMap((t, i) => ([
-    { id: `e${i}a`, name: t.name, cost: Math.max(1, t.cost + cycle),     power: t.power + scale * 2 + i     },
-    { id: `e${i}b`, name: t.name, cost: Math.max(1, t.cost + cycle + 1), power: t.power + scale * 2 + i + 2 },
+    { id: `e${i}a`, name: t.name, cost: Math.max(1, t.cost + cycle),     power: t.power + scale * 2 + i,     text: t.text },
+    { id: `e${i}b`, name: t.name, cost: Math.max(1, t.cost + cycle + 1), power: t.power + scale * 2 + i + 2, text: t.text },
   ]));
+}
+
+export function getAllDCCCardTemplates(): Card[] {
+  const seen = new Set<string>();
+  let idx = 0;
+  return Object.values(DCC_CARD_POOL)
+    .flatMap(arr => arr)
+    .filter(t => { if (seen.has(t.name)) return false; seen.add(t.name); return true; })
+    .map(t => ({ id: `tpl-${idx++}`, name: t.name, cost: t.cost, power: t.power, text: t.text }));
 }

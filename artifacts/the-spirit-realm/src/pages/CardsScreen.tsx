@@ -2,9 +2,9 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useGame, MAX_DECK_SIZE } from "@/game/state";
 import { C, PixelButton, StatChip } from "@/components/PixelUI";
 import CardArt, { FullCard } from "@/components/CardArt";
-import { getDCCThemeInfo, buildDCCEnemyDeck, type Card } from "@/game/data";
+import { getDCCThemeInfo, buildDCCEnemyDeck, getAllDCCCardTemplates, type Card } from "@/game/data";
 
-type DccTab = "table" | "cards";
+type DccTab = "table" | "deck" | "collection";
 const LANE_COUNT  = 3;
 const ROUND_COUNT = 6;
 
@@ -189,7 +189,7 @@ function useCardScale(): number {
 export default function CardsScreen() {
   const {
     player, recordDCCWin, pendingCardUpgrades, applyCardUpgrade,
-    upgradeCard, addCardToDeck, removeCardFromDeck,
+    upgradeCard, addCardToDeck, removeCardFromDeck, maxUpgradeCard,
   } = useGame();
   const [dcc, setDCC]         = useState<DCCState | null>(null);
   const [dccTab, setDccTab]   = useState<DccTab>("table");
@@ -648,7 +648,7 @@ export default function CardsScreen() {
 
       {/* Tab bar */}
       <div style={{ display: "flex", borderBottom: "2px solid #000", flexShrink: 0 }}>
-        {(["table", "cards"] as DccTab[]).map(t => (
+        {(["table", "deck", "collection"] as DccTab[]).map(t => (
           <button key={t} onClick={() => setDccTab(t)} style={{
             flex: 1, padding: "7px 0",
             backgroundColor: dccTab === t ? "#0A0A1A" : C.bg2,
@@ -656,7 +656,7 @@ export default function CardsScreen() {
             color: dccTab === t ? themeInfo.color : C.textDim,
             fontFamily: "'VT323', monospace", fontSize: 16, cursor: "pointer",
           }}>
-            {t === "table" ? "♠ THE BLACK ROSE" : "CARDS"}
+            {t === "table" ? "♠ BLACK ROSE" : t === "deck" ? "DECK" : "COLLECTION"}
           </button>
         ))}
       </div>
@@ -710,12 +710,12 @@ export default function CardsScreen() {
               {player.deck.length === 0 ? "ADD CARDS TO DECK FIRST" : "♠ SIT DOWN & PLAY"}
             </PixelButton>
           </div>
-        ) : (
-          /* ── CARDS tab ─────────────────────────────────────────────────────── */
+        ) : dccTab === "deck" ? (
+          /* ── DECK tab ─────────────────────────────────────────────────────── */
           <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
-                Collection: {upgradeOptions.length} · Deck: {player.deck.length}/{MAX_DECK_SIZE}
+                Owned: {upgradeOptions.length} · Deck: {player.deck.length}/{MAX_DECK_SIZE}
               </span>
               <span className="pixel-text" style={{ color: themeInfo.color, fontSize: 11 }}>
                 tap card to toggle deck
@@ -740,6 +740,7 @@ export default function CardsScreen() {
                       const lvl     = player.collection[c.name] || 1;
                       const maxLvl  = lvl >= 5;
                       const upgCost = 50 * lvl;
+                      const canAffordAll = player.money >= upgCost;
                       return (
                         <div
                           key={c.id + i}
@@ -765,14 +766,23 @@ export default function CardsScreen() {
                               ♠ IN DECK
                             </span>
                           )}
-                          <div onClick={e => e.stopPropagation()}>
+                          <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 3, width: "100%" }}>
                             <PixelButton small
                               color={maxLvl ? C.bg3 : C.yellow} textColor="#000"
                               disabled={maxLvl || player.money < upgCost}
                               onClick={() => handleUpgradeCard(c.name)}
+                              style={{ flex: 1 }}
                             >
-                              {maxLvl ? "MAX" : `↑ $${upgCost}`}
+                              {maxLvl ? "MAX" : `↑$${upgCost}`}
                             </PixelButton>
+                            {!maxLvl && canAffordAll && (
+                              <PixelButton small color="#6040C0" textColor="#fff"
+                                onClick={() => { maxUpgradeCard(c.name); setCardMsg(`${c.name} maxed!`); setTimeout(() => setCardMsg(null), 2000); }}
+                                style={{ flex: 1 }}
+                              >
+                                MAX↑
+                              </PixelButton>
+                            )}
                           </div>
                         </div>
                       );
@@ -784,7 +794,12 @@ export default function CardsScreen() {
               return (
                 <>
                   {inDeckCards.length > 0 && renderGrid(inDeckCards, `♠ IN DECK (${inDeckCards.length}/${MAX_DECK_SIZE})`)}
-                  {outDeckCards.length > 0 && renderGrid(outDeckCards, inDeckCards.length > 0 ? "COLLECTION" : undefined)}
+                  {outDeckCards.length > 0 && renderGrid(outDeckCards, inDeckCards.length > 0 ? "OWNED — NOT IN DECK" : undefined)}
+                  {upgradeOptions.length === 0 && (
+                    <span className="pixel-text" style={{ color: C.textDim, fontSize: 13 }}>
+                      Win DCC games to earn cards. Go to ♠ BLACK ROSE tab to play.
+                    </span>
+                  )}
                 </>
               );
             })()}
@@ -793,6 +808,50 @@ export default function CardsScreen() {
               <span className="pixel-text" style={{ color: C.green, fontSize: 13 }}>{cardMsg}</span>
             )}
           </div>
+        ) : (
+          /* ── COLLECTION tab — all DCC cards, owned or not ──────────────────── */
+          (() => {
+            const allTemplates = getAllDCCCardTemplates();
+            const ownedNames = new Set(upgradeOptions.map(c => c.name));
+            return (
+              <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+                <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
+                  All {allTemplates.length} DCC cards — {ownedNames.size} owned
+                </span>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                  {allTemplates.map((t, i) => {
+                    const owned = ownedNames.has(t.name);
+                    const lvl   = player.collection[t.name] || 0;
+                    return (
+                      <div key={t.id + i} style={{
+                        backgroundColor: owned ? C.bg2 : "#070710",
+                        border: `2px solid ${owned ? themeInfo.color + "66" : "#222"}`,
+                        padding: "6px 6px 4px",
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                        opacity: owned ? 1 : 0.45,
+                      }}>
+                        <div style={{ filter: owned ? "none" : "grayscale(1) brightness(0.4)" }}>
+                          <FullCard card={{ ...t, power: t.power } as any} scale={cardScale} />
+                        </div>
+                        <span className="pixel-text" style={{ color: owned ? C.text : "#444", fontSize: 12, textAlign: "center", lineHeight: 1.1 }}>
+                          {t.name}
+                        </span>
+                        <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
+                          {t.cost}sp · p{t.power}
+                          {owned ? ` · Lv${lvl}` : " · LOCKED"}
+                        </span>
+                        {t.text && (
+                          <span className="pixel-text" style={{ color: "#605880", fontSize: 9, textAlign: "center", lineHeight: 1.2 }}>
+                            {t.text}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()
         )}
       </div>
     </div>

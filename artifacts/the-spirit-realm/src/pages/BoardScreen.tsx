@@ -432,11 +432,13 @@ export default function BoardScreen() {
             Lap {player.lap} · {biome.toUpperCase()}{stars ? ` ${stars}` : ""}
           </span>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <StatChip label="♥" value={`${player.hp}/${eMax}`} color={C.green} />
-          <StatChip label="$" value={player.money} color={C.yellow} />
-          <StatChip label="M" value={player.metals} color={C.textDim} />
-        </div>
+        {isDesktop && (
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <StatChip label="♥" value={`${player.hp}/${eMax}`} color={C.green} />
+            <StatChip label="$" value={player.money} color={C.yellow} />
+            <StatChip label="M" value={player.metals} color={C.textDim} />
+          </div>
+        )}
       </div>
 
       {/* Main two-column area */}
@@ -454,6 +456,15 @@ export default function BoardScreen() {
         overflowY: "auto", display: "flex", flexDirection: "column", alignItems: "center",
         gap: 8, padding: "8px 0 90px",
       }}>
+
+        {/* Stats above board — mobile only */}
+        {!isDesktop && (
+          <div style={{ display: "flex", gap: 10, alignItems: "center", padding: "2px 8px", backgroundColor: "#06101C", border: "1px solid #1A2A3A", borderRadius: 2, flexShrink: 0 }}>
+            <span className="pixel-text" style={{ color: C.green, fontSize: 15 }}>♥ {player.hp}/{eMax}</span>
+            <span className="pixel-text" style={{ color: C.yellow, fontSize: 15 }}>$ {player.money}</span>
+            <span className="pixel-text" style={{ color: C.textDim, fontSize: 15 }}>M {player.metals}</span>
+          </div>
+        )}
 
         {/* Board */}
         <div style={{

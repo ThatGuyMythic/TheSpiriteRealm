@@ -243,6 +243,8 @@ interface GameContextType {
   debugGiveMetals: (amount: number) => void;
   debugMoveToTile: (kind: TileKind) => void;
   debugRebirth: () => void;
+  debugGiveOpKit: () => void;
+  maxUpgradeCard: (cardName: string) => void;
   performRebirth: () => void;
 }
 
@@ -946,12 +948,56 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setPendingTileAction(null);
   }
 
+  function maxUpgradeCard(cardName: string) {
+    setPlayerState((p) => {
+      let cur = p.collection[cardName] || 1;
+      let money = p.money;
+      let powerBoost = 0;
+      while (cur < 5) {
+        const cost = 50 * cur;
+        if (money < cost) break;
+        money -= cost;
+        cur++;
+        powerBoost++;
+      }
+      if (powerBoost === 0) return p;
+      return {
+        ...p,
+        money,
+        collection: { ...p.collection, [cardName]: cur },
+        deck:     p.deck.map(c     => c.name === cardName ? { ...c, power: c.power + powerBoost } : c),
+        deckPool: p.deckPool.map(c => c.name === cardName ? { ...c, power: c.power + powerBoost } : c),
+      };
+    });
+  }
+
   function debugGiveMoney(amount: number) {
     setPlayerState(p => ({ ...p, money: p.money + amount }));
   }
 
   function debugGiveMetals(amount: number) {
     setPlayerState(p => ({ ...p, metals: p.metals + amount }));
+  }
+
+  function debugGiveOpKit() {
+    const opWeapon = {
+      id: `op-kit-${Date.now()}`,
+      kind: "weapon" as const,
+      weaponKind: "sword" as const,
+      damageType: "slash" as const,
+      name: "★ DEBUG — THE OP KIT",
+      damage: 1000000,
+      effect: "stun" as const,
+      level: 999,
+    } as Weapon;
+    setPlayerState(p => ({
+      ...p,
+      money: p.money + 9999999,
+      metals: p.metals + 9999,
+      hp: effectiveMaxHp(p),
+      gear: [...(p.gear ?? []), opWeapon],
+      equipped: { ...p.equipped, weapon: opWeapon },
+    }));
   }
 
   function debugMoveToTile(kind: TileKind) {
@@ -1019,7 +1065,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       effectiveMaxHp,
       recordDCCWin, getPendingCardUpgrades, pendingCardUpgrades,
       addCardToDeck, removeCardFromDeck,
-      debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth,
+      debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugGiveOpKit,
+      maxUpgradeCard,
       performRebirth,
     }}>
       {children}
