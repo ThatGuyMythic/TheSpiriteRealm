@@ -128,29 +128,31 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           overflow: "hidden",
         }}>
 
-          {/* Player — left 30%, faces RIGHT toward enemies */}
+          {/* Player — left 30%, sprite faces right naturally (no flip needed) */}
           <div style={{
             width: "30%", position: "relative", overflow: "hidden",
-            display: "flex", alignItems: "flex-end", justifyContent: "center",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "flex-end",
           }}>
             <div
               className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
-              style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }}
+              style={{ width: "100%", flex: 1, minHeight: 0 }}
             >
               <SpriteFill name="self" isPlayer />
             </div>
           </div>
 
-          {/* Enemies — right 70%, all side-by-side, no dividers */}
+          {/* Enemies — right 70%, all side-by-side, stretch to full height */}
           <div style={{
             flex: 1, display: "flex", flexDirection: "row",
-            alignItems: "flex-end", overflow: "hidden",
+            alignItems: "stretch", overflow: "hidden",
           }}>
             {jwc.enemies.map((e, i) => {
               const isDead = e.hp <= 0;
               const isTarget = i === jwc.active;
               const atkN = atkByEnemy[i] ?? 0;
               const animClass = enemyAnim.getClass(e.id, "jwc-attack-hit");
+              const isBoss = jwc.isBossFight && jwc.enemies.length === 1;
               return (
                 <div key={e.id}
                   onClick={() => !isDead && !jwc.finished && handleAttackEnemy(i)}
@@ -159,7 +161,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   style={{
                     flex: isDead ? "0 0 18px" : 1,
                     display: "flex", flexDirection: "column", alignItems: "center",
-                    justifyContent: "flex-end", position: "relative",
+                    justifyContent: "flex-end",
                     cursor: isDead || jwc.finished ? "default" : "pointer",
                     opacity: isDead ? 0.25 : 1,
                     overflow: "hidden",
@@ -168,34 +170,36 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                     <span className="pixel-text" style={{ color: "#500", fontSize: 10, paddingBottom: 4 }}>✗</span>
                   ) : (
                     <>
-                      {/* Sprite with glow highlight on target — no cell background */}
+                      {/* Sprite — capped smaller for bosses/elites */}
                       <div className={animClass} style={{
                         flex: 1, width: "100%", minHeight: 0,
+                        maxHeight: isBoss ? "65%" : jwc.enemies.length === 1 ? "72%" : "100%",
                         filter: isTarget
-                          ? `drop-shadow(0 0 5px ${C.redBright}) drop-shadow(0 0 10px ${C.redBright}88)`
+                          ? `drop-shadow(0 0 6px ${C.redBright}) drop-shadow(0 0 12px ${C.redBright}99)`
                           : "none",
                         transition: "filter 0.15s",
                       }}>
                         <SpriteFill name={e.name} />
                       </div>
-                      {/* Floating HP overlay at bottom of each enemy */}
+                      {/* HP overlay — always visible at the bottom */}
                       <div style={{
-                        width: "100%", padding: "2px 3px",
-                        background: "linear-gradient(0deg, #00000099 80%, transparent 100%)",
+                        width: "100%", flexShrink: 0,
+                        padding: "3px 4px",
+                        background: "linear-gradient(0deg, #000000CC 0%, #00000066 80%, transparent 100%)",
                       }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 1 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
                           <span className="pixel-text" style={{
-                            color: isTarget ? C.redBright : "#C07070", fontSize: 8, lineHeight: 1,
-                            textShadow: isTarget ? `0 0 4px ${C.redBright}` : "none",
+                            color: isTarget ? C.redBright : "#DD8888", fontSize: 9, lineHeight: 1,
+                            textShadow: isTarget ? `0 0 6px ${C.redBright}` : "none",
                           }}>
                             {e.name.split(" ")[0]}
                           </span>
                           {atkN > 0 && (
-                            <span className="pixel-text" style={{ color: C.redBright, fontSize: 8 }}>⚔×{atkN}</span>
+                            <span className="pixel-text" style={{ color: C.redBright, fontSize: 9 }}>⚔×{atkN}</span>
                           )}
                         </div>
-                        <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={3} />
-                        <span className="pixel-text" style={{ color: "#80404077", fontSize: 7 }}>{e.hp}/{e.maxHp}</span>
+                        <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={4} />
+                        <span className="pixel-text" style={{ color: "#CC7777", fontSize: 8 }}>{e.hp}/{e.maxHp}</span>
                       </div>
                     </>
                   )}

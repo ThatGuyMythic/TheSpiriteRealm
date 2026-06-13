@@ -1,2 +1,4 @@
 - [Image generation limits](image-gen-limits.md) — free tier: 10 images per run; outputPath ignored, always lands in attached_assets/generated_images/ with hash names.
 - [Spirit Realm art pipeline](spirit-realm-art.md) — 20 card PNGs in public/art/; sprites.ts returns null for missing assets so PixelPortrait SVG fallback activates.
+- [Spirit Realm JWC inline layout](jwc-inline-layout.md) — flex-column: battle scene top (player left 30% no flip, enemies right stretch), whiteboard log + HP+buttons bottom 44%. Enemy HP bars need flexShrink:0 and high-contrast color to stay visible.
+- [Spirit Realm bestiary](bestiary.md) — Player.bestiary Record tracks seen/killed/maxHp per enemy name; startJWC increments seen, closeJWC victory increments killed; BunkerScreen CODEX section shows sprites + lore.

@@ -50,6 +50,7 @@ export interface Player {
   rebirthCount: number;
   rebirthReadySwamp: boolean;
   rebirthReadyDCC: boolean;
+  bestiary: Record<string, { seen: number; killed: number; maxHp: number }>;
 }
 
 export const MAX_DECK_SIZE = 12;
@@ -118,6 +119,7 @@ function newPlayer(rebirthCount = 0): Player {
     rebirthCount,
     rebirthReadySwamp: false,
     rebirthReadyDCC: false,
+    bestiary: {},
   };
 }
 
@@ -150,6 +152,7 @@ function sanitize(p: Partial<Player>): Player {
     safe.rooms = safe.rooms.map(r => r.id === "kitchen" ? { ...r, id: "medlab", name: "Medical Lab" } : r);
   }
   if (!safe.collection || typeof safe.collection !== "object") safe.collection = {};
+  if (!safe.bestiary   || typeof safe.bestiary   !== "object") safe.bestiary   = {};
   if (!safe.propertyIncome || typeof safe.propertyIncome !== "object") safe.propertyIncome = {};
   if (!safe.propertyLanded || typeof safe.propertyLanded !== "object") safe.propertyLanded = {};
   // Fix parts saved from old builds that lack the buff property
@@ -330,6 +333,14 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       log: logLines,
       atkByEnemy: scaledEnemies.map(() => 0), pendingDef: 0,
       finished: false, victory: false, isBossFight: isBoss,
+    });
+    setPlayerState(p => {
+      const b = { ...p.bestiary };
+      for (const e of scaledEnemies) {
+        const prev = b[e.name] ?? { seen: 0, killed: 0, maxHp: 0 };
+        b[e.name] = { ...prev, seen: prev.seen + 1, maxHp: Math.max(prev.maxHp, e.maxHp) };
+      }
+      return { ...p, bestiary: b };
     });
   }
 
@@ -720,6 +731,11 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         const fittingGear = gearDrops.slice(0, space);
         const newBossKills = isBossWin ? p.bossKills + 1 : p.bossKills;
         const newReadySwamp = p.rebirthReadySwamp || (isBossWin && newBossKills === 19);
+        const newBestiary = { ...p.bestiary };
+        for (const e of jwc.enemies) {
+          const prev = newBestiary[e.name] ?? { seen: 0, killed: 0, maxHp: 0 };
+          newBestiary[e.name] = { ...prev, killed: prev.killed + 1 };
+        }
         return {
           ...p,
           hp:        Math.max(1, Math.min(effectiveMaxHp(p), jwc.playerHp)),
@@ -729,6 +745,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           inventory: [...p.inventory, ...partDrops, ...fittingGear],
           bossKills: newBossKills,
           rebirthReadySwamp: newReadySwamp,
+          bestiary: newBestiary,
         };
       });
     } else {

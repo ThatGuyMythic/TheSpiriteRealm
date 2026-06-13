@@ -2,7 +2,39 @@ import React, { useState } from "react";
 import { useGame, effectiveMaxHp } from "@/game/state";
 import { C, PixelButton, StatChip, PTitle } from "@/components/PixelUI";
 import { PixelPortrait } from "@/components/CardArt";
-import { CHARACTER_SPRITES } from "@/assets/sprites";
+import { CHARACTER_SPRITES, ENEMY_SPRITES } from "@/assets/sprites";
+
+// ── Bestiary lore ───────────────────────────────────────────────────────────────
+const ENEMY_LORE: Record<string, string> = {
+  "Goblin":               "Weak but cunning. Travels in raiding packs.",
+  "Slime":                "Dissolves armor on contact. Deceptively durable.",
+  "Orc":                  "Brutal warrior. Slow to think, fast to hit.",
+  "Goblin King":          "Rules by fear. Richer than he deserves.",
+  "Frost Salamander":     "Breathes freezing mist. Cold-blooded killer.",
+  "Snow Wolf":            "Pack hunter of the high passes.",
+  "Yeti":                 "Ancient mountain beast. Fiercely territorial.",
+  "The Great Dragon":     "A legend made real. Few survive its gaze.",
+  "Skeleton":             "Risen bones with no mercy. Never tires.",
+  "Skeleton Wolf":        "A dead wolf that refuses to stay down.",
+  "Skeleton Knight":      "A warrior in death as in life.",
+  "Firegaunt":            "A wraith of flame. Burns all it touches.",
+  "Fire Lich":            "Undead sorcerer commanding fire and bone.",
+  "Burning Snae":         "Serpent wreathed in ash and embers.",
+  "Lava Golem":           "Solidified magma animated by dark will.",
+  "Fire Demon":           "Servant of the deep flame pits.",
+  "Swamp Slug":           "Trails acid. Surprisingly difficult to kill.",
+  "Snake":                "Venomous and fast. Hides in the reeds.",
+  "Troll":                "Slow regeneration. End it before it heals.",
+  "Ancient Black Dragon": "The oldest evil lurking in the swamp.",
+};
+
+const ENEMY_ORDER = [
+  "Goblin","Slime","Orc","Goblin King",
+  "Frost Salamander","Snow Wolf","Yeti","The Great Dragon",
+  "Skeleton","Skeleton Wolf","Skeleton Knight","Firegaunt",
+  "Fire Lich","Burning Snae","Lava Golem","Fire Demon",
+  "Swamp Slug","Snake","Troll","Ancient Black Dragon",
+];
 
 // ── Room icons ─────────────────────────────────────────────────────────────────
 const ROOM_ICON: Record<string, string> = {
@@ -475,12 +507,106 @@ export default function BunkerScreen() {
           </div>
         </div>
 
+        {/* ── CODEX / Bestiary ────────────────────────────────────────────────── */}
+        <BestiarySection bestiary={player.bestiary} />
+
         {msg && (
           <div style={{ backgroundColor: "#001A00", border: `1px solid ${C.green}`, padding: "4px 10px" }}>
             <span className="pixel-text" style={{ color: C.green, fontSize: 13 }}>{msg}</span>
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ── Bestiary section ────────────────────────────────────────────────────────────
+function BestiarySection({ bestiary }: { bestiary: Record<string, { seen: number; killed: number; maxHp: number }> }) {
+  const [open, setOpen] = useState(false);
+  const encountered = ENEMY_ORDER.filter(n => bestiary[n]);
+  const total = ENEMY_ORDER.length;
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          width: "100%", background: "none",
+          border: `2px solid #6040A044`,
+          padding: "6px 10px", cursor: "pointer",
+          display: "flex", justifyContent: "space-between", alignItems: "center",
+        }}
+      >
+        <span className="pixel-text" style={{ color: "#A080D0", fontSize: 14, letterSpacing: 2 }}>
+          CODEX
+        </span>
+        <span className="pixel-text" style={{ color: "#705090", fontSize: 11 }}>
+          {encountered.length}/{total} discovered {open ? "▲" : "▼"}
+        </span>
+      </button>
+      {open && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 2 }}>
+          {ENEMY_ORDER.map(name => {
+            const entry = bestiary[name];
+            const imgSrc = ENEMY_SPRITES[name] ?? null;
+            const seen = entry?.seen ?? 0;
+            const killed = entry?.killed ?? 0;
+            const maxHp = entry?.maxHp ?? 0;
+            const discovered = !!entry;
+            return (
+              <div key={name} style={{
+                display: "flex", alignItems: "center", gap: 8,
+                backgroundColor: discovered ? "#0A0814" : "#080808",
+                border: `1px solid ${discovered ? "#4A2A7044" : "#1A1A1A"}`,
+                padding: "5px 8px",
+                opacity: discovered ? 1 : 0.35,
+              }}>
+                {/* Sprite thumbnail */}
+                <div style={{
+                  width: 44, height: 44, flexShrink: 0,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  backgroundColor: "#050508",
+                  border: `1px solid ${discovered ? "#6040A044" : "#111"}`,
+                  overflow: "hidden",
+                }}>
+                  {imgSrc ? (
+                    <img src={imgSrc} alt={name} style={{
+                      width: "100%", height: "100%",
+                      objectFit: "contain", imageRendering: "pixelated",
+                      filter: discovered ? "none" : "brightness(0)",
+                    }} />
+                  ) : (
+                    <PixelPortrait name={name} size={38} />
+                  )}
+                </div>
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <span className="pixel-text" style={{
+                    color: discovered ? "#C090FF" : "#333",
+                    fontSize: 13, display: "block", lineHeight: 1.1,
+                  }}>
+                    {discovered ? name : "???"}
+                  </span>
+                  {discovered ? (
+                    <>
+                      <span className="pixel-text" style={{ color: "#706050", fontSize: 9, display: "block", marginTop: 1 }}>
+                        {ENEMY_LORE[name] ?? "Unknown creature."}
+                      </span>
+                      <div style={{ display: "flex", gap: 10, marginTop: 3 }}>
+                        <span className="pixel-text" style={{ color: "#CC4444", fontSize: 10 }}>HP: {maxHp}</span>
+                        <span className="pixel-text" style={{ color: "#44AA44", fontSize: 10 }}>Kills: {killed}</span>
+                        <span className="pixel-text" style={{ color: "#9060D0", fontSize: 10 }}>Seen: {seen}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <span className="pixel-text" style={{ color: "#222", fontSize: 9 }}>Not yet encountered</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
