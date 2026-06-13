@@ -56,29 +56,27 @@ export const CARD_SPRITES: Record<string, string | null> = {
 };
 
 // ── Combat enemy sprites ──────────────────────────────────────────────────────
-// No PNG files generated yet — all fall back to PixelPortrait which uses
-// category-aware pixel art (slime, skeleton, goblin, dragon, etc.)
 export const ENEMY_SPRITES: Record<string, string | null> = {
   // Forest
-  "Goblin":               null,
-  "Slime":                null,
-  "Orc":                  null,
-  "Goblin King":          null,
+  "Goblin":               `${B}art/enemy-goblin.png`,
+  "Slime":                `${B}art/enemy-slime.png`,
+  "Orc":                  `${B}art/enemy-orc.png`,
+  "Goblin King":          `${B}art/enemy-goblin-king.png`,
   // Snowy
   "Frost Salamander":     null,
   "Snow Wolf":            null,
   "Yeti":                 null,
-  "The Great Dragon":     null,
+  "The Great Dragon":     `${B}art/enemy-great-dragon.png`,
   // Underworld
-  "Skeleton":             null,
+  "Skeleton":             `${B}art/enemy-skeleton.png`,
   "Skeleton Wolf":        null,
-  "Skeleton Knight":      null,
-  "Firegaunt":            null,
+  "Skeleton Knight":      `${B}art/enemy-skeleton-knight.png`,
+  "Firegaunt":            `${B}art/enemy-firegaunt.png`,
   // Volcano
   "Fire Lich":            null,
   "Burning Snae":         null,
   "Lava Golem":           null,
-  "Fire Demon":           null,
+  "Fire Demon":           `${B}art/enemy-fire-demon.png`,
   // Swamp
   "Swamp Slug":           null,
   "Snake":                null,
@@ -88,11 +86,11 @@ export const ENEMY_SPRITES: Record<string, string | null> = {
 
 // ── Bunker / battle character sprites ─────────────────────────────────────────
 export const CHARACTER_SPRITES: Record<string, string | null> = {
-  "self":   null,
+  "self":   `${B}art/char-self.png`,
   "mundo":  null,
   "ornn":   null,
   "norra":  null,
-  "battle": null,
+  "battle": `${B}art/char-self.png`,
 };
 
 // ── Weapon icons ──────────────────────────────────────────────────────────────

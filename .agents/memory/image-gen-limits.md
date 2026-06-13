@@ -7,11 +7,11 @@ description: Free tier image gen constraints and file naming behavior
 Free tier: **10 images per run** (session). Exceeding it throws "Image generation limit reached."
 
 ## outputPath behavior
-The `outputPath` parameter in `generateImage` / `generateImageAsync` does **not** save to the specified path. Images always land in `attached_assets/generated_images/` with auto-generated hex hash names (e.g. `medieval_fantasy_pixel_art_26e5.png`). Must copy/rename after generation.
+`outputPath` in `generateImage` (synchronous) **works correctly** — images save directly to the specified path (e.g. `artifacts/the-spirit-realm/public/art/enemy-goblin.png`).
 
-**Why:** The sandbox intercepts file writes and routes them to attached_assets regardless of the path specified.
+`generateImageAsync` (async) does **not** reliably save to outputPath — images land in `attached_assets/generated_images/` with random hex hash names. Prefer synchronous `generateImage` in batches of 10 for reliable file placement.
 
-**How to apply:** After generating a batch, use `read` tool on each image file to visually identify them, then `cp` to the correct destination with proper names.
+**How to apply:** Use `generateImage` with explicit `outputPath` per image. No rename step needed.
 
 ## Ordering
 Files are named with random hashes — not sequential. Must visually identify each image to match it to its intended asset name.

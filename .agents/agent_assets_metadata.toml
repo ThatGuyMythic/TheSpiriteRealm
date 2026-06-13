@@ -60,3 +60,63 @@ id = "3r73uJY_rbScMWcI8QB4V"
 uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d21b.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "4ecy7Eu_qfn3YeojA-VT8"
+uri = "file://artifacts/the-spirit-realm/public/art/char-self.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3xeMrPYpancYou6lKNbzY"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-goblin.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "l-A-wc2OL9KVOXMfAY21u"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-slime.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "sfEIPGiFFmxLmcl0jRUc-"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-orc.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "TkyM0yyyOKgWe3k9kkZGN"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-goblin-king.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jQr0D6rYB_0cTUluDhhI3"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-skeleton.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "NinAtiEhnhQya1lWWEO6E"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-skeleton-knight.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "1FbEAZMWjiWcARftTh3J5"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-firegaunt.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "F2EDG5kombMmV0mW_zTx6"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-fire-demon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "f7w3zkxdGlUoVrWjOkKXs"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-great-dragon.png"
+type = "image"
+title = "generated_image"
