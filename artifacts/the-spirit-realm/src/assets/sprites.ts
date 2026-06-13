@@ -79,9 +79,9 @@ export const ENEMY_SPRITES: Record<string, string | null> = {
   "Fire Demon":           `${B}art/enemy-fire-demon.png`,
   // Swamp
   "Swamp Slug":           `${B}art/enemy-swamp-slug.png`,
-  "Snake":                null,
+  "Snake":                `${B}art/enemy-snake.png`,
   "Troll":                `${B}art/enemy-troll.png`,
-  "Ancient Black Dragon": null,
+  "Ancient Black Dragon": `${B}art/enemy-ancient-black-dragon.png`,
 };
 
 // ── Bunker / battle character sprites ─────────────────────────────────────────

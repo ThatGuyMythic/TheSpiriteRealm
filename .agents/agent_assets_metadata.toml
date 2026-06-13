@@ -174,3 +174,15 @@ id = "2IKShjSaU8PjfCP1E5hiB"
 uri = "file://artifacts/the-spirit-realm/public/art/enemy-troll.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "PXWcDW4iTiRBPLsDsM7Ow"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-snake.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7At_MKqEOLUlzrD5rihel"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-ancient-black-dragon.png"
+type = "image"
+title = "generated_image"
