@@ -1,0 +1,266 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "W6Z86ZSTVAvv-TXGRoaPJ"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_26e5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LojcfXm_kriyK9CReyXSf"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d8a8.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "mASJ01EC-5izo2fuK_v2W"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_e202.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dWpngcgkkt7JgqHO5l93P"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_0cdb.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zsjgcs_2AsyojUG9z2jdb"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_03b3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bhVgQmsp3XfYKlxA-4qIe"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_c61e.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SwTxSWcNQavbF2gM5lo5K"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_7c87.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "xy3LqsedPDSJ3fcO15swP"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_c146.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "MYXgv3IlYv7Gn2wGPefU5"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d9b9.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3r73uJY_rbScMWcI8QB4V"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d21b.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "4ecy7Eu_qfn3YeojA-VT8"
+uri = "file://artifacts/the-spirit-realm/public/art/char-self.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3xeMrPYpancYou6lKNbzY"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-goblin.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "l-A-wc2OL9KVOXMfAY21u"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-slime.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "sfEIPGiFFmxLmcl0jRUc-"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-orc.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "TkyM0yyyOKgWe3k9kkZGN"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-goblin-king.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jQr0D6rYB_0cTUluDhhI3"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-skeleton.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "NinAtiEhnhQya1lWWEO6E"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-skeleton-knight.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "1FbEAZMWjiWcARftTh3J5"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-firegaunt.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "F2EDG5kombMmV0mW_zTx6"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-fire-demon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "f7w3zkxdGlUoVrWjOkKXs"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-great-dragon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "qnYtHlT6aEGqhUjmXBSEa"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-snow-wolf.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "QLjHZplhnpYaTqJro-SGs"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-yeti.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "_mCAptHJ9SCpfzT01LaZX"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-frost-salamander.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "q2ZCd4YWpAVRG1l0RzwcW"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-skeleton-wolf.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "NGu9Juyhn9-chC6XonvRR"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-fire-lich.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fm5rdOo26j3gbjEl8OfR3"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-burning-snae.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7wyNz3izQi4J9LqsgQEOP"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-lava-golem.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ayEzAIq0oTf8MVnbXpFV9"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-swamp-slug.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "2IKShjSaU8PjfCP1E5hiB"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-troll.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "PXWcDW4iTiRBPLsDsM7Ow"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-snake.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7At_MKqEOLUlzrD5rihel"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-ancient-black-dragon.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "RGu6bTQCflVB7AoXVn434"
+uri = "file://artifacts/the-spirit-realm/public/art/char-ornn.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "UY6rvWK30lm0DtLv2u5y2"
+uri = "file://artifacts/the-spirit-realm/public/art/char-norra.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "6PnT-Qgja2hAHomPr84kl"
+uri = "file://artifacts/the-spirit-realm/public/art/char-mundo.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SC264upz4hsmksTrV2WM8"
+uri = "file://attached_assets/generated_images/pixel_art_goblin_warchief_1fb0.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Mq5BKd1QclR4yIajHpMLt"
+uri = "file://attached_assets/generated_images/pixel_art_vine_lurker_df4b.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7GBPPpIXBLG8Q32esROmd"
+uri = "file://attached_assets/generated_images/pixel_art_fire_imp_fbf6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7XGMOVL82wllmHi3ywzya"
+uri = "file://attached_assets/generated_images/pixel_art_shadow_fiend_826d.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Vo1kGsvcRkHHNMd1aMvcy"
+uri = "file://attached_assets/generated_images/pixel_art_root_golem_5c82.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "sCbQnFFxd76baoxq2xADu"
+uri = "file://attached_assets/generated_images/pixel_art_thorn_sprite_273c.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "IbNer-aelowh8E0Y-gb-L"
+uri = "file://attached_assets/generated_images/pixel_art_demon_knight_89f9.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "wPcCEoLnkXFlV_1mQkzkb"
+uri = "file://attached_assets/generated_images/pixel_art_rust_bot_9164.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "P1fss-ZVVjdNClRFWy3C_"
+uri = "file://attached_assets/generated_images/pixel_art_iron_cleric_c9e2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "PNGMz2KJsNfZBQqWswjQz"
+uri = "file://attached_assets/generated_images/pixel_art_pit_lord_ace2.png"
+type = "image"
+title = "generated_image"
