@@ -1,0 +1,2 @@
+- [Image generation limits](image-gen-limits.md) — free tier: 10 images per run; outputPath ignored, always lands in attached_assets/generated_images/ with hash names.
+- [Spirit Realm art pipeline](spirit-realm-art.md) — 20 card PNGs in public/art/; sprites.ts returns null for missing assets so PixelPortrait SVG fallback activates.

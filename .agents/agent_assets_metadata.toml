@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "W6Z86ZSTVAvv-TXGRoaPJ"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_26e5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LojcfXm_kriyK9CReyXSf"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d8a8.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "mASJ01EC-5izo2fuK_v2W"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_e202.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "dWpngcgkkt7JgqHO5l93P"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_0cdb.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zsjgcs_2AsyojUG9z2jdb"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_03b3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bhVgQmsp3XfYKlxA-4qIe"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_c61e.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SwTxSWcNQavbF2gM5lo5K"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_7c87.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "xy3LqsedPDSJ3fcO15swP"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_c146.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "MYXgv3IlYv7Gn2wGPefU5"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d9b9.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "3r73uJY_rbScMWcI8QB4V"
+uri = "file://attached_assets/generated_images/medieval_fantasy_pixel_art_d21b.png"
+type = "image"
+title = "generated_image"
