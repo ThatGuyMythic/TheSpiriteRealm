@@ -120,3 +120,57 @@ id = "f7w3zkxdGlUoVrWjOkKXs"
 uri = "file://artifacts/the-spirit-realm/public/art/enemy-great-dragon.png"
 type = "image"
 title = "generated_image"
+
+[[generated]]
+id = "qnYtHlT6aEGqhUjmXBSEa"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-snow-wolf.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "QLjHZplhnpYaTqJro-SGs"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-yeti.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "_mCAptHJ9SCpfzT01LaZX"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-frost-salamander.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "q2ZCd4YWpAVRG1l0RzwcW"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-skeleton-wolf.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "NGu9Juyhn9-chC6XonvRR"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-fire-lich.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fm5rdOo26j3gbjEl8OfR3"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-burning-snae.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "7wyNz3izQi4J9LqsgQEOP"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-lava-golem.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ayEzAIq0oTf8MVnbXpFV9"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-swamp-slug.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "2IKShjSaU8PjfCP1E5hiB"
+uri = "file://artifacts/the-spirit-realm/public/art/enemy-troll.png"
+type = "image"
+title = "generated_image"

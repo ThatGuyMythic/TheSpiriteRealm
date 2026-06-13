@@ -63,24 +63,24 @@ export const ENEMY_SPRITES: Record<string, string | null> = {
   "Orc":                  `${B}art/enemy-orc.png`,
   "Goblin King":          `${B}art/enemy-goblin-king.png`,
   // Snowy
-  "Frost Salamander":     null,
-  "Snow Wolf":            null,
-  "Yeti":                 null,
+  "Frost Salamander":     `${B}art/enemy-frost-salamander.png`,
+  "Snow Wolf":            `${B}art/enemy-snow-wolf.png`,
+  "Yeti":                 `${B}art/enemy-yeti.png`,
   "The Great Dragon":     `${B}art/enemy-great-dragon.png`,
   // Underworld
   "Skeleton":             `${B}art/enemy-skeleton.png`,
-  "Skeleton Wolf":        null,
+  "Skeleton Wolf":        `${B}art/enemy-skeleton-wolf.png`,
   "Skeleton Knight":      `${B}art/enemy-skeleton-knight.png`,
   "Firegaunt":            `${B}art/enemy-firegaunt.png`,
   // Volcano
-  "Fire Lich":            null,
-  "Burning Snae":         null,
-  "Lava Golem":           null,
+  "Fire Lich":            `${B}art/enemy-fire-lich.png`,
+  "Burning Snae":         `${B}art/enemy-burning-snae.png`,
+  "Lava Golem":           `${B}art/enemy-lava-golem.png`,
   "Fire Demon":           `${B}art/enemy-fire-demon.png`,
   // Swamp
-  "Swamp Slug":           null,
+  "Swamp Slug":           `${B}art/enemy-swamp-slug.png`,
   "Snake":                null,
-  "Troll":                null,
+  "Troll":                `${B}art/enemy-troll.png`,
   "Ancient Black Dragon": null,
 };
 
