@@ -117,129 +117,159 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
 
   // ── INLINE compact layout ──────────────────────────────────────────────────
   if (inline) {
-    const inlineSize = liveEnemies.length > 2 ? 80 : 100;
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}>
+
+        {/* ── Battle scene — floating sprites, no rigid columns ── */}
         <div style={{
-          flex: 1, display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "3fr 3fr 2.2fr",
+          flex: 1, minHeight: 0,
+          display: "flex", flexDirection: "row",
+          background: "linear-gradient(180deg, #0A0814 0%, #100A1C 60%, #080510 100%)",
           overflow: "hidden",
-          borderBottom: `3px solid ${accent}`,
         }}>
-          {/* [0,0] Enemy HP */}
+
+          {/* Player — left 30%, faces RIGHT toward enemies */}
           <div style={{
-            backgroundColor: "#0D0404", borderRight: `1px solid ${accent}33`, borderBottom: `1px solid ${accent}22`,
-            padding: "4px 6px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 3,
+            width: "30%", position: "relative", overflow: "hidden",
+            display: "flex", alignItems: "flex-end", justifyContent: "center",
+          }}>
+            <div
+              className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
+              style={{ width: "100%", height: "100%", transform: "scaleX(-1)" }}
+            >
+              <SpriteFill name="self" isPlayer />
+            </div>
+          </div>
+
+          {/* Enemies — right 70%, all side-by-side, no dividers */}
+          <div style={{
+            flex: 1, display: "flex", flexDirection: "row",
+            alignItems: "flex-end", overflow: "hidden",
           }}>
             {jwc.enemies.map((e, i) => {
-              const isTarget = i === jwc.active, isDead = e.hp <= 0, atkN = atkByEnemy[i] ?? 0;
+              const isDead = e.hp <= 0;
+              const isTarget = i === jwc.active;
+              const atkN = atkByEnemy[i] ?? 0;
+              const animClass = enemyAnim.getClass(e.id, "jwc-attack-hit");
               return (
                 <div key={e.id}
                   onClick={() => !isDead && !jwc.finished && handleAttackEnemy(i)}
                   onContextMenu={ev => { ev.preventDefault(); if (atkN > 0) jwcUnqueueAtkForEnemy(i); else if (!isDead && !jwc.finished) jwcSelectTarget(i); }}
                   onTouchStart={() => startHold(i)} onTouchEnd={clearHold} onTouchMove={clearHold}
-                  style={{ padding: "3px 4px", backgroundColor: isDead ? "#0A0000" : isTarget ? "#1E0404" : "#110202", border: `1px solid ${isDead ? "#300" : isTarget ? C.redBright : "#600"}`, cursor: isDead || jwc.finished ? "default" : "pointer", opacity: isDead ? 0.4 : 1 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 2, marginBottom: 2 }}>
-                    <span className="pixel-text" style={{ color: isDead ? "#600" : isTarget ? C.redBright : "#C06060", fontSize: 13, flex: 1, lineHeight: 1 }}>
-                      {isDead ? `✗ ${e.name}` : e.name}
-                    </span>
-                    {atkN > 0 && <span className="pixel-text" style={{ color: C.redBright, fontSize: 10, backgroundColor: "#3A0000", padding: "0 3px" }}>ATK×{atkN}</span>}
-                  </div>
-                  {!isDead && (
+                  style={{
+                    flex: isDead ? "0 0 18px" : 1,
+                    display: "flex", flexDirection: "column", alignItems: "center",
+                    justifyContent: "flex-end", position: "relative",
+                    cursor: isDead || jwc.finished ? "default" : "pointer",
+                    opacity: isDead ? 0.25 : 1,
+                    overflow: "hidden",
+                  }}>
+                  {isDead ? (
+                    <span className="pixel-text" style={{ color: "#500", fontSize: 10, paddingBottom: 4 }}>✗</span>
+                  ) : (
                     <>
-                      <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={5} />
-                      <span className="pixel-text" style={{ color: "#904040", fontSize: 10 }}>{e.hp}/{e.maxHp}</span>
+                      {/* Sprite with glow highlight on target — no cell background */}
+                      <div className={animClass} style={{
+                        flex: 1, width: "100%", minHeight: 0,
+                        filter: isTarget
+                          ? `drop-shadow(0 0 5px ${C.redBright}) drop-shadow(0 0 10px ${C.redBright}88)`
+                          : "none",
+                        transition: "filter 0.15s",
+                      }}>
+                        <SpriteFill name={e.name} />
+                      </div>
+                      {/* Floating HP overlay at bottom of each enemy */}
+                      <div style={{
+                        width: "100%", padding: "2px 3px",
+                        background: "linear-gradient(0deg, #00000099 80%, transparent 100%)",
+                      }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 1 }}>
+                          <span className="pixel-text" style={{
+                            color: isTarget ? C.redBright : "#C07070", fontSize: 8, lineHeight: 1,
+                            textShadow: isTarget ? `0 0 4px ${C.redBright}` : "none",
+                          }}>
+                            {e.name.split(" ")[0]}
+                          </span>
+                          {atkN > 0 && (
+                            <span className="pixel-text" style={{ color: C.redBright, fontSize: 8 }}>⚔×{atkN}</span>
+                          )}
+                        </div>
+                        <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={3} />
+                        <span className="pixel-text" style={{ color: "#80404077", fontSize: 7 }}>{e.hp}/{e.maxHp}</span>
+                      </div>
                     </>
                   )}
                 </div>
               );
             })}
           </div>
+        </div>
 
-          {/* [0,1] Enemy sprites — fill the cell */}
+        {/* ── Bottom strip: whiteboard log | HP + buttons ── */}
+        <div style={{
+          height: "44%", flexShrink: 0,
+          display: "flex", flexDirection: "row",
+          borderTop: `2px solid ${accent}66`,
+        }}>
+
+          {/* Whiteboard log — parchment/cream style */}
           <div style={{
-            backgroundColor: "#100404", borderBottom: `1px solid ${accent}22`,
-            display: "flex", alignItems: "stretch",
-            justifyContent: "stretch",
-            overflow: "hidden", position: "relative",
+            flex: 1, minWidth: 0,
+            backgroundColor: "#EDE8D4",
+            borderRight: "1px solid #B8A870",
+            padding: "4px 6px", overflowY: "auto",
+            display: "flex", flexDirection: "column", gap: 1,
           }}>
-            {liveEnemies.map(e => {
-              const idx = jwc.enemies.findIndex(x => x.id === e.id);
-              const isTarget = e.id === activeEnemy?.id, atkN = atkByEnemy[idx] ?? 0;
-              const animClass = enemyAnim.getClass(e.id, "jwc-attack-hit");
-              return (
-                <div key={e.id} onClick={() => !jwc.finished && handleAttackEnemy(idx)}
-                  onContextMenu={ev => { ev.preventDefault(); if (atkN > 0) jwcUnqueueAtkForEnemy(idx); }}
-                  style={{
-                    flex: 1, position: "relative", cursor: "pointer",
-                    outline: isTarget ? `2px solid ${C.redBright}` : "none",
-                    outlineOffset: -2,
-                    borderRight: liveEnemies.indexOf(e) < liveEnemies.length - 1 ? `1px solid ${accent}33` : "none",
-                    overflow: "hidden",
-                  }}>
-                  <SpriteFill name={e.name} animClass={animClass} />
-                  {atkN > 0 && (
-                    <div style={{ position: "absolute", top: 0, left: 0, right: 0, textAlign: "center", backgroundColor: "#8B000099", padding: "1px 0" }}>
-                      <span className="pixel-text" style={{ color: C.redBright, fontSize: 9 }}>ATK×{atkN}</span>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* [1,0] Player sprite — fill the cell */}
-          <div style={{
-            backgroundColor: "#040C04", borderRight: `1px solid ${accent}33`, borderBottom: `1px solid ${accent}22`,
-            overflow: "hidden", position: "relative",
-          }}>
-            <SpriteFill
-              name="self" isPlayer
-              animClass={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
-            />
-          </div>
-
-          {/* [1,1] Player HP */}
-          <div style={{
-            backgroundColor: "#040A04", borderBottom: `1px solid ${accent}22`,
-            padding: "6px 8px", display: "flex", flexDirection: "column", gap: 5, justifyContent: "center",
-          }}>
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
-                <span className="pixel-text" style={{ color: C.green, fontSize: 13 }}>HP</span>
-                <span className="pixel-text" style={{ color: jwc.playerHp / jwc.playerMaxHp > 0.3 ? C.green : C.redBright, fontSize: 14 }}>
-                  {jwc.playerHp}/{jwc.playerMaxHp}
-                </span>
-              </div>
-              <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={7} />
-            </div>
-            <span className="pixel-text" style={{ color: sp > 0 ? C.cyan : "#334", fontSize: 14 }}>SP:{sp}{spReserved > 0 ? `+${spReserved}` : ""}</span>
-            {w && <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>{w.name} · {w.damage}dmg</span>}
-          </div>
-
-          {/* [2,0] Log */}
-          <div style={{ backgroundColor: "#020A02", borderRight: `1px solid ${accent}33`, padding: "4px 6px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 1 }}>
+            {recentLog.length === 0 && (
+              <span className="pixel-text" style={{ color: "#9A8060", fontSize: 9 }}>Combat begins...</span>
+            )}
             {recentLog.map((line, i) => (
               <span key={i} className="pixel-text" style={{
-                fontSize: i === 0 ? 12 : 10,
-                color: line.includes("STUN") || line.includes("[ICE]") ? C.cyan : line.includes("hit") || line.includes("collapse") ? C.redBright : line.includes("VICTORY") || line.includes("★") ? C.green : line.includes("WEAK") ? C.yellow : C.textDim,
-                opacity: 1 - i * 0.13, lineHeight: 1.2,
+                fontSize: i === 0 ? 11 : 9,
+                color: line.includes("STUN") || line.includes("[ICE]") ? "#005580"
+                     : line.includes("hit") || line.includes("collapse")  ? "#880010"
+                     : line.includes("VICTORY") || line.includes("★")    ? "#105010"
+                     : line.includes("WEAK")                               ? "#705000"
+                     : "#3A2810",
+                opacity: 1 - i * 0.1, lineHeight: 1.25,
               }}>{line}</span>
             ))}
           </div>
 
-          {/* [2,1] Buttons — End Turn big, 3 action buttons fill rest */}
-          <div style={{ backgroundColor: "#030A03", padding: "3px 4px", display: "flex", flexDirection: "column", gap: 3, height: "100%" }}>
+          {/* Player HP floating + action buttons */}
+          <div style={{
+            width: "48%", display: "flex", flexDirection: "column",
+            backgroundColor: "#050C05", padding: "3px 4px", gap: 3,
+          }}>
+            {/* Floating HP chip */}
+            <div style={{
+              padding: "2px 5px", flexShrink: 0,
+              background: "linear-gradient(90deg, #001A0044 0%, #001A0088 100%)",
+              border: `1px solid ${C.green}44`,
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+            }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+                  <span className="pixel-text" style={{ color: C.green, fontSize: 10 }}>
+                    ♥ {jwc.playerHp}/{jwc.playerMaxHp}
+                  </span>
+                  <span className="pixel-text" style={{ color: sp > 0 ? C.cyan : "#334", fontSize: 10 }}>
+                    SP {sp}{spReserved > 0 ? `+${spReserved}` : ""}
+                  </span>
+                </div>
+                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={4} />
+              </div>
+            </div>
+
             {!jwc.finished ? (
               <>
                 <button onClick={jwcEndRound} style={{
-                  padding: "10px 0", flexShrink: 0,
-                  backgroundColor: totalPending > 0 || spReserved > 0 ? "#083008" : "#0A0A0A",
-                  border: `2px solid ${totalPending > 0 || spReserved > 0 ? C.green : "#333"}`,
-                  color: totalPending > 0 || spReserved > 0 ? C.green : "#444",
-                  fontFamily: "'VT323', monospace", fontSize: 18, cursor: "pointer", width: "100%",
-                }}>{totalPending > 0 || spReserved > 0 ? "END TURN ▶ RESOLVE" : "END TURN — PASS"}</button>
+                  padding: "8px 0", flexShrink: 0,
+                  backgroundColor: totalPending > 0 || spReserved > 0 ? "#082808" : "#080808",
+                  border: `2px solid ${totalPending > 0 || spReserved > 0 ? C.green : "#2A2A2A"}`,
+                  color: totalPending > 0 || spReserved > 0 ? C.green : "#3A3A3A",
+                  fontFamily: "'VT323', monospace", fontSize: 16, cursor: "pointer", width: "100%",
+                }}>{totalPending > 0 || spReserved > 0 ? "END TURN ▶" : "END TURN"}</button>
                 <div style={{ display: "flex", gap: 3, flex: 1, minHeight: 0 }}>
                   {(["STRIKE", "BLOCK", "RSRV"] as const).map((label) => {
                     const handler = label === "STRIKE" ? jwcAttack : label === "BLOCK" ? handleDefend : handleReserve;
@@ -251,14 +281,16 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                       <div key={label} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
                         <button onClick={handler} disabled={noSp} style={{
                           flex: 1, width: "100%", cursor: noSp ? "not-allowed" : "pointer",
-                          backgroundColor: noSp ? bg + "33" : bg, border: `2px solid ${noSp ? col + "33" : col}`,
-                          color: noSp ? col + "44" : col, fontFamily: "'VT323', monospace", fontSize: 16,
+                          backgroundColor: noSp ? bg + "22" : bg,
+                          border: `2px solid ${noSp ? col + "22" : col}`,
+                          color: noSp ? col + "33" : col,
+                          fontFamily: "'VT323', monospace", fontSize: 15,
                         }}>{label}</button>
                         {remover && queuedN > 0 && (
                           <button onClick={remover} style={{
-                            width: "100%", cursor: "pointer", backgroundColor: "#0A0A0A",
-                            border: `1px solid ${col}66`, color: col + "AA",
-                            fontFamily: "'VT323', monospace", fontSize: 11, padding: "1px 0",
+                            width: "100%", cursor: "pointer", backgroundColor: "#080808",
+                            border: `1px solid ${col}55`, color: col + "99",
+                            fontFamily: "'VT323', monospace", fontSize: 10, padding: "1px 0",
                           }}>↩ ×{queuedN}</button>
                         )}
                       </div>
@@ -273,17 +305,16 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   const tg = jwc.enemies.reduce((s, e) => s + (e.loot?.gems ?? 0), 0);
                   const drops = jwc.enemies.map(e => e.loot?.partName).filter(Boolean) as string[];
                   return (
-                    <div style={{ backgroundColor: "#001A08", border: `1px solid ${C.green}44`, padding: "4px 6px", marginBottom: 3 }}>
-                      <span className="pixel-text" style={{ color: C.green, fontSize: 11 }}>{isBossFight ? "★ BOSS REWARDS" : "★ REWARDS"}</span>
-                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 2 }}>
-                        {tm > 0 && <span className="pixel-text" style={{ color: C.yellow, fontSize: 13 }}>+${tm}</span>}
-                        {tg > 0 && <span className="pixel-text" style={{ color: C.cyan, fontSize: 13 }}>+{tg}💎</span>}
-                        {drops.map((d, i) => <span key={i} className="pixel-text" style={{ color: "#A080FF", fontSize: 11 }}>{d}</span>)}
+                    <div style={{ backgroundColor: "#001608", border: `1px solid ${C.green}44`, padding: "3px 4px", marginBottom: 2 }}>
+                      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                        {tm > 0 && <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>+${tm}</span>}
+                        {tg > 0 && <span className="pixel-text" style={{ color: C.cyan, fontSize: 11 }}>+{tg}💎</span>}
+                        {drops.map((d, i) => <span key={i} className="pixel-text" style={{ color: "#A080FF", fontSize: 10 }}>{d}</span>)}
                       </div>
                     </div>
                   );
                 })()}
-                <PixelButton onClick={closeJWC} color={jwc.victory ? C.green : "#6B0000"} textColor={jwc.victory ? "#052002" : "#fff"} style={{ width: "100%", padding: "12px 0" }}>
+                <PixelButton onClick={closeJWC} color={jwc.victory ? C.green : "#6B0000"} textColor={jwc.victory ? "#052002" : "#fff"} style={{ width: "100%", flex: 1 }}>
                   {jwc.victory ? (isBossFight ? "★ BOSS SLAIN" : "★ CLAIM LOOT") : "CONTINUE..."}
                 </PixelButton>
               </>

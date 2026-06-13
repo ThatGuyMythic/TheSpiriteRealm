@@ -240,7 +240,7 @@ export default function SettingsScreen() {
                       onChange={e => setDebugPw(e.target.value)}
                       onKeyDown={e => {
                         if (e.key === "Enter") {
-                          if (debugPw === "Fizzylikesyummitop") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
+                          if (debugPw === "DBT") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
                           else { flash("Wrong password."); setDebugPw(""); }
                         }
                       }}
@@ -252,7 +252,7 @@ export default function SettingsScreen() {
                       }}
                     />
                     <PixelButton small color="#201040" textColor="#B090E0" onClick={() => {
-                      if (debugPw === "Fizzylikesyummitop") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
+                      if (debugPw === "DBT") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
                       else { flash("Wrong password."); setDebugPw(""); }
                     }}>ENTER</PixelButton>
                   </div>
