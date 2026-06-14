@@ -1,0 +1,168 @@
+Board
+Use a tiny 8-bit version of the Medieval Rogue model for the board player.
+
+Give the player 3 separate images:
+
+One front-facing full-body image for the bunker and gear area, with no weapons.
+
+One tiny 8-bit image for the board.
+
+One JWC combat image showing the back of the player, torso and up only.
+
+In the browser version, make the left half of the screen the board and the right half the rest of the game.
+
+Fix the phone board UI so the board fits properly and does not get too big on the left and right.
+
+Forge
+When merging stacked mob loot, keep the same items selected until either:
+
+The item being infused reaches max level, or
+
+The player runs out of that mob loot.
+
+JWC Combat
+Fix the UI layout issues in JWC combat.
+
+Do not separate all 6 areas physically; use them for placement guidance only.
+
+Put buttons, info box, and bottom UI in the lower 1/3 of the screen.
+
+Put the player model in the upper 2/3.
+
+Put the player health box to the right of the player.
+
+Put enemies above the player with their health boxes to the left of them.
+
+Fix both browser and phone UI.
+
+Make the phone UI feel like an actual battle area, not separated images on a screen.
+
+Replace the black background with a flat biome-based battle area.
+
+Use full-body enemy art for all JWC enemies.
+
+Make enemies face at an angle toward the player.
+
+Gear Tab
+Remove the need for a separate equipped tab.
+
+Let the player equip items by clicking on them directly where the player model is.
+
+Remove the equipped-item buttons entirely.
+
+Add an inspect button for each item.
+
+In the inspect popup, show better stats in green, weaker stats in red, and equal stats in white.
+
+Bunker
+Ornn buffs should affect forge tiles on the board.
+
+Ornn buffs should make forged weapons and armor better the more he is upgraded.
+
+Area level should also affect weapon strength, with higher areas giving better base items.
+
+Ornn buffs should add on top of the area bonus.
+
+Norra buffs should affect shop tiles on the board.
+
+Norra should make shop items better and cheaper.
+
+Shop tile prices should match the quality of the area.
+
+Fix the bug where the shop tile sometimes gives +0 health.
+
+Let the player sell enemy loot to Norra.
+
+Add sell 1, sell 10, and sell all options for each enemy loot type.
+
+Black Rose / DCC
+Fix the upgrade system so it actually works instead of only showing a notification.
+
+Allow duplicate cards.
+
+Make sure no two cards have the exact same stats.
+
+Give duplicate cards different buffs or damage so they feel distinct.
+
+Reduce the number of cards that are only slightly better copies of others.
+
+Add more variety so different playstyles are possible.
+
+Keep the card art the same, but change white backgrounds to black or grey.
+
+Fix the Fire Imps background so it does not look like a missing image.
+
+Rework the sit-down/play UI.
+
+For browser, use a horizontal rectangular table with a green cloth center and the button in the middle.
+
+For phone, make it feel like sitting at the table looking at another person, with the button under them.
+
+Overall Art Direction
+Keep Black Rose art unchanged except for background fixes.
+
+Change the rest of the game to an old Pokémon-style pixel look.
+
+Make characters look cool, detailed, and pixel-like.
+
+Do not make the non-Black Rose art look like random blobs.
+
+Keep the art directional and meaningful.
+
+Make sure it is still easy to add custom art.
+
+If the process changes, document it in the debug area.
+
+Do not change Black Rose art style beyond the background fixes.
+
+Save and UI Behavior
+Make actions persist when switching tabs and coming back.
+
+If the player types the debug password, that should stay when returning.
+
+If the player starts a Black Rose game, that should stay when returning.
+
+Make popups appear above the UI instead of shifting the whole UI and causing misclicks.
+
+Make all weapons, drops, and similar items appear in alphabetical order.
+
+Saves
+Add save support so players can keep progress.
+
+Let players download their save file.
+
+Let players import a save file on any device.
+
+Make the save format readable on any device.
+
+Make a new game not delete old saves.
+
+Main Menu
+Add a Continue Save option.
+
+Continue Save should lead to a list of all saves the player has.
+
+The player should pick which save to load.
+
+Add Hardcore mode.
+
+In Hardcore, dying resets the whole save.
+
+Hardcore should also let the player opt out of fights before clicking attacking.
+
+Add a Tutorial option.
+
+Put all tutorial tabs inside the Tutorial menu.
+
+Add a Go Back button there.
+
+Make the front page accessible again.
+
+Final Checks
+Recheck that all items and characters have pixel art.
+
+Add 128-bit pixel art for anything missing.
+
+Recheck for crashes.
+
+Make sure nothing is broken after all changes.
