@@ -3,7 +3,6 @@ import { useGame, effectiveMaxHp } from "@/game/state";
 import { C, PixelButton, StatChip, PTitle } from "@/components/PixelUI";
 import { PixelPortrait } from "@/components/CardArt";
 import { CHARACTER_SPRITES, ENEMY_SPRITES } from "@/assets/sprites";
-import { type EnemyPart } from "@/game/data";
 
 // ── Bestiary lore ───────────────────────────────────────────────────────────────
 const ENEMY_LORE: Record<string, string> = {
@@ -246,64 +245,6 @@ function MedlabPanel() {
 }
 
 // ── Main BunkerScreen ──────────────────────────────────────────────────────────
-function SellDropsPanel() {
-  const { player, sellParts } = useGame();
-  const [msg, setMsg] = useState("");
-  function flash(m: string) { setMsg(m); setTimeout(() => setMsg(""), 1800); }
-
-  const parts = player.inventory.filter(i => i.kind === "part") as EnemyPart[];
-  const groups = new Map<string, EnemyPart[]>();
-  for (const p of parts) {
-    const list = groups.get(p.name) ?? [];
-    list.push(p);
-    groups.set(p.name, list);
-  }
-
-  if (groups.size === 0) {
-    return <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>No drops to sell.</span>;
-  }
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-      {Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([name, group]) => {
-        const avgLevel = Math.round(group.reduce((s, p) => s + p.level, 0) / group.length);
-        const priceEach = Math.max(5, 8 + avgLevel * 2);
-        const count = group.length;
-        return (
-          <div key={name} style={{
-            backgroundColor: "#0A0A14", border: "1px solid #2A2A3A",
-            padding: "5px 8px", display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}>
-            <div>
-              <span className="pixel-text" style={{ color: "#A080FF", fontSize: 13 }}>{name}</span>
-              <span className="pixel-text" style={{ color: C.textDim, fontSize: 10, display: "block" }}>
-                ×{count} · ${priceEach}/ea
-              </span>
-            </div>
-            <div style={{ display: "flex", gap: 3 }}>
-              <PixelButton small color={C.yellow + "33"} textColor={C.yellow}
-                onClick={() => { sellParts(name, 1); flash(`Sold 1 ${name} for $${priceEach}.`); }}>
-                ×1
-              </PixelButton>
-              {count >= 10 && (
-                <PixelButton small color={C.yellow + "33"} textColor={C.yellow}
-                  onClick={() => { sellParts(name, 10); flash(`Sold 10 ${name} for $${priceEach * 10}.`); }}>
-                  ×10
-                </PixelButton>
-              )}
-              <PixelButton small color={C.yellow + "33"} textColor={C.yellow}
-                onClick={() => { const v = priceEach * count; sellParts(name, -1); flash(`Sold all ${name} (×${count}) for $${v}.`); }}>
-                ALL
-              </PixelButton>
-            </div>
-          </div>
-        );
-      })}
-      {msg && <span className="pixel-text" style={{ color: C.green, fontSize: 12, marginTop: 2 }}>{msg}</span>}
-    </div>
-  );
-}
-
 export default function BunkerScreen() {
   const { player, upgradeRoom } = useGame();
   const [msg, setMsg]           = useState("");
@@ -486,11 +427,10 @@ export default function BunkerScreen() {
                   Board shops: +1 extra item · 10% off all gear
                 </span>
               </div>
-              <div style={{ borderTop: `1px solid ${C.yellow}22`, paddingTop: 8, marginTop: 2 }}>
-                <span className="pixel-text" style={{ color: C.yellow, fontSize: 13, display: "block", marginBottom: 4 }}>
-                  SELL DROPS
+              <div style={{ backgroundColor: C.yellow + "11", border: `1px solid ${C.yellow}22`, padding: "4px 8px", marginTop: 2 }}>
+                <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>
+                  Visit the Shop tile to sell your enemy drops.
                 </span>
-                <SellDropsPanel />
               </div>
             </div>
           </div>

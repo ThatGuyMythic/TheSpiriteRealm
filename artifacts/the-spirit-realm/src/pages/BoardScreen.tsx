@@ -76,7 +76,7 @@ function DiceDisplay({ value, rolling }: { value: number | null; rolling: boolea
 
 // ── Shop modal overlay ────────────────────────────────────────────────────────
 function ShopOverlay({ items, onClose, inline }: { items: Item[]; onClose: () => void; inline?: boolean }) {
-  const { buyShopItem, player } = useGame();
+  const { buyShopItem, player, sellParts } = useGame();
   const [msg, setMsg] = useState("");
   function flash(m: string) { setMsg(m); setTimeout(() => setMsg(""), 1600); }
 
@@ -135,6 +135,61 @@ function ShopOverlay({ items, onClose, inline }: { items: Item[]; onClose: () =>
             );
           })}
         </div>
+        {/* Sell Drops section — shown when player has enemy parts */}
+        {(() => {
+          const parts = player.inventory.filter(i => i.kind === "part") as EnemyPart[];
+          const groups = new Map<string, EnemyPart[]>();
+          for (const p of parts) {
+            const list = groups.get(p.name) ?? [];
+            list.push(p);
+            groups.set(p.name, list);
+          }
+          if (groups.size === 0) return null;
+          return (
+            <div style={{ borderTop: `1px solid ${C.yellow}33`, padding: "6px 12px" }}>
+              <span className="pixel-text" style={{ color: C.yellow, fontSize: 13, display: "block", marginBottom: 6 }}>
+                ◈ SELL DROPS
+              </span>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([name, group]) => {
+                  const avgLevel  = Math.round(group.reduce((s, p) => s + p.level, 0) / group.length);
+                  const priceEach = Math.max(5, 8 + avgLevel * 2);
+                  const count     = group.length;
+                  return (
+                    <div key={name} style={{
+                      backgroundColor: "#0A0A14", border: "1px solid #2A2A3A",
+                      padding: "4px 8px", display: "flex", justifyContent: "space-between", alignItems: "center",
+                    }}>
+                      <div>
+                        <span className="pixel-text" style={{ color: "#A080FF", fontSize: inline ? 15 : 13 }}>{name}</span>
+                        <span className="pixel-text" style={{ color: C.textDim, fontSize: 10, display: "block" }}>
+                          ×{count} · ${priceEach}/ea
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", gap: 3 }}>
+                        <PixelButton small color={C.yellow + "33"} textColor={C.yellow}
+                          onClick={() => { sellParts(name, 1); flash(`Sold 1 ${name} for $${priceEach}.`); }}>
+                          ×1
+                        </PixelButton>
+                        {count >= 10 && (
+                          <PixelButton small color={C.yellow + "33"} textColor={C.yellow}
+                            onClick={() => { sellParts(name, 10); flash(`Sold 10 ${name} for $${priceEach * 10}.`); }}>
+                            ×10
+                          </PixelButton>
+                        )}
+                        <PixelButton small color={C.yellow + "33"} textColor={C.yellow}
+                          onClick={() => { const v = priceEach * count; sellParts(name, -1); flash(`Sold all ${name} for $${v}.`); }}>
+                          ALL
+                        </PixelButton>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         {msg && (
           <div style={{ padding: "4px 12px", backgroundColor: "#001A00", borderTop: "1px solid #0A3A0A" }}>
             <span className="pixel-text" style={{ color: C.green, fontSize: 12 }}>{msg}</span>

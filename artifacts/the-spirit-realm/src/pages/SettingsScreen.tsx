@@ -5,6 +5,9 @@ import { getBiome, getStarDisplay, BIOME_NAMES, type TileKind } from "@/game/dat
 
 type SettingsTab = "beginner" | "combat" | "blackrose" | "bunker" | "data";
 
+const DEBUG_KEY    = "nolife.debug.v1";
+let   _lastSettingsTab: SettingsTab = "beginner";
+
 const TABS: { id: SettingsTab; label: string; icon: string; color: string }[] = [
   { id: "beginner",  label: "BEGINNER",       icon: "★",  color: "#80C040" },
   { id: "combat",   label: "COMBAT & BOARD", icon: "✦",  color: C.redBright },
@@ -41,9 +44,11 @@ export default function SettingsScreen() {
   const { player, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugGiveOpKit } = useGame();
   const [msg, setMsg]                   = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
-  const [tab, setTab]                   = useState<SettingsTab>("beginner");
+  const [tab, setTab]                   = useState<SettingsTab>(_lastSettingsTab);
   const [debugPw, setDebugPw]           = useState("");
-  const [debugUnlocked, setDebugUnlocked] = useState(false);
+  const [debugUnlocked, setDebugUnlocked] = useState(() => {
+    try { return localStorage.getItem(DEBUG_KEY) === "1"; } catch { return false; }
+  });
   const importRef = useRef<HTMLInputElement>(null);
 
   function flash(m: string) { setMsg(m); setTimeout(() => setMsg(""), 2000); }
@@ -123,7 +128,7 @@ export default function SettingsScreen() {
       {/* Tab bar */}
       <div style={{ display: "flex", borderBottom: "2px solid #000", flexShrink: 0, overflowX: "auto" }}>
         {TABS.map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
+          <button key={t.id} onClick={() => { _lastSettingsTab = t.id; setTab(t.id); }} style={{
             flexShrink: 0, padding: "6px 10px",
             backgroundColor: tab === t.id ? C.bg2 : C.bg3,
             border: "none", borderBottom: tab === t.id ? `2px solid ${t.color}` : "2px solid transparent",
@@ -298,7 +303,7 @@ export default function SettingsScreen() {
                       onChange={e => setDebugPw(e.target.value)}
                       onKeyDown={e => {
                         if (e.key === "Enter") {
-                          if (debugPw === "DBT") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
+                          if (debugPw === "DBT") { setDebugUnlocked(true); try { localStorage.setItem(DEBUG_KEY, "1"); } catch { /* ignore */ } setDebugPw(""); flash("★ Debug tools unlocked!"); }
                           else { flash("Wrong password."); setDebugPw(""); }
                         }
                       }}
@@ -310,7 +315,7 @@ export default function SettingsScreen() {
                       }}
                     />
                     <PixelButton small color="#201040" textColor="#B090E0" onClick={() => {
-                      if (debugPw === "DBT") { setDebugUnlocked(true); setDebugPw(""); flash("★ Debug tools unlocked!"); }
+                      if (debugPw === "DBT") { setDebugUnlocked(true); try { localStorage.setItem(DEBUG_KEY, "1"); } catch { /* ignore */ } setDebugPw(""); flash("★ Debug tools unlocked!"); }
                       else { flash("Wrong password."); setDebugPw(""); }
                     }}>ENTER</PixelButton>
                   </div>
