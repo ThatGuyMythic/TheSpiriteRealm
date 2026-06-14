@@ -1,0 +1,1 @@
+- [Spirit Realm game fixes](spirit-realm-fixes.md) — tab persistence, DCC async bug, card duplicates, blend-mode art bg, Norra discount, END TURN placement.

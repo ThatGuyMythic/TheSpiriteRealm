@@ -1,6 +1,6 @@
-# [Project name]
+# The Spirit Realm
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+_A pixel-art card/board RPG game: explore a board, fight enemies in real-time combat (JWC), and duel in the Black Rose card parlour (DCC) to grow your deck and progress through biomes._
 
 ## Run & Operate
 
