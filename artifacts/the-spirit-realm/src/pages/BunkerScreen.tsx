@@ -3,6 +3,7 @@ import { useGame, effectiveMaxHp } from "@/game/state";
 import { C, PixelButton, StatChip, PTitle } from "@/components/PixelUI";
 import { PixelPortrait } from "@/components/CardArt";
 import { CHARACTER_SPRITES, ENEMY_SPRITES } from "@/assets/sprites";
+import { GearDoll } from "@/components/CharacterDoll";
 
 // ── Bestiary lore ───────────────────────────────────────────────────────────────
 const ENEMY_LORE: Record<string, string> = {
@@ -328,7 +329,14 @@ export default function BunkerScreen() {
                 >
                   {/* Portrait image — fills width, fixed height */}
                   <div style={{ width: "100%", height: 220, overflow: "hidden", backgroundColor: "#000", position: "relative" }}>
-                    {imgSrc ? (
+                    {c.id === "self" ? (
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#060A10" }}>
+                        <GearDoll
+                          w={110} h={165}
+                          hasHelmet={false} hasChest={false} hasCloak={false} hasWeapon={false}
+                        />
+                      </div>
+                    ) : imgSrc ? (
                       <img
                         src={imgSrc}
                         alt={c.name}

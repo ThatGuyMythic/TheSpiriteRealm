@@ -164,7 +164,7 @@ function WoodenTable({ children }: { children: React.ReactNode }) {
       background: "repeating-linear-gradient(90deg, #2A1A08 0px, #3A2210 6px, #2E1C0A 12px, #2A1A08 18px)",
       borderTop: "3px solid #4A2E10", borderBottom: "3px solid #1A0C04",
       boxShadow: "inset 0 2px 8px rgba(0,0,0,0.5), inset 0 -2px 4px rgba(255,200,100,0.05)",
-      padding: 6,
+      padding: 2,
     }}>
       {children}
     </div>
@@ -534,7 +534,7 @@ export default function CardsScreen() {
                       ? <span className="pixel-text" style={{ color: "#1A4A1A", fontSize: 10, margin: "auto", alignSelf: "center", paddingTop: 8 }}>—</span>
                       : <div style={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
                           {[col0, col1].map((col, ci) => col.length > 0 && (
-                            <div key={ci} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                            <div key={ci} style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
                               {col.map((c, j) => (
                                 <div key={c.id + j} style={{ marginTop: j > 0 ? Math.round(-65 * cardScale) : 0, position: "relative", zIndex: j }}>
                                   <FullCard card={c} isEnemy scale={cardScale} />
