@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "eWSlgXuOON02tn7XrBCW_"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Player_model.png"
+type = "image"
+title = "player hero pixel art"
+
+[[generated]]
+id = "rKtPQ72a23zdFyyukadff"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Goblin.png"
+type = "image"
+title = "goblin enemy pixel art"
+
+[[generated]]
+id = "fc5cFmexDwy1oCy1s0yd4"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Slime.png"
+type = "image"
+title = "slime enemy pixel art"
+
+[[generated]]
+id = "8255fkNlulHFubt1EEndE"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Orc.png"
+type = "image"
+title = "orc enemy pixel art"
+
+[[generated]]
+id = "A9TrvdlCr5SsQok2Tpc7e"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Goblin_King.png"
+type = "image"
+title = "goblin king enemy pixel art"
+
+[[generated]]
+id = "QzIIgeAlLUC73aLwvXgM7"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Frost_Salamander.png"
+type = "image"
+title = "frost salamander enemy pixel art"
+
+[[generated]]
+id = "SIrA4spIUver8qwfx-1Fy"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Snow_Wolf.png"
+type = "image"
+title = "snow wolf enemy pixel art"
+
+[[generated]]
+id = "k8Q4X9kFCUPM-OSymkU1n"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Yeti.png"
+type = "image"
+title = "yeti enemy pixel art"
+
+[[generated]]
+id = "CeNq550sTFAYXGT_N0OMv"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Great_Dragon.png"
+type = "image"
+title = "great dragon enemy pixel art"
+
+[[generated]]
+id = "bnYcmj9XQtxpuU5N0jssX"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Skeleton.png"
+type = "image"
+title = "skeleton enemy pixel art"

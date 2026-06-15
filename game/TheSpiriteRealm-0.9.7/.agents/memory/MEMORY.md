@@ -1,0 +1,1 @@
+- [Spirit Realm artifact](spirit-realm.md) — game at artifacts/the-spirit-realm; workflow needs PORT=26090 BASE_PATH=/ prefix; pre-existing TS18047 jwc-null errors in JWCModal.tsx are benign.

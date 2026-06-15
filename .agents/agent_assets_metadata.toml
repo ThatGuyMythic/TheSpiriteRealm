@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "-ndKR8Z6blo3P5K8HqfT7"
+uri = "file://TheSpiriteRealm-0.9.7-updated.zip"
+type = "unspecified"
+title = "TheSpiriteRealm-0.9.7-updated.zip"
