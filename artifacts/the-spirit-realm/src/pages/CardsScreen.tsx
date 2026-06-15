@@ -598,6 +598,8 @@ export default function CardsScreen() {
             <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: "1px solid #3A7A3A22" }}>
               {dcc.lanes.map((l, i) => {
                 const { player: pPow } = calcLanePower(l, i);
+                const col0 = l.player.filter((_, j) => j % 2 === 0);
+                const col1 = l.player.filter((_, j) => j % 2 === 1);
                 return (
                   <div key={i} onClick={() => dcc.selectedCard && placeCard(i)}
                     style={{
@@ -609,10 +611,14 @@ export default function CardsScreen() {
                     }}>
                     {l.player.length === 0
                       ? <span className="pixel-text" style={{ color: "#1A4A1A", fontSize: 10, margin: "auto", alignSelf: "center", paddingTop: 8 }}>—</span>
-                      : <div style={{ display: "flex", flexWrap: "wrap", gap: 2, alignItems: "flex-start" }}>
-                          {l.player.map((c, j) => (
-                            <div key={c.id + j}>
-                              <FullCard card={c} scale={cardScale} />
+                      : <div style={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
+                          {[col0, col1].map((col, ci) => col.length > 0 && (
+                            <div key={ci} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                              {col.map((c, j) => (
+                                <div key={c.id + j} style={{ marginTop: j > 0 ? Math.round(-65 * cardScale) : 0, position: "relative", zIndex: j }}>
+                                  <FullCard card={c} scale={cardScale} />
+                                </div>
+                              ))}
                             </div>
                           ))}
                         </div>

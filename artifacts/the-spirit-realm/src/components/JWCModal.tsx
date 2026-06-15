@@ -250,7 +250,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
         </div>
 
         {/* RIGHT SECTION: sprites fill right→left (first enemy rightmost) */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "row-reverse", gap: compact ? 1 : 16, alignItems: "flex-end", overflow: "hidden", maxHeight: compact ? "100%" : 400 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "row-reverse", gap: compact ? 1 : 16, alignItems: "flex-end", overflow: "hidden", maxHeight: compact ? 240 : 300 }}>
           {jwc.enemies.map((e, i) => {
             const isDead    = e.hp <= 0;
             const isTarget  = i === jwc.active;
@@ -268,8 +268,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                 className={animClass}
                 style={{
                   flex: isDead ? "0 0 16px" : 1,
-                  height: compact ? "100%" : 400,
-                  minHeight: compact ? 180 : undefined,
+                  height: compact ? 240 : 300,
                   cursor: isDead || jwc.finished ? "default" : "pointer",
                   opacity: isDead ? 0.2 : 1,
                   filter: isTarget
