@@ -399,83 +399,70 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
       zIndex: 100, overflow: "hidden",
     }}>
 
-      {/* ── Upper 68%: Battle scene ── */}
+      {/* ── Battle scene: enemies only, fills available space ── */}
       <div style={{
-        flex: "0 0 68%", minHeight: 0,
+        flex: 1, minHeight: 0,
         background: `linear-gradient(180deg, ${battleBg} 0%, ${battleAccent} 100%)`,
         display: "flex", flexDirection: "column",
-        padding: "10px 12px 6px", gap: 0, overflow: "hidden",
-        justifyContent: "space-between",
+        overflow: "hidden",
       }}>
-
-        {/* Top group: boss banner + enemies — fixed height, anchored to TOP */}
-        <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-          {isBossFight && (
-            <div style={{ textAlign: "center", flexShrink: 0, marginBottom: -4 }}>
-              <span className="pixel-text" style={{ color: C.yellow, fontSize: 16 }}>★ BOSS FIGHT ★</span>
-            </div>
-          )}
-          {/* Enemies: all HP bars LEFT column, all sprites RIGHT section */}
+        {isBossFight && (
+          <div style={{ textAlign: "center", flexShrink: 0, padding: "4px 0" }}>
+            <span className="pixel-text" style={{ color: C.yellow, fontSize: 14 }}>★ BOSS FIGHT ★</span>
+          </div>
+        )}
+        <div style={{ flex: 1, minHeight: 0, overflow: "hidden", padding: "4px 8px 0" }}>
           {renderEnemies(false)}
         </div>
+      </div>
 
-        {/* Player — sprite LEFT (fixed 260px), HP/SP box RIGHT (max 240px) — anchored to BOTTOM */}
+      {/* ── Player HP/SP strip ── */}
+      <div style={{
+        height: 110, flexShrink: 0, overflow: "hidden",
+        display: "flex", flexDirection: "row", alignItems: "stretch",
+        borderTop: `2px solid ${accent}44`,
+        borderBottom: `2px solid ${accent}44`,
+        backgroundColor: "#0A0A0A",
+      }}>
+        <div
+          className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
+          style={{ width: 90, flexShrink: 0 }}>
+          <SpriteFill name="self" isPlayer />
+        </div>
         <div style={{
-          display: "flex", flexDirection: "row", alignItems: "flex-end",
-          height: 300, flexShrink: 0, marginTop: 16, gap: 12,
+          flex: 1, minWidth: 0, padding: "8px 14px", overflow: "hidden",
+          display: "flex", flexDirection: "column", justifyContent: "center", gap: 5,
         }}>
-          <div
-            className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
-            style={{ width: 340, height: "100%", flexShrink: 0 }}>
-            <SpriteFill name="self" isPlayer />
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 14 }}>♥ YOU</span>
+            <span className="pixel-text" style={{
+              color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 14,
+            }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
           </div>
-          <div style={{
-            width: 240, flexShrink: 0,
-            padding: "0 0 6px 0",
-            display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 6,
-          }}>
-            <div style={{
-              backgroundColor: "#1C1C1C", border: "2px solid #444444",
-              padding: "8px 10px", display: "flex", flexDirection: "column", gap: 6,
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 14 }}>♥ YOU</span>
-                <span className="pixel-text" style={{
-                  color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 16,
-                }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
-              </div>
-              <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={8} />
-              <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
-                <span className="pixel-text" style={{ color: "#666666", fontSize: 11 }}>SP</span>
-                {spPips.map((f, i) => (
-                  <div key={i} style={{
-                    width: 12, height: 12,
-                    backgroundColor: f ? C.cyan : "#111",
-                    border: `1px solid ${f ? C.cyan : "#333"}`,
-                  }} />
-                ))}
-                {spReserved > 0 && (
-                  <span className="pixel-text" style={{ color: C.yellow, fontSize: 12 }}>+{spReserved}</span>
-                )}
-              </div>
-            </div>
+          <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={10} />
+          <div style={{ display: "flex", gap: 5, alignItems: "center", flexWrap: "wrap" }}>
+            <span className="pixel-text" style={{ color: "#666", fontSize: 11 }}>SP</span>
+            {spPips.map((f, i) => (
+              <div key={i} style={{
+                width: 11, height: 11,
+                backgroundColor: f ? C.cyan : "#111",
+                border: `1px solid ${f ? C.cyan : "#333"}`,
+              }} />
+            ))}
+            {spReserved > 0 && (
+              <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>+{spReserved}</span>
+            )}
             {w && (
-              <div style={{ backgroundColor: "#00000066", border: `1px solid ${C.yellow}22`, padding: "4px 8px" }}>
-                <span className="pixel-text" style={{ color: C.yellow, fontSize: 12 }}>
-                  ⚔ {w.name} · {w.damage}dmg
-                </span>
-              </div>
+              <span className="pixel-text" style={{ color: C.yellow, fontSize: 11, marginLeft: 8 }}>⚔ {w.name} · {w.damage}dmg</span>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Lower 40%: Combat HUD ── */}
+      {/* ── Controls: action buttons ── */}
       <div style={{
-        flex: 1, display: "flex", flexDirection: "column",
-        backgroundColor: "#06090F",
-        borderTop: `2px solid ${accent}`,
-        overflow: "hidden",
+        height: 200, flexShrink: 0, borderTop: `2px solid ${accent}`,
+        display: "flex", flexDirection: "column", overflow: "hidden",
       }}>
         {!jwc.finished ? (
           <div style={{ flex: 1, display: "flex", flexDirection: "row", overflow: "hidden" }}>
@@ -483,20 +470,19 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
             {renderButtons()}
           </div>
         ) : (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", backgroundColor: "#06090F", padding: "16px 20px", gap: 12 }}>
-            {jwc.victory ? (
-              <div style={{ backgroundColor: "#001608", border: `1px solid ${C.green}44`, padding: "10px 14px" }}>
-                <span className="pixel-text" style={{ color: C.green, fontSize: 18, display: "block", marginBottom: 6 }}>
-                  ★ VICTORY
-                </span>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                  {lootDisplay.tm > 0 && <span className="pixel-text" style={{ color: C.yellow, fontSize: 20 }}>+${lootDisplay.tm}</span>}
-                  {lootDisplay.tg > 0 && <span className="pixel-text" style={{ color: C.cyan, fontSize: 20 }}>+{lootDisplay.tg}💎</span>}
-                  {lootDisplay.drops.map((d, i) => <span key={i} className="pixel-text" style={{ color: "#A080FF", fontSize: 18 }}>{d}</span>)}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", backgroundColor: "#050C05", padding: "12px 16px", gap: 8 }}>
+            {jwc.victory && (
+              <div style={{ backgroundColor: "#001608", border: `1px solid ${C.green}44`, padding: "6px 10px" }}>
+                <span className="pixel-text" style={{ color: C.green, fontSize: 16, display: "block", marginBottom: 2 }}>★ VICTORY</span>
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {lootDisplay.tm > 0 && <span className="pixel-text" style={{ color: C.yellow, fontSize: 18 }}>+${lootDisplay.tm}</span>}
+                  {lootDisplay.tg > 0 && <span className="pixel-text" style={{ color: C.cyan, fontSize: 18 }}>+{lootDisplay.tg}💎</span>}
+                  {lootDisplay.drops.map((d, i) => <span key={i} className="pixel-text" style={{ color: "#A080FF", fontSize: 16 }}>{d}</span>)}
                 </div>
               </div>
-            ) : (
-              <div style={{ backgroundColor: "#180000", border: `1px solid ${C.redBright}44`, padding: "10px 14px" }}>
+            )}
+            {!jwc.victory && (
+              <div style={{ backgroundColor: "#180000", border: `1px solid ${C.redBright}44`, padding: "6px 10px" }}>
                 <span className="pixel-text" style={{ color: C.redBright, fontSize: 18 }}>✗ DEFEATED</span>
               </div>
             )}

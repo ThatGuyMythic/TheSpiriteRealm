@@ -522,8 +522,8 @@ export default function CardsScreen() {
             <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderBottom: "2px solid #3A7A3A" }}>
               {dcc.lanes.map((l, i) => {
                 const { enemy: ePow } = calcLanePower(l, i);
-                const col0 = l.enemy.filter((_, j) => j % 2 === 0);
-                const col1 = l.enemy.filter((_, j) => j % 2 === 1);
+                const numCols = cardScale >= 0.9 ? 4 : 2;
+                const cols = Array.from({ length: numCols }, (_, ci) => l.enemy.filter((_, j) => j % numCols === ci));
                 return (
                   <div key={i} style={{
                     borderRight: i < 2 ? "1px solid #3A7A3A55" : undefined,
@@ -533,7 +533,7 @@ export default function CardsScreen() {
                     {l.enemy.length === 0
                       ? <span className="pixel-text" style={{ color: "#1A4A1A", fontSize: 10, margin: "auto", alignSelf: "center", paddingTop: 8 }}>—</span>
                       : <div style={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                          {[col0, col1].map((col, ci) => col.length > 0 && (
+                          {cols.map((col, ci) => col.length > 0 && (
                             <div key={ci} style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
                               {col.map((c, j) => (
                                 <div key={c.id + j} style={{ marginTop: j > 0 ? Math.round(-65 * cardScale) : 0, position: "relative", zIndex: j }}>
@@ -598,8 +598,8 @@ export default function CardsScreen() {
             <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: "1px solid #3A7A3A22" }}>
               {dcc.lanes.map((l, i) => {
                 const { player: pPow } = calcLanePower(l, i);
-                const col0 = l.player.filter((_, j) => j % 2 === 0);
-                const col1 = l.player.filter((_, j) => j % 2 === 1);
+                const numCols = cardScale >= 0.9 ? 4 : 2;
+                const cols = Array.from({ length: numCols }, (_, ci) => l.player.filter((_, j) => j % numCols === ci));
                 return (
                   <div key={i} onClick={() => dcc.selectedCard && placeCard(i)}
                     style={{
@@ -612,7 +612,7 @@ export default function CardsScreen() {
                     {l.player.length === 0
                       ? <span className="pixel-text" style={{ color: "#1A4A1A", fontSize: 10, margin: "auto", alignSelf: "center", paddingTop: 8 }}>—</span>
                       : <div style={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
-                          {[col0, col1].map((col, ci) => col.length > 0 && (
+                          {cols.map((col, ci) => col.length > 0 && (
                             <div key={ci} style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
                               {col.map((c, j) => (
                                 <div key={c.id + j} style={{ marginTop: j > 0 ? Math.round(-65 * cardScale) : 0, position: "relative", zIndex: j }}>
@@ -655,7 +655,7 @@ export default function CardsScreen() {
                 Empty hand — tap END TURN above
               </span>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, padding: "1px 0" }}>
+              <div style={{ display: "grid", gridTemplateColumns: `repeat(${cardScale >= 0.9 ? 6 : 4}, 1fr)`, gap: 1, padding: "1px 0" }}>
                 {dcc.hand.map(card => (
                   <FullCard
                     key={card.id}
@@ -814,7 +814,7 @@ export default function CardsScreen() {
                       {sectionLabel}
                     </span>
                   )}
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 3 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: `repeat(${cardScale >= 0.9 ? 6 : 4}, 1fr)`, gap: 3 }}>
                     {cards.map((c, i) => {
                       const inDeck  = player.deck.some(d => d.id === c.id);
                       const lvl     = player.collection[c.name] || 1;
@@ -898,7 +898,7 @@ export default function CardsScreen() {
                 <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
                   All {allTemplates.length} DCC cards — {ownedNames.size} owned
                 </span>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 3 }}>
+                <div style={{ display: "grid", gridTemplateColumns: `repeat(${cardScale >= 0.9 ? 6 : 4}, 1fr)`, gap: 3 }}>
                   {allTemplates.map((t, i) => {
                     const owned = ownedNames.has(t.name);
                     const lvl   = player.collection[t.name] || 0;
