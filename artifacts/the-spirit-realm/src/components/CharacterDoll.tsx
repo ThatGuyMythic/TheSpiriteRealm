@@ -14,6 +14,71 @@ const SLOT_META = {
   cloak:   { label: "CLK", icon: "🧣", color: "#A060C0" },
 } as const;
 
+function FireRedDoll({ w, h, hasHelmet, hasChest, hasCloak, hasWeapon }: {
+  w: number; h: number;
+  hasHelmet: boolean; hasChest: boolean; hasCloak: boolean; hasWeapon: boolean;
+}) {
+  const vw = 20;
+  const vh = 28;
+  const sx = w / vw;
+  const sy = h / vh;
+
+  type Rect = { x: number; y: number; w: number; h: number; fill: string };
+
+  const pixels: Rect[] = [
+    { x: 7,  y: 0, w: 6,  h: 1, fill: "#CC2200" },
+    { x: 6,  y: 1, w: 8,  h: 1, fill: "#CC2200" },
+    { x: 6,  y: 2, w: 8,  h: 2, fill: hasHelmet ? "#FF3300" : "#CC2200" },
+    { x: 5,  y: 2, w: 1,  h: 2, fill: "#222222" },
+    { x: 14, y: 2, w: 1,  h: 2, fill: "#222222" },
+    { x: 7,  y: 4, w: 6,  h: 4, fill: "#F0C080" },
+    { x: 8,  y: 5, w: 1,  h: 1, fill: "#111111" },
+    { x: 11, y: 5, w: 1,  h: 1, fill: "#111111" },
+    { x: 8,  y: 7, w: 4,  h: 1, fill: "#D08050" },
+    { x: 5,  y: 8, w: 10, h: 1, fill: "#AAAAAA" },
+    { x: 5,  y: 9,  w: 10, h: 5, fill: hasChest ? "#2255CC" : "#334488" },
+    { x: 4,  y: 9,  w: 1,  h: 4, fill: hasChest ? "#1A44BB" : "#223377" },
+    { x: 15, y: 9,  w: 1,  h: 4, fill: hasChest ? "#1A44BB" : "#223377" },
+    { x: 3,  y: 9,  w: 1,  h: 3, fill: "#F0C080" },
+    { x: 16, y: 9,  w: 1,  h: 3, fill: "#F0C080" },
+    { x: 5,  y: 14, w: 10, h: 1, fill: "#224488" },
+    { x: 6,  y: 15, w: 3,  h: 5, fill: "#224488" },
+    { x: 11, y: 15, w: 3,  h: 5, fill: "#224488" },
+    { x: 6,  y: 20, w: 3,  h: 3, fill: "#1A1A1A" },
+    { x: 11, y: 20, w: 3,  h: 3, fill: "#1A1A1A" },
+    { x: 5,  y: 20, w: 1,  h: 3, fill: "#333333" },
+    { x: 14, y: 20, w: 1,  h: 3, fill: "#333333" },
+  ];
+
+  if (hasCloak) {
+    pixels.push(
+      { x: 4, y: 9,  w: 12, h: 6, fill: "#5A1A88" },
+      { x: 5, y: 15, w: 10, h: 4, fill: "#44126E" },
+    );
+  }
+
+  if (hasWeapon) {
+    pixels.push(
+      { x: 17, y: 5,  w: 1, h: 12, fill: "#CCCCCC" },
+      { x: 16, y: 9,  w: 3, h: 1,  fill: "#A08050" },
+      { x: 17, y: 17, w: 1, h: 2,  fill: "#D4A020" },
+    );
+  }
+
+  return (
+    <svg
+      width={w} height={h}
+      viewBox={`0 0 ${vw} ${vh}`}
+      style={{ imageRendering: "pixelated", display: "block" }}
+    >
+      {pixels.map((r, i) => (
+        <rect key={i} x={r.x} y={r.y} width={r.w} height={r.h} fill={r.fill} />
+      ))}
+      {void (sx, sy)}
+    </svg>
+  );
+}
+
 export default function CharacterDoll({ equipped, size = "sm" }: Props) {
   const imgSrc = CHARACTER_SPRITES["inventory_player_model"] ?? CHARACTER_SPRITES["self"];
   const w = size === "lg" ? 96 : 56;
@@ -29,7 +94,6 @@ export default function CharacterDoll({ equipped, size = "sm" }: Props) {
   if (imgSrc) {
     return (
       <div style={{ position: "relative", width: w, height: h, flexShrink: 0 }}>
-        {/* Player sprite */}
         <img
           src={imgSrc}
           alt="Player"
@@ -42,27 +106,22 @@ export default function CharacterDoll({ equipped, size = "sm" }: Props) {
             border: `2px solid ${C.green}44`,
           }}
         />
-        {/* Equipment badges — 2×2 grid in bottom-right corner */}
         <div style={{
           position: "absolute", bottom: 2, right: 2,
           display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2,
         }}>
           {slots.map(s => {
             const meta = SLOT_META[s.key];
-            const equipped = !!s.item;
+            const eq = !!s.item;
             return (
-              <div
-                key={s.key}
-                title={meta.label}
-                style={{
-                  width: size === "lg" ? 18 : 14,
-                  height: size === "lg" ? 18 : 14,
-                  backgroundColor: equipped ? meta.color + "CC" : "#000000AA",
-                  border: `1px solid ${equipped ? meta.color : "#444"}`,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}
-              >
-                <span className="pixel-text" style={{ fontSize: size === "lg" ? 7 : 6, color: equipped ? "#000" : "#555", lineHeight: 1 }}>
+              <div key={s.key} title={meta.label} style={{
+                width: size === "lg" ? 18 : 14,
+                height: size === "lg" ? 18 : 14,
+                backgroundColor: eq ? meta.color + "CC" : "#000000AA",
+                border: `1px solid ${eq ? meta.color : "#444"}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <span className="pixel-text" style={{ fontSize: size === "lg" ? 7 : 6, color: eq ? "#000" : "#555", lineHeight: 1 }}>
                   {meta.label}
                 </span>
               </div>
@@ -73,40 +132,43 @@ export default function CharacterDoll({ equipped, size = "sm" }: Props) {
     );
   }
 
-  // ── Fallback: original CSS doll ───────────────────────────────────────────
-  const s = size === "lg" ? 96 : 40;
   const hasHelmet = !!equipped.helmet;
   const hasChest  = !!equipped.chest;
   const hasCloak  = !!equipped.cloak;
   const hasWeapon = !!equipped.weapon;
 
   return (
-    <div style={{ width: s, height: s, position: "relative", flexShrink: 0 }}>
-      <div style={{ position: "absolute", left: "4%", top: "42%", width: "20%", height: "12%", backgroundColor: hasChest ? C.cyan : C.textDim, border: "2px solid #000" }} />
-      <div style={{ position: "absolute", right: "4%", top: "42%", width: "20%", height: "12%", backgroundColor: hasChest ? C.cyan : C.textDim, border: "2px solid #000" }} />
-      <div style={{ position: "absolute", left: "2%", top: "52%", width: "16%", height: "10%", backgroundColor: "#D09060", border: "2px solid #000" }} />
-      <div style={{ position: "absolute", right: "2%", top: "52%", width: "16%", height: "10%", backgroundColor: "#D09060", border: "2px solid #000" }} />
-      {hasCloak && (
-        <div style={{ position: "absolute", left: "10%", top: "38%", width: "80%", height: "55%", backgroundColor: "#5A2080", border: "2px solid #000", opacity: 0.75, zIndex: 0 }} />
-      )}
-      <div style={{ position: "absolute", left: "28%", top: "80%", width: "18%", height: "18%", backgroundColor: C.bg3, border: "2px solid #000" }} />
-      <div style={{ position: "absolute", right: "28%", top: "80%", width: "18%", height: "18%", backgroundColor: C.bg3, border: "2px solid #000" }} />
-      <div style={{ position: "absolute", left: "26%", top: "40%", width: "48%", height: "42%", backgroundColor: hasChest ? C.cyan : C.textDim, border: "2px solid #000", zIndex: 1 }} />
-      <div style={{ position: "absolute", left: "26%", top: "68%", width: "48%", height: "6%", backgroundColor: "#8A6030", border: "1px solid #000", zIndex: 2 }} />
-      <div style={{ position: "absolute", left: "26%", top: "8%", width: "48%", height: "34%", backgroundColor: hasHelmet ? C.yellow : "#E8C88A", border: "2px solid #000", zIndex: 2 }}>
-        <div style={{ position: "absolute", left: "16%", top: "42%", width: "18%", height: "20%", backgroundColor: "#000" }} />
-        <div style={{ position: "absolute", right: "16%", top: "42%", width: "18%", height: "20%", backgroundColor: "#000" }} />
-        {hasHelmet && (
-          <div style={{ position: "absolute", left: "-4%", bottom: "-2px", width: "108%", height: "16%", backgroundColor: "#C09020", border: "1px solid #000" }} />
-        )}
+    <div style={{ width: w, height: h, position: "relative", flexShrink: 0, backgroundColor: "#0A0A14", border: `2px solid ${C.green}44` }}>
+      <FireRedDoll
+        w={w - 4}
+        h={h - 4}
+        hasHelmet={hasHelmet}
+        hasChest={hasChest}
+        hasCloak={hasCloak}
+        hasWeapon={hasWeapon}
+      />
+      <div style={{
+        position: "absolute", bottom: 2, right: 2,
+        display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1,
+      }}>
+        {slots.map(s => {
+          const meta = SLOT_META[s.key];
+          const eq = !!s.item;
+          return (
+            <div key={s.key} title={meta.label} style={{
+              width: size === "lg" ? 16 : 12,
+              height: size === "lg" ? 16 : 12,
+              backgroundColor: eq ? meta.color + "CC" : "#000000AA",
+              border: `1px solid ${eq ? meta.color : "#333"}`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <span className="pixel-text" style={{ fontSize: size === "lg" ? 6 : 5, color: eq ? "#000" : "#444", lineHeight: 1 }}>
+                {meta.label}
+              </span>
+            </div>
+          );
+        })}
       </div>
-      {hasWeapon && (
-        <>
-          <div style={{ position: "absolute", right: "-2%", top: "22%", width: "8%", height: "58%", backgroundColor: "#C0C0C0", border: "2px solid #000", zIndex: 3 }} />
-          <div style={{ position: "absolute", right: "-6%", top: "46%", width: "20%", height: "7%", backgroundColor: "#907040", border: "1px solid #000", zIndex: 3 }} />
-          <div style={{ position: "absolute", right: "-1%", top: "75%", width: "10%", height: "8%", backgroundColor: "#D4A020", border: "1px solid #000", zIndex: 3 }} />
-        </>
-      )}
     </div>
   );
 }

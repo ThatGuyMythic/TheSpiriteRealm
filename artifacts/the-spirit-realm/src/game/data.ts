@@ -550,11 +550,12 @@ export function genArmor(level = 1): Armor {
 
 export type Item = Weapon | Armor | EnemyPart;
 
-export function genShopItems(bossKills: number, rebirthCount = 0, hasNorra = false): Item[] {
+export function genShopItems(bossKills: number, rebirthCount = 0, norraLevel = 0): Item[] {
   const biome = getBiome(bossKills);
   const range = getEnemyLevelRange(bossKills, false);
   const baseLevel = Math.round((range.min + range.max) / 2);
-  const level = hasNorra ? baseLevel + 2 : baseLevel;
+  const hasNorra = norraLevel > 0;
+  const level = hasNorra ? baseLevel + Math.min(5, Math.floor(norraLevel / 4) + 1) : baseLevel;
   const m = 1 + 0.1 * rebirthCount;
   function scaleWeapon(w: Weapon): Weapon {
     return { ...w, damage: Math.round(w.damage * m) };
@@ -575,14 +576,19 @@ export function genShopItems(bossKills: number, rebirthCount = 0, hasNorra = fal
     scaleArmor(genArmor(level)),
     scaleArmor(genArmor(level)),
   ];
-  if (hasNorra) base.push(Math.random() < 0.5 ? scaleWeapon(genWeapon(level, biome)) : scaleArmor(genArmor(level)));
+  if (hasNorra) {
+    base.push(Math.random() < 0.5 ? scaleWeapon(genWeapon(level, biome)) : scaleArmor(genArmor(level)));
+    if (norraLevel >= 10) base.push(Math.random() < 0.5 ? scaleWeapon(genWeapon(level, biome)) : scaleArmor(genArmor(level)));
+  }
   return base;
 }
 
-export function shopPrice(item: Item, norraDiscount = false): number {
+export function shopPrice(item: Item, norraLevel = 0): number {
   if (item.kind === "part") return 0;
   const base = 60 + item.level * 35;
-  return norraDiscount ? Math.round(base * 0.9) : base;
+  if (norraLevel <= 0) return base;
+  const discountPct = Math.min(30, 5 + norraLevel * 1.5);
+  return Math.round(base * (1 - discountPct / 100));
 }
 
 // ── Static game data ──────────────────────────────────────────────────────────

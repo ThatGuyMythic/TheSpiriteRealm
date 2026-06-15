@@ -192,18 +192,18 @@ function FeltArea({ children, highlight }: { children: React.ReactNode; highligh
 function useCardScale(): number {
   const [scale, setScale] = useState(() => {
     const w = window.innerWidth;
-    if (w >= 1400) return 2.2;
-    if (w >= 1000) return 1.8;
-    if (w >= 700)  return 1.4;
-    return 1;
+    if (w >= 1400) return 1.0;
+    if (w >= 1000) return 0.9;
+    if (w >= 700)  return 0.8;
+    return 0.7;
   });
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w >= 1400) setScale(2.2);
-      else if (w >= 1000) setScale(1.8);
-      else if (w >= 700)  setScale(1.4);
-      else setScale(1);
+      if (w >= 1400) setScale(1.0);
+      else if (w >= 1000) setScale(0.9);
+      else if (w >= 700)  setScale(0.8);
+      else setScale(0.7);
     };
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
@@ -649,14 +649,14 @@ export default function CardsScreen() {
 
         {/* Hand area on wooden shelf */}
         <WoodenTable>
-          <div style={{ overflowX: "auto", overflowY: "hidden" }}>
-            <div style={{ display: "flex", gap: 6, padding: "2px 0", minWidth: "max-content" }}>
-              {dcc.hand.length === 0 ? (
-                <span className="pixel-text" style={{ color: "#8A6040", fontSize: 12, alignSelf: "center" }}>
-                  Empty hand — tap END TURN above
-                </span>
-              ) : (
-                dcc.hand.map(card => (
+          <div style={{ overflowY: "auto", maxHeight: 260 }}>
+            {dcc.hand.length === 0 ? (
+              <span className="pixel-text" style={{ color: "#8A6040", fontSize: 12 }}>
+                Empty hand — tap END TURN above
+              </span>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4, padding: "2px 0" }}>
+                {dcc.hand.map(card => (
                   <FullCard
                     key={card.id}
                     card={card}
@@ -665,9 +665,9 @@ export default function CardsScreen() {
                     onClick={() => selectCard(card)}
                     scale={cardScale}
                   />
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </WoodenTable>
       </div>

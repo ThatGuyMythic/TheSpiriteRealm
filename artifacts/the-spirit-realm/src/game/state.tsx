@@ -44,6 +44,8 @@ export interface Player {
   dccXp: number;
   dccLevel: number;
   bossKills: number;
+  ornnLevel: number;
+  norraLevel: number;
   propertyIncome: Record<number, number>;
   propertyLanded: Record<number, boolean>;
   lastTick: number;
@@ -114,6 +116,7 @@ function newPlayer(rebirthCount = 0): Player {
     collection: {},
     dccXp: 0, dccLevel: 1,
     bossKills: 0,
+    ornnLevel: 0, norraLevel: 0,
     propertyIncome: {}, propertyLanded: {},
     lastTick: Date.now(),
     rebirthCount,
@@ -139,6 +142,10 @@ function sanitize(p: Partial<Player>): Player {
   safe.dccXp       = num(safe.dccXp, 0);
   safe.dccLevel    = Math.max(1, num(safe.dccLevel, 1));
   safe.bossKills   = Math.max(0, num(safe.bossKills, 0));
+  safe.ornnLevel   = Math.max(0, num(safe.ornnLevel, 0));
+  safe.norraLevel  = Math.max(0, num(safe.norraLevel, 0));
+  if (safe.characters.find(c => c.id === "ornn")?.unlocked  && safe.ornnLevel  === 0) safe.ornnLevel  = 1;
+  if (safe.characters.find(c => c.id === "norra")?.unlocked && safe.norraLevel === 0) safe.norraLevel = 1;
   safe.rebirthCount      = Math.max(0, num(safe.rebirthCount, 0));
   safe.rebirthReadySwamp = Boolean(safe.rebirthReadySwamp);
   safe.rebirthReadyDCC   = Boolean(safe.rebirthReadyDCC);
@@ -251,6 +258,7 @@ interface GameContextType {
   debugStartFightSequence: () => void;
   maxUpgradeCard: (cardName: string) => void;
   performRebirth: () => void;
+  upgradeNpcLevel: (npcId: "ornn" | "norra") => { ok: boolean; msg: string };
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -348,10 +356,46 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   }
 
   function playerHasNorra(p: Player): boolean {
-    return p.characters.find(c => c.id === "norra")?.unlocked ?? false;
+    return (p.norraLevel ?? 0) > 0;
   }
   function playerHasOrnn(p: Player): boolean {
-    return p.characters.find(c => c.id === "ornn")?.unlocked ?? false;
+    return (p.ornnLevel ?? 0) > 0;
+  }
+  function playerNorraLevel(p: Player): number {
+    return p.norraLevel ?? 0;
+  }
+  function playerOrnnLevel(p: Player): number {
+    return p.ornnLevel ?? 0;
+  }
+  function maxNpcLevel(p: Player): number {
+    return Math.min(20, Math.floor(p.bossKills / 5) * 5 + 5);
+  }
+  function npcUpgradeCost(level: number): { money: number; metals: number } {
+    const nextLv = level + 1;
+    return { money: nextLv * 80, metals: nextLv };
+  }
+  function upgradeNpcLevel(npcId: "ornn" | "norra"): { ok: boolean; msg: string } {
+    const p = playerRef.current;
+    const curLevel = npcId === "ornn" ? playerOrnnLevel(p) : playerNorraLevel(p);
+    const isUnlocked = npcId === "ornn"
+      ? p.characters.find(c => c.id === "ornn")?.unlocked
+      : p.characters.find(c => c.id === "norra")?.unlocked;
+    if (!isUnlocked) return { ok: false, msg: `${npcId} not unlocked.` };
+    if (curLevel <= 0) return { ok: false, msg: `${npcId} not active.` };
+    const cap = maxNpcLevel(p);
+    if (curLevel >= cap) return { ok: false, msg: `Reach next biome to unlock higher levels.` };
+    if (curLevel >= 20)  return { ok: false, msg: `Already max level 20.` };
+    const { money, metals } = npcUpgradeCost(curLevel);
+    if (p.money < money)   return { ok: false, msg: `Need $${money}.` };
+    if (p.metals < metals) return { ok: false, msg: `Need ${metals} metals.` };
+    setPlayerState(q => ({
+      ...q,
+      money: q.money - money,
+      metals: q.metals - metals,
+      ornnLevel:  npcId === "ornn"  ? (q.ornnLevel  ?? 0) + 1 : q.ornnLevel,
+      norraLevel: npcId === "norra" ? (q.norraLevel ?? 0) + 1 : q.norraLevel,
+    }));
+    return { ok: true, msg: `${npcId === "ornn" ? "Ornn" : "Norra"} leveled up to ${curLevel + 1}!` };
   }
 
   function rollDice() {
@@ -373,7 +417,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     } else if (tile.kind === "pve") {
       enemies = rollEncounter(p0.bossKills);
     } else if (tile.kind === "shop") {
-      pendingAction = { type: "shop", items: genShopItems(p0.bossKills, p0.rebirthCount, playerHasNorra(p0)) };
+      pendingAction = { type: "shop", items: genShopItems(p0.bossKills, p0.rebirthCount, playerNorraLevel(p0)) };
     } else if (tile.kind === "elite") {
       enemies = rollEncounter(p0.bossKills, true);
     } else if (tile.kind === "forge") {
@@ -500,7 +544,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   function buyShopItem(item: Item): { ok: boolean; msg: string } {
     if (item.kind === "part") return { ok: false, msg: "Can't buy parts." };
-    const price = shopPrice(item, playerHasNorra(playerRef.current));
+    const price = shopPrice(item, playerNorraLevel(playerRef.current));
     if (playerRef.current.money < price) return { ok: false, msg: `Need $${price}.` };
     const p = playerRef.current;
     if (gearBagCount(p) >= gearBagSize(p)) {
@@ -861,7 +905,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setPlayerState((q) => {
       const range = getEnemyLevelRange(q.bossKills, false);
       const baseLevel = Math.round((range.min + range.max) / 2);
-      const ornnBonus = playerHasOrnn(q) ? 3 : 0;
+      const ornnBonus = playerOrnnLevel(q);
       const level = baseLevel + ornnBonus;
       return {
         ...q,
@@ -1094,7 +1138,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           return next;
         });
         if (kind === "shop") {
-          setPendingTileAction({ type: "shop", items: genShopItems(p.bossKills, p.rebirthCount, playerHasNorra(p)) });
+          setPendingTileAction({ type: "shop", items: genShopItems(p.bossKills, p.rebirthCount, playerNorraLevel(p)) });
         } else if (kind === "forge") {
           setPendingTileAction({ type: "forge" });
         } else if (kind === "pve") {
@@ -1147,6 +1191,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugGiveOpKit, debugStartFightSequence,
       maxUpgradeCard,
       performRebirth,
+      upgradeNpcLevel,
     }}>
       {children}
     </GameContext.Provider>

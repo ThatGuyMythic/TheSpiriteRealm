@@ -210,8 +210,8 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   <span className="pixel-text" style={{ color: "#500", fontSize: compact ? 8 : 10, padding: "0 2px" }}>✗</span>
                 ) : (
                   <div style={{
-                    backgroundColor: "#888888",
-                    border: `2px solid ${isTarget ? C.redBright : "#444444"}`,
+                    backgroundColor: "#3A3A3A",
+                    border: `2px solid ${isTarget ? C.redBright : "#1A1A1A"}`,
                     padding: compact ? "2px 3px" : "4px 6px",
                     display: "flex", flexDirection: "column", gap: compact ? 1 : 2,
                     outline: isTarget ? `1px solid ${C.redBright}44` : "none",
@@ -224,7 +224,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                     }}>
                       {(isBossFight || e.isElite) ? "★" : ""}{e.name.split(" ")[0].slice(0, compact ? 5 : 8)}
                     </span>
-                    <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={compact ? 3 : 5} />
+                    <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={compact ? 7 : 11} />
                     <span className="pixel-text" style={{ color: "#220000", fontSize: compact ? 6 : 9 }}>{e.hp}/{e.maxHp}</span>
                     {!compact && <span className="pixel-text" style={{ color: "#664444", fontSize: 8 }}>Lv{e.level}</span>}
                     {atkN > 0 && (
@@ -328,16 +328,16 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
               display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 2,
             }}>
               <div style={{
-                backgroundColor: "#888888", border: "2px solid #444444",
+                backgroundColor: "#3A3A3A", border: "2px solid #1A1A1A",
                 padding: "3px 5px", display: "flex", flexDirection: "column", gap: 2,
               }}>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span className="pixel-text" style={{ color: "#001800", fontSize: 9 }}>♥ YOU</span>
+                  <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 9 }}>♥ YOU</span>
                   <span className="pixel-text" style={{
-                    color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#004400" : C.redBright, fontSize: 9,
+                    color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 9,
                   }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
                 </div>
-                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={3} />
+                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={5} />
                 <div style={{ display: "flex", gap: 2, alignItems: "center" }}>
                   <span className="pixel-text" style={{ color: "#333333", fontSize: 7 }}>SP</span>
                   {spPips.map((f, i) => (

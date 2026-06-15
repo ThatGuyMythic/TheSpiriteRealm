@@ -246,18 +246,32 @@ function MedlabPanel() {
 
 // ── Main BunkerScreen ──────────────────────────────────────────────────────────
 export default function BunkerScreen() {
-  const { player, upgradeRoom } = useGame();
+  const { player, upgradeRoom, upgradeNpcLevel } = useGame();
   const [msg, setMsg]           = useState("");
+  const [npcMsg, setNpcMsg]     = useState("");
   const [activeNpc, setActiveNpc] = useState<string | null>(null);
   const [dialogueIdx, setDialogueIdx] = useState(0);
 
   function flash(m: string) { setMsg(m); setTimeout(() => setMsg(""), 1800); }
+  function flashNpc(m: string) { setNpcMsg(m); setTimeout(() => setNpcMsg(""), 2000); }
 
   function doUpgradeRoom(id: string) {
     const ok = upgradeRoom(id);
     const room = player.rooms.find(r => r.id === id);
     flash(ok ? `${room?.name} upgraded!` : `Need $${room?.costMoney} and ${room?.costMetals} metals.`);
   }
+
+  function doUpgradeNpc(id: "ornn" | "norra") {
+    const r = upgradeNpcLevel(id);
+    flashNpc(r.msg);
+  }
+
+  function npcUpgradeCost(level: number) {
+    const nextLv = level + 1;
+    return { money: nextLv * 80, metals: nextLv };
+  }
+
+  const maxNpcLv = Math.min(20, Math.floor(player.bossKills / 5) * 5 + 5);
 
   function cycleDialogue(npcId: string) {
     const info = NPC_INFO[npcId];
@@ -371,70 +385,131 @@ export default function BunkerScreen() {
         </div>
 
         {/* NPC Panels */}
-        {player.characters.find(c => c.id === "ornn")?.unlocked && (
-          <div style={{ backgroundColor: C.bg2, border: `2px solid ${C.cyan}33` }}>
-            <div style={{
-              padding: "6px 10px", backgroundColor: C.cyan + "11",
-              borderBottom: `2px solid ${C.cyan}33`,
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-              <span className="pixel-text" style={{ color: C.cyan, fontSize: 15 }}>[FORGE] ORNN'S FORGE</span>
-            </div>
-            <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <div>
-                  <span className="pixel-text" style={{ color: C.cyan, fontSize: 14, display: "block" }}>
-                    Board Forge Upgraded
-                  </span>
-                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11, display: "block", marginTop: 2 }}>
-                    Ornn's mastery flows into every Forge tile on the board.
-                    Visit a Forge tile to craft weapons and armor, or merge monster parts into your gear.
-                  </span>
-                </div>
-              </div>
-              <div style={{ backgroundColor: C.cyan + "11", border: `1px solid ${C.cyan}33`, padding: "4px 8px" }}>
-                <span className="pixel-text" style={{ color: C.cyan, fontSize: 11 }}>
-                  Board forges: +1 item quality · parts merge at bonus tier
-                </span>
-              </div>
-            </div>
+        {npcMsg && (
+          <div style={{ backgroundColor: "#001A00", border: `1px solid ${C.green}`, padding: "6px 10px" }}>
+            <span className="pixel-text" style={{ color: C.green, fontSize: 13 }}>{npcMsg}</span>
           </div>
         )}
 
-        {player.characters.find(c => c.id === "norra")?.unlocked && (
-          <div style={{ backgroundColor: C.bg2, border: `2px solid ${C.yellow}33` }}>
-            <div style={{
-              padding: "6px 10px", backgroundColor: C.yellow + "11",
-              borderBottom: `2px solid ${C.yellow}33`,
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-              <span className="pixel-text" style={{ color: C.yellow, fontSize: 15 }}>NORRA'S TRADE NETWORK</span>
-            </div>
-            <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
-              <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-                <div>
-                  <span className="pixel-text" style={{ color: C.yellow, fontSize: 14, display: "block" }}>
-                    Board shops are upgraded
-                  </span>
-                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11, display: "block", marginTop: 2 }}>
-                    Norra's portal network extends to every Shop tile on the board.
-                    All board shops stock one extra item and offer a 10% discount on gear.
+        {player.characters.find(c => c.id === "ornn")?.unlocked && (() => {
+          const lv = player.ornnLevel ?? 1;
+          const atCap = lv >= maxNpcLv;
+          const atMax = lv >= 20;
+          const cost = npcUpgradeCost(lv);
+          const canAfford = player.money >= cost.money && player.metals >= cost.metals;
+          const ornnDiscount = Math.min(30, 5 + lv * 1.5);
+          return (
+            <div style={{ backgroundColor: C.bg2, border: `2px solid ${C.cyan}33` }}>
+              <div style={{
+                padding: "6px 10px", backgroundColor: C.cyan + "11",
+                borderBottom: `2px solid ${C.cyan}33`,
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+                <span className="pixel-text" style={{ color: C.cyan, fontSize: 15 }}>[FORGE] ORNN'S FORGE</span>
+                <span className="pixel-text" style={{ color: C.cyan, fontSize: 13 }}>Lv {lv}/20</span>
+              </div>
+              <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{ display: "flex", gap: 3 }}>
+                  {Array.from({ length: 20 }, (_, i) => (
+                    <div key={i} style={{
+                      flex: 1, height: 6,
+                      backgroundColor: i < lv ? C.cyan : i < maxNpcLv ? C.cyan + "33" : "#222",
+                      border: `1px solid ${i < lv ? C.cyan : "#333"}`,
+                    }} />
+                  ))}
+                </div>
+                <div style={{ backgroundColor: C.cyan + "11", border: `1px solid ${C.cyan}33`, padding: "4px 8px" }}>
+                  <span className="pixel-text" style={{ color: C.cyan, fontSize: 11 }}>
+                    Forge quality +{lv} · item level bonus per boss kill
                   </span>
                 </div>
-              </div>
-              <div style={{ backgroundColor: C.yellow + "11", border: `1px solid ${C.yellow}33`, padding: "4px 8px" }}>
-                <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>
-                  Board shops: +1 extra item · 10% off all gear
-                </span>
-              </div>
-              <div style={{ backgroundColor: C.yellow + "11", border: `1px solid ${C.yellow}22`, padding: "4px 8px", marginTop: 2 }}>
-                <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>
-                  Enemy drops can be sold at any board Shop tile — or merged into gear at the Forge tile for stat bonuses.
+                {!atMax && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <PixelButton
+                      small
+                      onClick={() => doUpgradeNpc("ornn")}
+                      disabled={atCap || !canAfford}
+                      color={!atCap && canAfford ? C.cyan : C.bg3}
+                      textColor={!atCap && canAfford ? "#000" : "#555"}
+                    >
+                      {atCap ? `BIOME CAP (${lv}/${maxNpcLv})` : `LV UP · $${cost.money} · ${cost.metals}M`}
+                    </PixelButton>
+                    {atCap && !atMax && (
+                      <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
+                        Beat 5 more bosses to unlock next level
+                      </span>
+                    )}
+                  </div>
+                )}
+                {atMax && (
+                  <span className="pixel-text" style={{ color: C.cyan, fontSize: 11 }}>★ MAX LEVEL — Master Smith at full power</span>
+                )}
+                <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
+                  Shop discount scales with Norra · Ornn discount: {Math.round(ornnDiscount)}%
                 </span>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
+
+        {player.characters.find(c => c.id === "norra")?.unlocked && (() => {
+          const lv = player.norraLevel ?? 1;
+          const atCap = lv >= maxNpcLv;
+          const atMax = lv >= 20;
+          const cost = npcUpgradeCost(lv);
+          const canAfford = player.money >= cost.money && player.metals >= cost.metals;
+          const discountPct = Math.min(30, 5 + lv * 1.5);
+          const extraItems = lv >= 10 ? 2 : 1;
+          return (
+            <div style={{ backgroundColor: C.bg2, border: `2px solid ${C.yellow}33` }}>
+              <div style={{
+                padding: "6px 10px", backgroundColor: C.yellow + "11",
+                borderBottom: `2px solid ${C.yellow}33`,
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+                <span className="pixel-text" style={{ color: C.yellow, fontSize: 15 }}>NORRA'S TRADE NETWORK</span>
+                <span className="pixel-text" style={{ color: C.yellow, fontSize: 13 }}>Lv {lv}/20</span>
+              </div>
+              <div style={{ padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
+                <div style={{ display: "flex", gap: 3 }}>
+                  {Array.from({ length: 20 }, (_, i) => (
+                    <div key={i} style={{
+                      flex: 1, height: 6,
+                      backgroundColor: i < lv ? C.yellow : i < maxNpcLv ? C.yellow + "33" : "#222",
+                      border: `1px solid ${i < lv ? C.yellow : "#333"}`,
+                    }} />
+                  ))}
+                </div>
+                <div style={{ backgroundColor: C.yellow + "11", border: `1px solid ${C.yellow}33`, padding: "4px 8px" }}>
+                  <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>
+                    Board shops: +{extraItems} extra item{extraItems > 1 ? "s" : ""} · {Math.round(discountPct)}% off all gear
+                  </span>
+                </div>
+                {!atMax && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <PixelButton
+                      small
+                      onClick={() => doUpgradeNpc("norra")}
+                      disabled={atCap || !canAfford}
+                      color={!atCap && canAfford ? C.yellow : C.bg3}
+                      textColor={!atCap && canAfford ? "#000" : "#555"}
+                    >
+                      {atCap ? `BIOME CAP (${lv}/${maxNpcLv})` : `LV UP · $${cost.money} · ${cost.metals}M`}
+                    </PixelButton>
+                    {atCap && !atMax && (
+                      <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
+                        Beat 5 more bosses to unlock next level
+                      </span>
+                    )}
+                  </div>
+                )}
+                {atMax && (
+                  <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>★ MAX LEVEL — Trade network at full capacity</span>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {player.characters.find(c => c.id === "mundo")?.unlocked && (
           <div style={{ backgroundColor: C.bg2, border: `2px solid #50D89033` }}>
