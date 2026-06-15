@@ -221,31 +221,6 @@ function Inner({ startTab }: { startTab: Tab }) {
         ))}
       </div>
 
-      {/* JWC COMBAT label — top-right overlay, does not affect layout */}
-      <div style={{
-        position: "absolute",
-        top: 0,
-        right: 0,
-        zIndex: 100,
-        pointerEvents: "none",
-        padding: "3px 8px",
-        display: "flex",
-        alignItems: "center",
-        height: 44,
-      }}>
-        <span style={{
-          fontFamily: "'VT323', monospace",
-          fontSize: isDesktop ? 13 : 11,
-          letterSpacing: "0.14em",
-          color: "#4DBBCC",
-          textShadow: "0 0 8px #4DBBCC88, 0 1px 3px #000",
-          opacity: 0.85,
-          userSelect: "none",
-        }}>
-          JWC COMBAT
-        </span>
-      </div>
-
       <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         <div style={{ display: tab === "board"    ? "flex" : "none", flex: 1, flexDirection: "column", overflow: "hidden" }}><BoardScreen /></div>
         <div style={{ display: tab === "dcc"      ? "flex" : "none", flex: 1, flexDirection: "column", overflow: "hidden" }}><CardsScreen /></div>

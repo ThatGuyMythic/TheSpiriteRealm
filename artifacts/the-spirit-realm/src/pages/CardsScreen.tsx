@@ -613,7 +613,7 @@ export default function CardsScreen() {
                       ? <span className="pixel-text" style={{ color: "#1A4A1A", fontSize: 10, margin: "auto", alignSelf: "center", paddingTop: 8 }}>—</span>
                       : <div style={{ display: "flex", gap: 2, alignItems: "flex-start" }}>
                           {[col0, col1].map((col, ci) => col.length > 0 && (
-                            <div key={ci} style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+                            <div key={ci} style={{ display: "flex", flexDirection: "column", flexShrink: 0 }}>
                               {col.map((c, j) => (
                                 <div key={c.id + j} style={{ marginTop: j > 0 ? Math.round(-65 * cardScale) : 0, position: "relative", zIndex: j }}>
                                   <FullCard card={c} scale={cardScale} />

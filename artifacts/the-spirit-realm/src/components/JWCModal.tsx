@@ -316,7 +316,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
 
         {/* ── Player HP/SP bar — always visible between battle and buttons ── */}
         <div style={{
-          height: 90, flexShrink: 0,
+          height: 90, flexShrink: 0, overflow: "hidden",
           display: "flex", flexDirection: "row", alignItems: "stretch",
           borderTop: `2px solid ${accent}44`,
           borderBottom: `2px solid ${accent}44`,
@@ -330,7 +330,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           </div>
           {/* HP / SP */}
           <div style={{
-            flex: 1, padding: "6px 10px",
+            flex: 1, minWidth: 0, padding: "6px 10px", overflow: "hidden",
             display: "flex", flexDirection: "column", justifyContent: "center", gap: 4,
           }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -394,7 +394,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
   return (
     <div style={{
       position: "fixed", inset: 0,
-      background: "#03050A",
+      background: "#06090F",
       display: "flex", flexDirection: "column",
       zIndex: 100, overflow: "hidden",
     }}>
