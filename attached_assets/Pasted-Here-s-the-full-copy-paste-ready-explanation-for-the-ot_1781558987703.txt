@@ -1,0 +1,76 @@
+Here’s the full, copy-paste-ready explanation for the other AI:
+
+Full UI / Layout Changes Needed
+1. JWC Combat – Fullscreen Preview Layout
+In the preview mode, I can choose between full screen and different phone visual options. When I select full screen and enter a JWC combat fight on the board, the layout looks different from the phone versions.
+
+Changes needed:
+
+Make the fullscreen JWC combat view look more like the phone view.
+
+Specifically, remove the black strip at the bottom of the fullscreen view so it matches the phone layout more closely and feels like a full-bleed game screen.
+
+Also:
+
+Remove the placeholder text “JWC combat” in the top-right corner of the screen. It should not be there in the final version.
+
+2. JWC Combat – Phone UI Fixes
+In the phone UI for the exact same JWC combat scene, there are two overlapping/position issues:
+
+Current issues:
+
+The player image and health bar are too low and go underneath the buttons at the bottom of the screen.
+
+The health bar is pushed too far to the right and goes off screen.
+
+Changes needed:
+
+Move the player image and health bar upward so they sit clearly above the bottom button row and are not hidden.
+
+Shift the health bar left so it stays fully visible on screen and does not go off the right edge.
+
+3. Black Rose – Tab Layout and Card Grid
+In the Black Rose section, there are three tabs:
+
+Black Rose (the game)
+
+Deck
+
+Collection
+
+Focus is on the Black Rose (the game) tab. When I’m in fullscreen and press Play, I see:
+
+Enemy cards
+
+My cards
+
+Unused cards
+
+Current issue:
+
+All of these card groups have huge spacing on the left and right, so the cards are super separated and don’t fill the screen.
+
+Desired layout:
+
+For all cards that are in lanes (enemy cards and my cards):
+
+Change from: card ---------- card per row (2 cards with large gap)
+
+Change to: card - card - card - card per row (4 evenly spaced cards)
+
+This means each lane should have a maximum of 4 columns of cards.
+
+Since there are 3 lanes, this totals 12 columns across all lanes, filling the space more.
+
+For unused cards:
+
+Unused cards are not in lanes like enemy/player cards.
+
+They should be in a grid layout with 4 cards per row.
+
+Total of 12 rows for unused cards.
+
+This grid layout should be applied to all types of cards in Black Rose, except the unused cards area which is a separate list/grid with 12 rows.
+
+4. Additional UI Cleanup
+Remove the placeholder text “JWC combat” in the top-right corner of the screen. It should not appear in the final game.
