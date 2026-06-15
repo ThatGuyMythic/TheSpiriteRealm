@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spirit Realm — Sprite Sheet</title>
+<style>
+  body { background: #1a1a2e; color: #eee; font-family: monospace; padding: 20px; }
+  h1 { color: #a0f0a0; letter-spacing: 2px; }
+  h2 { color: #88ccff; border-bottom: 1px solid #334; padding-bottom: 6px; margin-top: 30px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .tile {
+    background: #2a2a3e;
+    border: 1px solid #445;
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    width: 130px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .tile:hover { border-color: #88ccff; }
+  .tile img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    display: block;
+    margin: 0 auto 8px;
+    background: #fff2;
+    border-radius: 2px;
+  }
+  .tile .name { font-size: 11px; color: #ccc; word-break: break-word; }
+  .tile .file { font-size: 9px; color: #888; margin-top: 2px; }
+  a.dl { display: inline-block; margin-top: 4px; font-size: 9px; color: #88ccff; text-decoration: none; }
+  a.dl:hover { color: #fff; }
+  .note { color: #aaa; font-size: 12px; margin-bottom: 20px; background: #2a2a3e; padding: 10px; border-left: 3px solid #88ccff; }
+</style>
+</head>
+<body>
+<h1>🎮 Spirit Realm — Sprite Index</h1>
+<p class="note">
+  All JWC battle sprites live in <code>public/art/jwc/</code> — files with descriptive names so you can easily swap them out.<br>
+  Click any tile to download. Replace the file with the same filename to update the sprite in-game.
+</p>
+
+<h2>⚔️ JWC Battle Sprites — Player</h2>
+<div class="grid" id="player-grid"></div>
+
+<h2>👾 JWC Battle Sprites — Enemies (Pokemon Fire Red style)</h2>
+<div class="grid" id="enemy-grid"></div>
+
+<h2>🃏 DCC Card Art — Player Cards</h2>
+<div class="grid" id="card-grid"></div>
+
+<h2>🎭 Character Portraits</h2>
+<div class="grid" id="char-grid"></div>
+
+<script>
+function makeTile(label, path) {
+  const div = document.createElement("div");
+  div.className = "tile";
+  const img = document.createElement("img");
+  img.src = path;
+  img.alt = label;
+  img.onerror = () => { img.style.opacity = "0.3"; };
+  const name = document.createElement("div");
+  name.className = "name";
+  name.textContent = label;
+  const file = document.createElement("div");
+  file.className = "file";
+  file.textContent = path.split("/").pop();
+  const dl = document.createElement("a");
+  dl.className = "dl";
+  dl.href = path;
+  dl.download = path.split("/").pop();
+  dl.textContent = "⬇ download";
+  div.appendChild(img);
+  div.appendChild(name);
+  div.appendChild(file);
+  div.appendChild(dl);
+  return div;
+}
+
+// Player
+const playerSprites = [
+  ["Player Model", "art/jwc/Player_model.png"],
+];
+playerSprites.forEach(([label, path]) => {
+  document.getElementById("player-grid").appendChild(makeTile(label, path));
+});
+
+// Enemies
+const enemySprites = [
+  ["Goblin",             "art/jwc/Enemy_Goblin.png"],
+  ["Slime",              "art/jwc/Enemy_Slime.png"],
+  ["Orc",                "art/jwc/Enemy_Orc.png"],
+  ["Goblin King",        "art/jwc/Enemy_Goblin_King.png"],
+  ["Frost Salamander",   "art/jwc/Enemy_Frost_Salamander.png"],
+  ["Snow Wolf",          "art/jwc/Enemy_Snow_Wolf.png"],
+  ["Yeti",               "art/jwc/Enemy_Yeti.png"],
+  ["Great Dragon",       "art/jwc/Enemy_Great_Dragon.png"],
+  ["Skeleton",           "art/jwc/Enemy_Skeleton.png"],
+  ["Skeleton Wolf",      "art/enemy-skeleton-wolf.png"],
+  ["Skeleton Knight",    "art/enemy-skeleton-knight.png"],
+  ["Firegaunt",          "art/enemy-firegaunt.png"],
+  ["Fire Lich",          "art/enemy-fire-lich.png"],
+  ["Burning Snae",       "art/enemy-burning-snae.png"],
+  ["Lava Golem",         "art/enemy-lava-golem.png"],
+  ["Fire Demon",         "art/enemy-fire-demon.png"],
+  ["Swamp Slug",         "art/enemy-swamp-slug.png"],
+  ["Snake",              "art/enemy-snake.png"],
+  ["Troll",              "art/enemy-troll.png"],
+  ["Ancient Black Dragon","art/enemy-ancient-black-dragon.png"],
+];
+enemySprites.forEach(([label, path]) => {
+  document.getElementById("enemy-grid").appendChild(makeTile(label, path));
+});
+
+// Cards
+const cardSprites = [
+  ["Village Guard",  "art/card-village-guard.png"],
+  ["Archer",         "art/card-archer.png"],
+  ["Knight",         "art/card-knight.png"],
+  ["Hunter",         "art/card-hunter.png"],
+  ["Dark Assassin",  "art/card-dark-assassin.png"],
+  ["Scientist",      "art/card-scientist.png"],
+  ["Dragon",         "art/card-dragon.png"],
+  ["Joker",          "art/card-joker.png"],
+  ["King",           "art/card-king.png"],
+  ["Sand Goblin",    "art/card-sand-goblin.png"],
+  ["Warchief",       "art/card-warchief.png"],
+  ["Vine Lurker",    "art/card-vine-lurker.png"],
+  ["Fire Imp",       "art/card-fire-imp.png"],
+  ["Shadow Fiend",   "art/card-shadow-fiend.png"],
+  ["Root Golem",     "art/card-root-golem.png"],
+  ["Thorn Sprite",   "art/card-thorn-sprite.png"],
+  ["Demon Knight",   "art/card-demon-knight.png"],
+  ["Rust Bot",       "art/card-rust-bot.png"],
+  ["Iron Cleric",    "art/card-iron-cleric.png"],
+  ["Pit Lord",       "art/card-pit-lord.png"],
+  ["Goblin Bomb",    "art/card-goblin-bomb.png"],
+  ["Ancient Sprout", "art/card-ancient-sprout.png"],
+  ["Bone Archer",    "art/card-bone-archer.png"],
+  ["Glass Tyrant",   "art/card-glass-tyrant.png"],
+  ["Dust Cloak",     "art/card-dust-cloak.png"],
+  ["Coil Katana",    "art/card-coil-katana.png"],
+  ["Mercy Dagger",   "art/card-mercy-dagger.png"],
+  ["Brass Hunter",   "art/card-brass-hunter.png"],
+];
+cardSprites.forEach(([label, path]) => {
+  document.getElementById("card-grid").appendChild(makeTile(label, path));
+});
+
+// Characters
+const charSprites = [
+  ["Mundo",  "art/char-mundo.png"],
+  ["Ornn",   "art/char-ornn.png"],
+  ["Norra",  "art/char-norra.png"],
+];
+charSprites.forEach(([label, path]) => {
+  document.getElementById("char-grid").appendChild(makeTile(label, path));
+});
+</script>
+</body>
+</html>
