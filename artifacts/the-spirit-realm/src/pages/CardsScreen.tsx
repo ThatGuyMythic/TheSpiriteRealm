@@ -655,7 +655,7 @@ export default function CardsScreen() {
                 Empty hand — tap END TURN above
               </span>
             ) : (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 4, padding: "2px 0" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, padding: "1px 0" }}>
                 {dcc.hand.map(card => (
                   <FullCard
                     key={card.id}

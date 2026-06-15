@@ -125,7 +125,7 @@ function GearDoll({ w, h, hasHelmet, hasChest, hasCloak, hasWeapon }: {
 }
 
 export default function CharacterDoll({ equipped, size = "sm" }: Props) {
-  const imgSrc = CHARACTER_SPRITES["inventory_player_model"] ?? CHARACTER_SPRITES["self"];
+  const imgSrc: string | null = null; // always use the forward-facing SVG GearDoll
   const w = size === "lg" ? 96 : 60;
   const h = size === "lg" ? 132 : 80;
 
