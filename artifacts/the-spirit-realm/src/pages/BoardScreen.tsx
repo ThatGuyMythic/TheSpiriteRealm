@@ -97,7 +97,15 @@ function ShopOverlay({ items, onClose, inline }: { items: Item[]; onClose: () =>
           borderBottom: `2px solid ${C.yellow}44`,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <span className="pixel-text" style={{ color: C.yellow, fontSize: 16 }}>◈ SHOP</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span className="pixel-text" style={{ color: C.yellow, fontSize: 16 }}>◈ SHOP</span>
+            {(player.characters.find(c => c.id === "norra")?.unlocked) && (
+              <span className="pixel-text" style={{
+                color: C.yellow, fontSize: 10, backgroundColor: C.yellow + "22",
+                border: `1px solid ${C.yellow}55`, padding: "1px 5px",
+              }}>+NORRA</span>
+            )}
+          </div>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <span className="pixel-text" style={{ color: C.yellow, fontSize: 13 }}>${player.money}</span>
             <button onClick={onClose} style={{
@@ -256,7 +264,15 @@ function ForgeOverlay({ onClose, inline }: { onClose: () => void; inline?: boole
           borderBottom: `2px solid ${C.accent}44`,
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <span className="pixel-text" style={{ color: C.accent, fontSize: 16 }}>FORGE</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span className="pixel-text" style={{ color: C.accent, fontSize: 16 }}>FORGE</span>
+            {(player.characters.find(c => c.id === "ornn")?.unlocked) && (
+              <span className="pixel-text" style={{
+                color: C.cyan, fontSize: 10, backgroundColor: C.cyan + "22",
+                border: `1px solid ${C.cyan}55`, padding: "1px 5px",
+              }}>+ORNN</span>
+            )}
+          </div>
           <button onClick={onClose} style={{
             background: "none", border: `1px solid ${C.accent}55`, color: C.accent,
             cursor: "pointer", fontFamily: "inherit", fontSize: 16, padding: "0 8px", lineHeight: 1.4,
@@ -595,6 +611,18 @@ export default function BoardScreen() {
                 }}>
                   {isProp ? (propOwned ? "OWNED" : "ABND") : TILE_GLYPH[kind] === glyph ? kind.slice(0,4).toUpperCase() : ""}
                 </span>
+                {/* Ornn active badge on forge tiles */}
+                {isForge && (player.characters.find(c => c.id === "ornn")?.unlocked) && (
+                  <div style={{ position: "absolute", top: 1, left: 1, backgroundColor: "#00000088" }}>
+                    <span className="pixel-text" style={{ color: C.cyan, fontSize: 6 }}>★</span>
+                  </div>
+                )}
+                {/* Norra active badge on shop tiles */}
+                {isShop && (player.characters.find(c => c.id === "norra")?.unlocked) && (
+                  <div style={{ position: "absolute", top: 1, left: 1, backgroundColor: "#00000088" }}>
+                    <span className="pixel-text" style={{ color: C.yellow, fontSize: 6 }}>★</span>
+                  </div>
+                )}
                 {/* Property income badge */}
                 {isProp && (player.propertyIncome[index] ?? 0) > 0 && (
                   <div style={{ position: "absolute", top: 1, right: 1, backgroundColor: "#00000088" }}>

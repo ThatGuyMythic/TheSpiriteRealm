@@ -9,11 +9,11 @@ const DEBUG_KEY    = "nolife.debug.v1";
 let   _lastSettingsTab: SettingsTab = "beginner";
 
 const TABS: { id: SettingsTab; label: string; icon: string; color: string }[] = [
-  { id: "beginner",  label: "BEGINNER",       icon: "★",  color: "#80C040" },
-  { id: "combat",   label: "COMBAT & BOARD", icon: "✦",  color: C.redBright },
-  { id: "blackrose",label: "BLACK ROSE",     icon: "♠",  color: C.cyan },
-  { id: "bunker",   label: "BUNKER & GEAR",  icon: "⌂",  color: "#9060D0" },
-  { id: "data",     label: "DATA & DEBUG",   icon: "◈",  color: C.textDim },
+  { id: "beginner",  label: "GUIDE",   icon: "★",  color: "#80C040" },
+  { id: "combat",   label: "COMBAT",  icon: "✦",  color: C.redBright },
+  { id: "blackrose",label: "ROSE",    icon: "♠",  color: C.cyan },
+  { id: "bunker",   label: "BUNKER",  icon: "⌂",  color: "#9060D0" },
+  { id: "data",     label: "DATA",    icon: "◈",  color: C.textDim },
 ];
 
 function Section({ title, color, children }: { title: string; color?: string; children: React.ReactNode }) {

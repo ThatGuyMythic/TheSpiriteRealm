@@ -190,8 +190,8 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
     return (
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: compact ? 3 : 6, overflow: "hidden" }}>
 
-        {/* LEFT COLUMN: all HP boxes stacked vertically */}
-        <div style={{ display: "flex", flexDirection: "column", gap: compact ? 2 : 4, width: hpWidth, flexShrink: 0, justifyContent: "flex-end" }}>
+        {/* LEFT COLUMN: all HP boxes stacked vertically — anchored to TOP */}
+        <div style={{ display: "flex", flexDirection: "column", gap: compact ? 2 : 4, width: hpWidth, flexShrink: 0, justifyContent: "flex-start" }}>
           {jwc.enemies.map((e, i) => {
             const isDead   = e.hp <= 0;
             const isTarget = i === jwc.active;
@@ -249,8 +249,8 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           })}
         </div>
 
-        {/* RIGHT SECTION: all sprites side by side */}
-        <div style={{ flex: 1, display: "flex", gap: compact ? 2 : 4, alignItems: "flex-end", overflow: "hidden" }}>
+        {/* RIGHT SECTION: all sprites side by side — anchored to TOP */}
+        <div style={{ flex: 1, display: "flex", gap: compact ? 2 : 4, alignItems: "flex-start", overflow: "hidden" }}>
           {jwc.enemies.map((e, i) => {
             const isDead    = e.hp <= 0;
             const isTarget  = i === jwc.active;
@@ -299,18 +299,21 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           flex: "0 0 67%", minHeight: 0,
           background: `linear-gradient(180deg, ${battleBg} 0%, ${battleAccent} 100%)`,
           display: "flex", flexDirection: "column",
-          padding: "6px 8px 4px", gap: 4, overflow: "hidden",
+          padding: "6px 8px 4px", gap: 0, overflow: "hidden",
+          justifyContent: "space-between",
         }}>
-          {isBossFight && (
-            <div style={{ textAlign: "center", flexShrink: 0 }}>
-              <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>★ BOSS ★</span>
-            </div>
-          )}
+          {/* Top group: boss banner + enemies */}
+          <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: 4, overflow: "hidden" }}>
+            {isBossFight && (
+              <div style={{ textAlign: "center", flexShrink: 0 }}>
+                <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>★ BOSS ★</span>
+              </div>
+            )}
+            {/* Enemies: all HP bars LEFT, all sprites RIGHT — anchored to TOP */}
+            {renderEnemies(true)}
+          </div>
 
-          {/* Enemies: all HP bars LEFT, all sprites RIGHT */}
-          {renderEnemies(true)}
-
-          {/* Player — sprite LEFT, HP/SP RIGHT */}
+          {/* Player — sprite LEFT, HP/SP RIGHT — anchored to BOTTOM */}
           <div style={{
             display: "flex", flexDirection: "row", alignItems: "flex-end",
             height: 80, flexShrink: 0,
@@ -401,19 +404,22 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
         flex: "0 0 60%", minHeight: 0,
         background: `linear-gradient(180deg, ${battleBg} 0%, ${battleAccent} 100%)`,
         display: "flex", flexDirection: "column",
-        padding: "10px 12px 6px", gap: 6, overflow: "hidden",
+        padding: "10px 12px 6px", gap: 0, overflow: "hidden",
+        justifyContent: "space-between",
       }}>
 
-        {isBossFight && (
-          <div style={{ textAlign: "center", flexShrink: 0, marginBottom: -4 }}>
-            <span className="pixel-text" style={{ color: C.yellow, fontSize: 16 }}>★ BOSS FIGHT ★</span>
-          </div>
-        )}
+        {/* Top group: boss banner + enemies — anchored to TOP */}
+        <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", gap: 6, overflow: "hidden" }}>
+          {isBossFight && (
+            <div style={{ textAlign: "center", flexShrink: 0, marginBottom: -4 }}>
+              <span className="pixel-text" style={{ color: C.yellow, fontSize: 16 }}>★ BOSS FIGHT ★</span>
+            </div>
+          )}
+          {/* Enemies: all HP bars LEFT column, all sprites RIGHT section */}
+          {renderEnemies(false)}
+        </div>
 
-        {/* Enemies: all HP bars LEFT column, all sprites RIGHT section */}
-        {renderEnemies(false)}
-
-        {/* Player — sprite LEFT, HP/SP box RIGHT */}
+        {/* Player — sprite LEFT, HP/SP box RIGHT — anchored to BOTTOM */}
         <div style={{
           display: "flex", flexDirection: "row", alignItems: "flex-end",
           height: 110, flexShrink: 0,

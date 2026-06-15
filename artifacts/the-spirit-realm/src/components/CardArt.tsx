@@ -103,12 +103,12 @@ export default function CardArt({ name, size = 40 }: { name: string; size?: numb
     <div style={{
       width:size, height:size, flexShrink:0,
       border:`2px solid ${col}`,
-      backgroundColor: imgSrc ? "#888888" : "#0A0A14",
+      backgroundColor: "#0A0A14",
       overflow:"hidden",
       display:"flex", alignItems:"center", justifyContent:"center",
     }}>
       {imgSrc
-        ? <img src={imgSrc} alt={name} style={{ width:"100%", height:"100%", objectFit:"cover", imageRendering:"pixelated", mixBlendMode:"multiply" }} />
+        ? <img src={imgSrc} alt={name} style={{ width:"100%", height:"100%", objectFit:"cover", imageRendering:"pixelated" }} />
         : <PixelPortrait name={name} size={size} />
       }
     </div>
@@ -174,9 +174,9 @@ export function FullCard({ card, selected, onClick, dimmed, isEnemy, scale = 1 }
       </div>
 
       {/* Art area */}
-      <div style={{ flex:1, overflow:"hidden", position:"relative", backgroundColor: imgSrc ? "#888888" : "#060612" }}>
+      <div style={{ flex:1, overflow:"hidden", position:"relative", backgroundColor: "#060612" }}>
         {imgSrc
-          ? <img src={imgSrc} alt={card.name} style={{ width:"100%", height:"100%", objectFit:"cover", imageRendering:"pixelated", mixBlendMode:"multiply" }} />
+          ? <img src={imgSrc} alt={card.name} style={{ width:"100%", height:"100%", objectFit:"cover", imageRendering:"pixelated" }} />
           : <PixelPortrait name={card.name} size={Math.max(frameW - 4, artH)} />
         }
         <div style={{
