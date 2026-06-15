@@ -827,40 +827,40 @@ export default function CardsScreen() {
                           onClick={() => handleToggleDeck(c)}
                           style={{
                             backgroundColor: inDeck ? themeInfo.color + "18" : C.bg2,
-                            border: `2px solid ${inDeck ? themeInfo.color : "#333"}`,
-                            padding: "6px 6px 4px",
-                            display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                            border: `1px solid ${inDeck ? themeInfo.color : "#2A2A2A"}`,
+                            padding: "2px 2px 2px",
+                            display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
                             cursor: "pointer",
                             transition: "border-color 0.15s, background-color 0.15s",
                           }}
                         >
                           <FullCard card={c} scale={cardScale} />
-                          <span className="pixel-text" style={{ color: C.text, fontSize: 12, textAlign: "center", lineHeight: 1.1 }}>
+                          <span className="pixel-text" style={{ color: C.text, fontSize: 9, textAlign: "center", lineHeight: 1.1 }}>
                             {c.name}
                           </span>
-                          <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
-                            {c.cost}sp · p{c.power} · Lv{lvl}
+                          <span className="pixel-text" style={{ color: C.textDim, fontSize: 8 }}>
+                            {c.cost}sp·p{c.power}·L{lvl}
                           </span>
                           {inDeck && (
-                            <span className="pixel-text" style={{ color: themeInfo.color, fontSize: 9 }}>
-                              ♠ IN DECK
+                            <span className="pixel-text" style={{ color: themeInfo.color, fontSize: 7 }}>
+                              ♠ DECK
                             </span>
                           )}
-                          <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 3, width: "100%" }}>
+                          <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 1, width: "100%" }}>
                             <PixelButton small
                               color={maxLvl ? C.bg3 : C.yellow} textColor="#000"
                               disabled={maxLvl || player.money < upgCost}
                               onClick={() => handleUpgradeCard(c.name)}
-                              style={{ flex: 1 }}
+                              style={{ flex: 1, fontSize: 8 }}
                             >
                               {maxLvl ? "MAX" : `↑$${upgCost}`}
                             </PixelButton>
                             {!maxLvl && canAffordAll && (
                               <PixelButton small color="#6040C0" textColor="#fff"
                                 onClick={() => { maxUpgradeCard(c.name); setCardMsg(`${c.name} maxed!`); setTimeout(() => setCardMsg(null), 2000); }}
-                                style={{ flex: 1 }}
+                                style={{ flex: 1, fontSize: 8 }}
                               >
-                                MAX↑
+                                MAX
                               </PixelButton>
                             )}
                           </div>
@@ -905,20 +905,19 @@ export default function CardsScreen() {
                     return (
                       <div key={t.id + i} style={{
                         backgroundColor: owned ? C.bg2 : "#070710",
-                        border: `2px solid ${owned ? themeInfo.color + "66" : "#222"}`,
-                        padding: "6px 6px 4px",
-                        display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                        border: `1px solid ${owned ? themeInfo.color + "66" : "#222"}`,
+                        padding: "2px 2px 2px",
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
                         opacity: owned ? 1 : 0.45,
                       }}>
                         <div style={{ filter: owned ? "none" : "grayscale(1) brightness(0.4)" }}>
                           <FullCard card={{ ...t, power: t.power } as any} scale={cardScale} />
                         </div>
-                        <span className="pixel-text" style={{ color: owned ? C.text : "#444", fontSize: 12, textAlign: "center", lineHeight: 1.1 }}>
+                        <span className="pixel-text" style={{ color: owned ? C.text : "#444", fontSize: 9, textAlign: "center", lineHeight: 1.1 }}>
                           {t.name}
                         </span>
-                        <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
-                          {t.cost}sp · p{t.power}
-                          {owned ? ` · Lv${lvl}` : " · LOCKED"}
+                        <span className="pixel-text" style={{ color: C.textDim, fontSize: 8 }}>
+                          {t.cost}sp·p{t.power}{owned ? `·L${lvl}` : "·🔒"}
                         </span>
                         {t.text && (
                           <span className="pixel-text" style={{ color: "#605880", fontSize: 9, textAlign: "center", lineHeight: 1.2 }}>

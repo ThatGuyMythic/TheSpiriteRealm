@@ -391,7 +391,40 @@ export default function BunkerScreen() {
           </div>
         )}
 
-        {player.characters.find(c => c.id === "ornn")?.unlocked && (() => {
+        {(() => {
+          const ornnUnlocked = player.characters.find(c => c.id === "ornn")?.unlocked;
+          const blacksmithRoom = player.rooms.find(r => r.id === "blacksmith");
+          if (!ornnUnlocked) {
+            const canAffordUnlock = blacksmithRoom
+              ? player.money >= blacksmithRoom.costMoney && player.metals >= blacksmithRoom.costMetals
+              : false;
+            return (
+              <div style={{ backgroundColor: C.bg2, border: `2px solid ${C.cyan}22` }}>
+                <div style={{ padding: "6px 10px", backgroundColor: C.cyan + "08", borderBottom: `2px solid ${C.cyan}22`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span className="pixel-text" style={{ color: C.cyan + "88", fontSize: 15 }}>[FORGE] ORNN'S FORGE</span>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>LOCKED</span>
+                </div>
+                <div style={{ padding: "8px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>
+                    Upgrade the Blacksmith room to unlock Ornn and his 20-level forge.
+                  </span>
+                  {blacksmithRoom && (
+                    <PixelButton
+                      small
+                      onClick={() => doUpgradeRoom("blacksmith")}
+                      disabled={!canAffordUnlock}
+                      color={canAffordUnlock ? C.cyan : C.bg3}
+                      textColor={canAffordUnlock ? "#000" : "#555"}
+                    >
+                      {canAffordUnlock
+                        ? `UNLOCK · $${blacksmithRoom.costMoney} · ${blacksmithRoom.costMetals}M`
+                        : `NEED $${blacksmithRoom.costMoney} · ${blacksmithRoom.costMetals}M`}
+                    </PixelButton>
+                  )}
+                </div>
+              </div>
+            );
+          }
           const lv = player.ornnLevel ?? 1;
           const atCap = lv >= maxNpcLv;
           const atMax = lv >= 20;
@@ -445,14 +478,47 @@ export default function BunkerScreen() {
                   <span className="pixel-text" style={{ color: C.cyan, fontSize: 11 }}>★ MAX LEVEL — Master Smith at full power</span>
                 )}
                 <span className="pixel-text" style={{ color: C.textDim, fontSize: 10 }}>
-                  Shop discount scales with Norra · Ornn discount: {Math.round(ornnDiscount)}%
+                  Ornn discount: {Math.round(ornnDiscount)}%
                 </span>
               </div>
             </div>
           );
         })()}
 
-        {player.characters.find(c => c.id === "norra")?.unlocked && (() => {
+        {(() => {
+          const norraUnlocked = player.characters.find(c => c.id === "norra")?.unlocked;
+          const shopRoom = player.rooms.find(r => r.id === "shop");
+          if (!norraUnlocked) {
+            const canAffordUnlock = shopRoom
+              ? player.money >= shopRoom.costMoney && player.metals >= shopRoom.costMetals
+              : false;
+            return (
+              <div style={{ backgroundColor: C.bg2, border: `2px solid ${C.yellow}22` }}>
+                <div style={{ padding: "6px 10px", backgroundColor: C.yellow + "08", borderBottom: `2px solid ${C.yellow}22`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <span className="pixel-text" style={{ color: C.yellow + "88", fontSize: 15 }}>NORRA'S TRADE NETWORK</span>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>LOCKED</span>
+                </div>
+                <div style={{ padding: "8px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>
+                    Upgrade the Shop room to unlock Norra and her 20-level trade network.
+                  </span>
+                  {shopRoom && (
+                    <PixelButton
+                      small
+                      onClick={() => doUpgradeRoom("shop")}
+                      disabled={!canAffordUnlock}
+                      color={canAffordUnlock ? C.yellow : C.bg3}
+                      textColor={canAffordUnlock ? "#000" : "#555"}
+                    >
+                      {canAffordUnlock
+                        ? `UNLOCK · $${shopRoom.costMoney} · ${shopRoom.costMetals}M`
+                        : `NEED $${shopRoom.costMoney} · ${shopRoom.costMetals}M`}
+                    </PixelButton>
+                  )}
+                </div>
+              </div>
+            );
+          }
           const lv = player.norraLevel ?? 1;
           const atCap = lv >= maxNpcLv;
           const atMax = lv >= 20;
