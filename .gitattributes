@@ -1,0 +1,2 @@
+attached_assets/TheSpiriteRealm-0.9.4_1781465793129.zip filter=lfs diff=lfs merge=lfs -text
+zipFile.zip filter=lfs diff=lfs merge=lfs -text
