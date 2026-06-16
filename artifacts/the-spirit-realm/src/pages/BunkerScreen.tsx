@@ -355,10 +355,9 @@ export default function BunkerScreen() {
                         alt={c.name}
                         style={{
                           width: "100%", height: "100%",
-                          objectFit: "cover",
-                          objectPosition: "center top",
+                          objectFit: "contain",
+                          objectPosition: "center center",
                           imageRendering: "pixelated",
-                          mixBlendMode: "screen",
                         }}
                       />
                     ) : (
