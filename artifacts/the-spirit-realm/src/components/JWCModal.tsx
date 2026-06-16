@@ -212,21 +212,20 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   <div style={{
                     backgroundColor: "#3A3A3A",
                     border: `2px solid ${isTarget ? C.redBright : "#1A1A1A"}`,
-                    padding: compact ? "2px 3px" : "6px 10px",
-                    display: "flex", flexDirection: "column", gap: compact ? 1 : 3,
+                    padding: compact ? "2px 3px" : "3px 4px",
+                    display: "flex", flexDirection: "column", gap: compact ? 1 : 2,
                     outline: isTarget ? `1px solid ${C.redBright}44` : "none",
                   }}>
                     <span className="pixel-text" style={{
                       color: isTarget ? C.redBright : "#EE9999",
-                      fontSize: compact ? 7 : 13,
+                      fontSize: compact ? 7 : 8,
                       lineHeight: 1,
                       textShadow: isTarget ? `0 0 6px ${C.redBright}` : "none",
                     }}>
-                      {(isBossFight || e.isElite) ? "★" : ""}{e.name.split(" ")[0].slice(0, compact ? 5 : 10)}
+                      {(isBossFight || e.isElite) ? "★" : ""}{e.name.split(" ")[0].slice(0, compact ? 5 : 6)}
                     </span>
-                    <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={compact ? 7 : 14} />
-                    <span className="pixel-text" style={{ color: compact ? "#220000" : "#FFAAAA", fontSize: compact ? 6 : 12 }}>{e.hp}/{e.maxHp}</span>
-                    {!compact && <span className="pixel-text" style={{ color: "#AA6666", fontSize: 10 }}>Lv{e.level}</span>}
+                    <HpBar hp={e.hp} maxHp={e.maxHp} color={C.redBright} height={compact ? 7 : 8} />
+                    <span className="pixel-text" style={{ color: compact ? "#220000" : "#FFAAAA", fontSize: compact ? 6 : 7 }}>{e.hp}/{e.maxHp}</span>
                     {atkN > 0 && (
                       <span className="pixel-text" style={{
                         color: allQueued ? C.redBright : "#CC4444",
@@ -325,7 +324,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
               <SpriteFill name="self" isPlayer />
             </div>
             <div style={{
-              flex: 1, minWidth: 0,
+              flex: "0 0 auto",
               padding: "0 0 4px 0",
               display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 4,
             }}>
@@ -333,15 +332,13 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                 backgroundColor: "#1C1C1C", border: "1px solid #444",
                 padding: "5px 7px", display: "flex", flexDirection: "column", gap: 4,
               }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                <div style={{ display: "flex", gap: 8, alignItems: "baseline" }}>
                   <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 10 }}>♥ YOU</span>
                   <span className="pixel-text" style={{
                     color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 11,
                   }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
                 </div>
-                <div style={{ maxWidth: "35%" }}>
-                  <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={6} />
-                </div>
+                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={6} />
                 <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                   <span className="pixel-text" style={{ color: "#666", fontSize: 9 }}>SP</span>
                   {spPips.map((f, i) => (
@@ -440,7 +437,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
             <SpriteFill name="self" isPlayer />
           </div>
           <div style={{
-            flex: 1, minWidth: 0,
+            flex: "0 0 auto",
             padding: "0 0 6px 0",
             display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 5,
           }}>
@@ -448,15 +445,13 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
               backgroundColor: "#1C1C1C", border: "2px solid #444444",
               padding: "6px 8px", display: "flex", flexDirection: "column", gap: 5,
             }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
                 <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 12 }}>♥ YOU</span>
                 <span className="pixel-text" style={{
                   color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 13,
                 }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
               </div>
-              <div style={{ maxWidth: "30%" }}>
-                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={7} />
-              </div>
+              <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={7} />
               <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
                 <span className="pixel-text" style={{ color: "#666666", fontSize: 11 }}>SP</span>
                 {spPips.map((f, i) => (
