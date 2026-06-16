@@ -185,7 +185,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
 
   // ── Shared: enemies section (all HP bars LEFT, all sprites RIGHT) ───────────
   function renderEnemies(compact?: boolean) {
-    const hpWidth = compact ? 70 : 160;
+    const hpWidth = compact ? 48 : 100;
 
     return (
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: compact ? 2 : 3, overflow: "hidden" }}>
@@ -267,8 +267,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                 onTouchStart={() => startHold(i)} onTouchEnd={clearHold} onTouchMove={clearHold}
                 className={animClass}
                 style={{
-                  flex: isDead ? "0 0 16px" : "0 0 auto",
-                  minWidth: isDead ? undefined : compact ? 72 : 140,
+                  flex: isDead ? "0 0 16px" : 1,
                   height: compact ? 240 : 300,
                   cursor: isDead || jwc.finished ? "default" : "pointer",
                   opacity: isDead ? 0.2 : 1,
@@ -318,11 +317,11 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           <div style={{
             display: "flex", flexDirection: "row", alignItems: "flex-end",
             flexShrink: 0, marginTop: 6, gap: 6, overflow: "hidden",
-            height: "clamp(90px, 24vh, 200px)",
+            height: "clamp(140px, 38vh, 320px)",
           }}>
             <div
               className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
-              style={{ width: "clamp(65px, 25%, 130px)", height: "100%", flexShrink: 0 }}>
+              style={{ width: "clamp(110px, 38%, 240px)", height: "100%", flexShrink: 0 }}>
               <SpriteFill name="self" isPlayer />
             </div>
             <div style={{
@@ -340,7 +339,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                     color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 11,
                   }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
                 </div>
-                <div style={{ maxWidth: "50%" }}>
+                <div style={{ maxWidth: "35%" }}>
                   <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={6} />
                 </div>
                 <div style={{ display: "flex", gap: 4, alignItems: "center" }}>

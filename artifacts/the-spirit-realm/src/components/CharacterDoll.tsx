@@ -78,7 +78,7 @@ export default function CharacterDoll({ equipped, size = "sm" }: Props) {
   return (
     <div style={{
       width: w, height: h, position: "relative", flexShrink: 0,
-      background: "radial-gradient(ellipse at 50% 80%, #0D2040 0%, #050810 70%)",
+      backgroundColor: "#000",
       border: `2px solid ${C.green}44`,
     }}>
       <img

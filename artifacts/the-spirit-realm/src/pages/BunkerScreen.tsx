@@ -330,7 +330,7 @@ export default function BunkerScreen() {
                   {/* Portrait image — fills width, fixed height */}
                   <div style={{ width: "100%", height: 220, overflow: "hidden", backgroundColor: "#000", position: "relative" }}>
                     {c.id === "self" ? (
-                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", background: "radial-gradient(ellipse at 50% 80%, #0D2040 0%, #050810 70%)" }}>
+                      <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "#000" }}>
                         {CHARACTER_SPRITES["inventory_player_model"] ? (
                           <img
                             src={CHARACTER_SPRITES["inventory_player_model"]}
