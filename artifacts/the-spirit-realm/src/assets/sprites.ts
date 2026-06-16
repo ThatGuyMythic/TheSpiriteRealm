@@ -87,7 +87,7 @@ export const ENEMY_SPRITES: Record<string, string | null> = {
 // used in the Gear (Inventory) and Bunker screens.
 export const CHARACTER_SPRITES: Record<string, string | null> = {
   "self":                    `${B}art/jwc/Player_model.png`,
-  "inventory_player_model":  `${B}art/jwc/inventory_player_model.png`,
+  "inventory_player_model":  `${B}art/jwc/inventory_player_model_front.png`,
   "mundo":  `${B}art/char-mundo.png`,
   "ornn":   `${B}art/char-ornn.png`,
   "norra":  `${B}art/char-norra.png`,
