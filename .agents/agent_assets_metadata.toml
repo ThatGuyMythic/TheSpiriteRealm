@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "gJPCE1cGsrH5yIF1t64pa"
@@ -36,3 +35,9 @@ id = "8EjGupKCdaNO2nNHMGKr6"
 uri = "file://artifacts/the-spirit-realm/public/art/jwc/inventory_player_model_front.png"
 type = "image"
 title = "hooded adventurer inventory model"
+
+[[outputs]]
+id = "LJm8QQA9dm-vdxfV9jOui"
+uri = "file://the-spirit-realm-itch.zip"
+type = "unspecified"
+title = "The Spirit Realm — itch.io build"

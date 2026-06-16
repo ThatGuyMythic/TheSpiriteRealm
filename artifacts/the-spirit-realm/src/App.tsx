@@ -172,6 +172,49 @@ function Inner({ startTab }: { startTab: Tab }) {
     try { localStorage.setItem(TAB_KEY, t); } catch { /* ignore */ }
   }
 
+  const tabBar = (
+    <div style={{
+      display: "flex",
+      borderTop: isDesktop ? "none" : "3px solid #000",
+      borderBottom: isDesktop ? "3px solid #000" : "none",
+      backgroundColor: "#060E1A",
+      flexShrink: 0,
+      overflowX: "auto",
+    }}>
+      {TABS.map((t) => (
+        <button
+          key={t.id}
+          onClick={() => handleTabChange(t.id)}
+          style={{
+            flex: 1,
+            padding: "5px 1px",
+            backgroundColor: tab === t.id ? C.bg : "transparent",
+            color: tab === t.id ? (t.id === "dcc" ? "#C060A0" : C.accent) : C.textDim,
+            border: "none",
+            borderBottom: isDesktop && tab === t.id
+              ? `3px solid ${t.id === "dcc" ? "#C060A0" : C.accent}`
+              : "3px solid transparent",
+            borderTop: !isDesktop && tab === t.id
+              ? `3px solid ${t.id === "dcc" ? "#C060A0" : C.accent}`
+              : "3px solid transparent",
+            fontFamily: "'VT323', monospace",
+            fontSize: 10,
+            letterSpacing: 0.3,
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1,
+            minWidth: 46,
+          }}
+        >
+          <span style={{ fontSize: 14 }}>{t.icon}</span>
+          <span>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <div style={{
       display: "flex",
@@ -184,42 +227,7 @@ function Inner({ startTab }: { startTab: Tab }) {
       position: "relative",
       overflow: "hidden",
     }}>
-      <div style={{
-        display: "flex",
-        borderBottom: "3px solid #000",
-        backgroundColor: "#060E1A",
-        flexShrink: 0,
-        overflowX: "auto",
-      }}>
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => handleTabChange(t.id)}
-            style={{
-              flex: 1,
-              padding: "5px 1px",
-              backgroundColor: tab === t.id ? C.bg : "transparent",
-              color: tab === t.id ? (t.id === "dcc" ? "#C060A0" : C.accent) : C.textDim,
-              border: "none",
-              borderBottom: tab === t.id
-                ? `3px solid ${t.id === "dcc" ? "#C060A0" : C.accent}`
-                : "3px solid transparent",
-              fontFamily: "'VT323', monospace",
-              fontSize: 10,
-              letterSpacing: 0.3,
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-              minWidth: 46,
-            }}
-          >
-            <span style={{ fontSize: 14 }}>{t.icon}</span>
-            <span>{t.label}</span>
-          </button>
-        ))}
-      </div>
+      {isDesktop && tabBar}
 
       <div style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         <div style={{ display: tab === "board"    ? "flex" : "none", flex: 1, flexDirection: "column", overflow: "hidden" }}><BoardScreen /></div>
@@ -228,6 +236,8 @@ function Inner({ startTab }: { startTab: Tab }) {
         <div style={{ display: tab === "bunker"   ? "flex" : "none", flex: 1, flexDirection: "column", overflow: "hidden" }}><BunkerScreen /></div>
         <div style={{ display: tab === "settings" ? "flex" : "none", flex: 1, flexDirection: "column", overflow: "hidden" }}><SettingsScreen /></div>
       </div>
+
+      {!isDesktop && tabBar}
     </div>
   );
 }

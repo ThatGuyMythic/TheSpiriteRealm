@@ -2,7 +2,7 @@ import React from "react";
 import { C } from "./PixelUI";
 
 const B = import.meta.env.BASE_URL;
-const PLAYER_IMG = `${B}art/jwc/inventory_player_model_front.png`;
+const PLAYER_IMG = `${B}art/jwc/inventory_player_model_front.png?v=2`;
 
 interface Props {
   equipped: { weapon: unknown; helmet: unknown; chest: unknown; cloak: unknown };
