@@ -1,0 +1,38 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "gJPCE1cGsrH5yIF1t64pa"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Yeti.png"
+type = "image"
+title = "yeti monster sprite"
+
+[[generated]]
+id = "ip6TYImRvcUqlrFFuWcUH"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Enemy_Frost_Salamander.png"
+type = "image"
+title = "frost salamander sprite"
+
+[[generated]]
+id = "Q6chAbvjmE3Yt3u42W9m1"
+uri = "file://artifacts/the-spirit-realm/public/art/char-ornn.png"
+type = "image"
+title = "ornn dwarf character"
+
+[[generated]]
+id = "qAc-F6zmAf2ibBfSFYOPa"
+uri = "file://artifacts/the-spirit-realm/public/art/char-norra.png"
+type = "image"
+title = "norra nerdy elf character"
+
+[[generated]]
+id = "G7xpUWRhCWrw7YBHr7Wi4"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/Player_model.png"
+type = "image"
+title = "hooded adventurer player model"
+
+[[generated]]
+id = "8EjGupKCdaNO2nNHMGKr6"
+uri = "file://artifacts/the-spirit-realm/public/art/jwc/inventory_player_model_front.png"
+type = "image"
+title = "hooded adventurer inventory model"
