@@ -250,7 +250,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
         </div>
 
         {/* RIGHT SECTION: sprites fill right→left (first enemy rightmost) */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "row-reverse", gap: compact ? 1 : 16, alignItems: "flex-end", overflow: "hidden", maxHeight: compact ? 240 : 300 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "row-reverse", gap: compact ? 1 : 4, alignItems: "flex-end", overflow: "hidden", maxHeight: compact ? 240 : 300 }}>
           {jwc.enemies.map((e, i) => {
             const isDead    = e.hp <= 0;
             const isTarget  = i === jwc.active;
@@ -267,7 +267,8 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                 onTouchStart={() => startHold(i)} onTouchEnd={clearHold} onTouchMove={clearHold}
                 className={animClass}
                 style={{
-                  flex: isDead ? "0 0 16px" : 1,
+                  flex: isDead ? "0 0 16px" : "0 0 auto",
+                  minWidth: isDead ? undefined : compact ? 72 : 140,
                   height: compact ? 240 : 300,
                   cursor: isDead || jwc.finished ? "default" : "pointer",
                   opacity: isDead ? 0.2 : 1,
@@ -317,11 +318,11 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           <div style={{
             display: "flex", flexDirection: "row", alignItems: "flex-end",
             flexShrink: 0, marginTop: 6, gap: 6, overflow: "hidden",
-            height: "clamp(60px, 18vh, 160px)",
+            height: "clamp(90px, 24vh, 200px)",
           }}>
             <div
               className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
-              style={{ width: "clamp(40px, 18%, 90px)", height: "100%", flexShrink: 0 }}>
+              style={{ width: "clamp(65px, 25%, 130px)", height: "100%", flexShrink: 0 }}>
               <SpriteFill name="self" isPlayer />
             </div>
             <div style={{
@@ -339,7 +340,9 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                     color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 11,
                   }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
                 </div>
-                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={6} />
+                <div style={{ maxWidth: "50%" }}>
+                  <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={6} />
+                </div>
                 <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
                   <span className="pixel-text" style={{ color: "#666", fontSize: 9 }}>SP</span>
                   {spPips.map((f, i) => (
@@ -452,7 +455,9 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                   color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 16,
                 }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
               </div>
-              <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={8} />
+              <div style={{ maxWidth: "50%" }}>
+                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={8} />
+              </div>
               <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
                 <span className="pixel-text" style={{ color: "#666666", fontSize: 11 }}>SP</span>
                 {spPips.map((f, i) => (
