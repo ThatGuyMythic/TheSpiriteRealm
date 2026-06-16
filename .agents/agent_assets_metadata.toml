@@ -1,8 +1,13 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "nYcAKwj9F4qH22VLrnMZE"
 uri = "file://artifacts/the-spirit-realm/public/art/jwc/inventory_player_model_front.png"
 type = "image"
 title = "forward facing pixel warrior sprite clean"
+
+[[outputs]]
+id = "FPCaUsYFOp9S2NdDLW3O-"
+uri = "file://the-spirit-realm-itchio.zip"
+type = "unspecified"
+title = "The Spirit Realm — itch.io HTML build"

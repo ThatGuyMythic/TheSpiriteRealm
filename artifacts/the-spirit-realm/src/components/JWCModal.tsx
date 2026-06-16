@@ -185,7 +185,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
 
   // ── Shared: enemies section (all HP bars LEFT, all sprites RIGHT) ───────────
   function renderEnemies(compact?: boolean) {
-    const hpWidth = compact ? 48 : 100;
+    const hpWidth = compact ? 48 : 52;
 
     return (
       <div style={{ display: "flex", flex: 1, minHeight: 0, gap: compact ? 2 : 3, overflow: "hidden" }}>
@@ -431,31 +431,31 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
         {/* Player — sprite LEFT (fluid), HP/SP box RIGHT — anchored to bottom */}
         <div style={{
           display: "flex", flexDirection: "row", alignItems: "flex-end",
-          flexShrink: 0, marginTop: 12, gap: 12, overflow: "hidden",
-          height: "clamp(120px, 25vh, 280px)",
+          flexShrink: 0, marginTop: 8, gap: 10, overflow: "hidden",
+          height: "clamp(160px, 36vh, 360px)",
         }}>
           <div
             className={playerAnim.getClass("player", "jwc-shield-block") || playerAnim.getClass("reserve", "jwc-reserve-pulse")}
-            style={{ width: "clamp(80px, 28vw, 300px)", height: "100%", flexShrink: 0 }}>
+            style={{ width: "clamp(120px, 36vw, 340px)", height: "100%", flexShrink: 0 }}>
             <SpriteFill name="self" isPlayer />
           </div>
           <div style={{
             flex: 1, minWidth: 0,
             padding: "0 0 6px 0",
-            display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 6,
+            display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 5,
           }}>
             <div style={{
               backgroundColor: "#1C1C1C", border: "2px solid #444444",
-              padding: "8px 10px", display: "flex", flexDirection: "column", gap: 6,
+              padding: "6px 8px", display: "flex", flexDirection: "column", gap: 5,
             }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 14 }}>♥ YOU</span>
+                <span className="pixel-text" style={{ color: "#AAFFAA", fontSize: 12 }}>♥ YOU</span>
                 <span className="pixel-text" style={{
-                  color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 16,
+                  color: jwc.playerHp / jwc.playerMaxHp > 0.4 ? "#88FF88" : C.redBright, fontSize: 13,
                 }}>{jwc.playerHp}/{jwc.playerMaxHp}</span>
               </div>
-              <div style={{ maxWidth: "50%" }}>
-                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={8} />
+              <div style={{ maxWidth: "30%" }}>
+                <HpBar hp={jwc.playerHp} maxHp={jwc.playerMaxHp} color={C.green} height={7} />
               </div>
               <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
                 <span className="pixel-text" style={{ color: "#666666", fontSize: 11 }}>SP</span>
