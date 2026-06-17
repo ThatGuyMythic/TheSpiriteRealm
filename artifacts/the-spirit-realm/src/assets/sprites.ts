@@ -96,12 +96,12 @@ export const CHARACTER_SPRITES: Record<string, string | null> = {
 
 // ── Weapon icons ──────────────────────────────────────────────────────────────
 export const WEAPON_SPRITES: Record<string, string | null> = {
-  "sword": null,
-  "spear": null,
-  "club":  null,
-  "fists": null,
-  "bow":   null,
-  "axe":   null,
+  "sword": `${B}art/weapon-sword.png`,
+  "spear": `${B}art/weapon-spear.png`,
+  "club":  `${B}art/weapon-club.png`,
+  "fists": `${B}art/weapon-fists.png`,
+  "bow":   `${B}art/weapon-bow.png`,
+  "axe":   `${B}art/weapon-axe.png`,
 };
 
 // ── Armor slot icons ──────────────────────────────────────────────────────────

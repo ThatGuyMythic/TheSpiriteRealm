@@ -216,6 +216,7 @@ export default function CardsScreen() {
   const {
     player, recordDCCWin, pendingCardUpgrades, applyCardUpgrade,
     upgradeCard, addCardToDeck, removeCardFromDeck, maxUpgradeCard,
+    sellCard, mergePoolDuplicates,
   } = useGame();
   const [dcc, setDCC]         = useState<DCCState | null>(null);
   const [dccTab, setDccTab]   = useState<DccTab>("table");
@@ -802,6 +803,32 @@ export default function CardsScreen() {
               </span>
             </div>
 
+            {/* Merge duplicates buttons */}
+            {(() => {
+              const nameCounts: Record<string, number> = {};
+              upgradeOptions.forEach(c => { nameCounts[c.name] = (nameCounts[c.name] ?? 0) + 1; });
+              const dupeNames = Object.entries(nameCounts).filter(([, cnt]) => cnt >= 2).map(([n]) => n);
+              if (dupeNames.length === 0) return null;
+              return (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4, paddingBottom: 4, borderBottom: `1px solid #333` }}>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 10, width: "100%", marginBottom: 2 }}>
+                    MERGE DUPLICATES — combines copies into one stronger card:
+                  </span>
+                  {dupeNames.map(name => {
+                    const cnt = nameCounts[name];
+                    return (
+                      <PixelButton key={name} small color="#3A1060" textColor="#CC88FF"
+                        onClick={() => { mergePoolDuplicates(name); setCardMsg(`Merged ${cnt}× ${name}!`); setTimeout(() => setCardMsg(null), 2000); }}
+                        style={{ fontSize: 9 }}
+                      >
+                        ⇒ {name} ×{cnt}
+                      </PixelButton>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+
             {/* Deck cards first (highlighted), then rest */}
             {(() => {
               const inDeckCards  = upgradeOptions.filter(c => player.deck.some(d => d.id === c.id));
@@ -846,23 +873,36 @@ export default function CardsScreen() {
                               ♠ DECK
                             </span>
                           )}
-                          <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 1, width: "100%" }}>
-                            <PixelButton small
-                              color={maxLvl ? C.bg3 : C.yellow} textColor="#000"
-                              disabled={maxLvl || player.money < upgCost}
-                              onClick={() => handleUpgradeCard(c.name)}
-                              style={{ flex: 1, fontSize: 8 }}
-                            >
-                              {maxLvl ? "MAX" : `↑$${upgCost}`}
-                            </PixelButton>
-                            {!maxLvl && canAffordAll && (
-                              <PixelButton small color="#6040C0" textColor="#fff"
-                                onClick={() => { maxUpgradeCard(c.name); setCardMsg(`${c.name} maxed!`); setTimeout(() => setCardMsg(null), 2000); }}
+                          <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 1, width: "100%", flexDirection: "column" }}>
+                            <div style={{ display: "flex", gap: 1, width: "100%" }}>
+                              <PixelButton small
+                                color={maxLvl ? C.bg3 : C.yellow} textColor="#000"
+                                disabled={maxLvl || player.money < upgCost}
+                                onClick={() => handleUpgradeCard(c.name)}
                                 style={{ flex: 1, fontSize: 8 }}
                               >
-                                MAX
+                                {maxLvl ? "MAX" : `↑$${upgCost}`}
                               </PixelButton>
-                            )}
+                              {!maxLvl && canAffordAll && (
+                                <PixelButton small color="#6040C0" textColor="#fff"
+                                  onClick={() => { maxUpgradeCard(c.name); setCardMsg(`${c.name} maxed!`); setTimeout(() => setCardMsg(null), 2000); }}
+                                  style={{ flex: 1, fontSize: 8 }}
+                                >
+                                  MAX
+                                </PixelButton>
+                              )}
+                            </div>
+                            <PixelButton small color="#440000" textColor="#FF7766"
+                              onClick={() => {
+                                const sellVal = Math.max(1, c.power ?? 1) * 10;
+                                sellCard(c.id);
+                                setCardMsg(`Sold ${c.name} for $${sellVal}`);
+                                setTimeout(() => setCardMsg(null), 2000);
+                              }}
+                              style={{ width: "100%", fontSize: 7 }}
+                            >
+                              SELL ${Math.max(1, c.power ?? 1) * 10}
+                            </PixelButton>
                           </div>
                         </div>
                       );

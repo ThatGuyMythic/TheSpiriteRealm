@@ -183,6 +183,13 @@ function loadPlayer(): Player {
       const parsed = JSON.parse(raw);
       if (parsed && typeof parsed === "object") return sanitize(parsed);
     }
+    // Check for new-game mode bootstrap (set by App when starting Hardcore)
+    const modeRaw = localStorage.getItem(SAVE_KEY + ".mode");
+    if (modeRaw) {
+      const mode = JSON.parse(modeRaw);
+      localStorage.removeItem(SAVE_KEY + ".mode");
+      return { ...newPlayer(), hardcoreMode: Boolean(mode.hardcore) };
+    }
   } catch { /* ignore */ }
   return newPlayer();
 }
@@ -258,12 +265,16 @@ interface GameContextType {
   debugGiveMetals: (amount: number) => void;
   debugMoveToTile: (kind: TileKind) => void;
   debugRebirth: () => void;
+  debugPrepareRebirth: () => void;
   debugGiveOpKit: () => void;
   debugStartFightSequence: () => void;
   maxUpgradeCard: (cardName: string) => void;
   performRebirth: () => void;
   upgradeNpcLevel: (npcId: "ornn" | "norra") => { ok: boolean; msg: string };
   jwcFlee: () => void;
+  gameOverSignal: number;
+  sellCard: (cardId: string) => void;
+  mergePoolDuplicates: (cardName: string) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -278,6 +289,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
   const [jwc, setJWC]              = useState<JWCState | null>(null);
   const [pendingCardUpgrades, setPendingCardUpgrades] = useState(0);
   const [pendingTileAction, setPendingTileAction] = useState<TileAction | null>(null);
+  const [gameOverSignal, setGameOverSignal] = useState(0);
   const pendingCombatRef  = useRef<{ enemies: Enemy[]; isBoss: boolean } | null>(null);
   const [hasPendingCombat, setHasPendingCombat] = useState(false);
   const fightQueueRef = useRef<Array<"pve" | "elite" | "boss">>([]);
@@ -510,10 +522,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         const newEffect = partItem.buff.addEffect ? partItem.buff.addEffect : wp.effect;
         const upgraded: Weapon = {
           ...wp,
-          damage:     wp.damage + partItem.buff.damageBonus,
-          effect:     newEffect as Weapon["effect"],
-          level:      wp.level + 1,
-          mergeCount: (wp.mergeCount ?? 0) + 1,
+          damage:           wp.damage + partItem.buff.damageBonus,
+          effect:           newEffect as Weapon["effect"],
+          level:            wp.level + 1,
+          mergeCount:       (wp.mergeCount ?? 0) + 1,
+          effectMergeCount: partItem.buff.addEffect
+            ? (wp.effectMergeCount ?? 0) + 1
+            : (wp.effectMergeCount ?? 0),
         };
         if (pl.equipped.weapon?.id === targetId) {
           return { ...pl, equipped: { ...pl.equipped, weapon: upgraded }, inventory: newInv };
@@ -673,7 +688,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       if (!target || target.hp <= 0) continue;
 
       let totalDmg = 0;
-      let weaponEffect: "stun" | "ice" | null = null;
+      let weaponEffect: "ice" | "confuse" | "lightning" | null = null;
       const targetAction = jwc.enemyActions[ei] ?? "atk";
 
       for (let i = 0; i < atks; i++) {
@@ -681,7 +696,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         if (w && w.kind === "weapon") {
           const isWeakness = w.damageType === target.weakness;
           dmg = Math.round((w.damage + (isWeakness ? 8 : 0)) * pMult);
-          if (w.effect && !weaponEffect) weaponEffect = w.effect;
+          if (w.effect && !weaponEffect) weaponEffect = (w.effect === "stun" ? "confuse" : w.effect) as typeof weaponEffect;
         }
         if (targetAction === "def") dmg = Math.max(1, Math.round(dmg * 0.6));
         totalDmg += dmg;
@@ -694,18 +709,34 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         const hitLabel = w?.damageType === target.weakness ? " (WEAK!)" : "";
         logs.push(`Hit ×${atks} → ${target.name}: −${totalDmg}${hitLabel}${targetAction === "def" ? " [braced]" : ""}`);
 
-        if (weaponEffect === "stun" && Math.random() < 0.35) {
+        const procChance = w
+          ? Math.min(0.8, 0.2 + ((w.effectMergeCount ?? 0) / 20) * 0.6)
+          : 0;
+
+        if (weaponEffect === "confuse" && Math.random() < procChance) {
           const enemies2 = [...next.enemies];
-          enemies2[ei] = { ...enemies2[ei], stunned: true };
+          enemies2[ei] = { ...enemies2[ei], confused: true };
           next = { ...next, enemies: enemies2 };
-          logs.push(`${target.name} is STUNNED!`);
+          logs.push(`${target.name} is CONFUSED — will attack itself!`);
         }
 
-        if (weaponEffect === "ice") {
+        if (weaponEffect === "ice" && Math.random() < procChance) {
           const enemies2 = [...next.enemies];
-          enemies2[ei] = { ...enemies2[ei], iceTurns: 2 };
+          enemies2[ei] = { ...enemies2[ei], iceTurns: 1 };
           next = { ...next, enemies: enemies2 };
-          logs.push(`[ICE] ${target.name} is FROZEN for 2 turns!`);
+          logs.push(`[ICE] ${target.name} is FROZEN — skips next turn!`);
+        }
+
+        if (weaponEffect === "lightning" && Math.random() < procChance) {
+          const chainDmg = Math.max(1, Math.round(totalDmg * 0.3));
+          const enemies2 = [...next.enemies];
+          for (let ci = 0; ci < enemies2.length; ci++) {
+            if (ci !== ei && enemies2[ci].hp > 0) {
+              enemies2[ci] = { ...enemies2[ci], hp: Math.max(0, enemies2[ci].hp - chainDmg) };
+            }
+          }
+          next = { ...next, enemies: enemies2 };
+          logs.push(`⚡ LIGHTNING chains ${chainDmg} dmg to all others!`);
         }
       }
     }
@@ -719,15 +750,23 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         const eAction = next.enemyActions[i] ?? "atk";
 
         if (eAction === "atk") {
-          const frozen  = (e.iceTurns ?? 0) > 0;
-          const rawDmg  = frozen ? Math.max(1, Math.round(e.damage * 0.5)) : e.damage;
-          const finalDmg = calcDamageTaken(rawDmg, e.attackType, pendingDef, playerRef.current.equipped);
-          next = { ...next, playerHp: Math.max(0, next.playerHp - finalDmg) };
-          const defNote = pendingDef > 0 ? (pendingDef >= 2 ? ` [block×${pendingDef}]` : ` [block]`) : "";
-          const frozeNote = frozen ? ` [ICE frozen -50%]` : "";
-          logs.push(`${e.name} hits −${finalDmg}${defNote}${frozeNote}`);
+          const frozen = (e.iceTurns ?? 0) > 0;
+          if (frozen) {
+            logs.push(`${e.name} is FROZEN — cannot act!`);
+          } else if (e.confused) {
+            const selfDmg = e.damage;
+            const enemies2 = [...next.enemies];
+            enemies2[i] = { ...enemies2[i], hp: Math.max(0, enemies2[i].hp - selfDmg) };
+            next = { ...next, enemies: enemies2 };
+            logs.push(`${e.name} is CONFUSED — attacks itself for ${selfDmg}!`);
+          } else {
+            const finalDmg = calcDamageTaken(e.damage, e.attackType, pendingDef, playerRef.current.equipped);
+            next = { ...next, playerHp: Math.max(0, next.playerHp - finalDmg) };
+            const defNote = pendingDef > 0 ? (pendingDef >= 2 ? ` [block×${pendingDef}]` : ` [block]`) : "";
+            logs.push(`${e.name} hits −${finalDmg}${defNote}`);
+          }
         } else if (eAction === "def") {
-          if (e.stunned) logs.push(`${e.name} is STUNNED — can't act!`);
+          // Enemy braced this turn
         }
       }
     }
@@ -735,7 +774,8 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     {
       const updatedEnemies = next.enemies.map(e => ({
         ...e,
-        stunned: false,
+        stunned:  false,
+        confused: false,
         iceTurns: Math.max(0, (e.iceTurns ?? 0) - 1),
       }));
       next = { ...next, enemies: updatedEnemies };
@@ -823,6 +863,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         setJWC(null);
         setPendingCardUpgrades(0);
         setPendingTileAction(null);
+        setGameOverSignal(s => s + 1);
         return;
       }
       setPlayerState((p) => ({
@@ -1129,8 +1170,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       damageType: "slash" as const,
       name: "★ DEBUG — THE OP KIT",
       damage: 1000000,
-      effect: "stun" as const,
+      effect: "confuse" as const,
       level: 999,
+      effectMergeCount: 20,
     } as Weapon;
     setPlayerState(p => ({
       ...p,
@@ -1199,6 +1241,46 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     setPendingTileAction(null);
   }
 
+  function debugPrepareRebirth() {
+    setPlayerState(p => {
+      const FINAL_BIOME_BOSS_KILLS = 19;
+      const DCC_MAX_LEVEL = 20;
+      const LAST_BOARD_IDX = BOARD.length - 1;
+      return {
+        ...p,
+        bossKills: FINAL_BIOME_BOSS_KILLS,
+        rebirthReadySwamp: true,
+        rebirthReadyDCC:   true,
+        position: LAST_BOARD_IDX,
+        rooms: { ...p.rooms, dcc: { ...p.rooms.dcc, level: DCC_MAX_LEVEL } },
+      };
+    });
+  }
+
+  function sellCard(cardId: string) {
+    setPlayerState(p => {
+      const card = p.deck.find(c => c.id === cardId);
+      if (!card) return p;
+      const sellValue = Math.max(1, card.power ?? 1) * 10;
+      return {
+        ...p,
+        deck:  p.deck.filter(c => c.id !== cardId),
+        money: p.money + sellValue,
+      };
+    });
+  }
+
+  function mergePoolDuplicates(cardName: string) {
+    setPlayerState(p => {
+      const dupes = p.deck.filter(c => c.name === cardName);
+      if (dupes.length < 2) return p;
+      const [base, ...rest] = dupes;
+      const merged = { ...base, power: (base.power ?? 1) + rest.reduce((s, c) => s + (c.power ?? 1), 0) };
+      const restIds = new Set(rest.map(c => c.id));
+      return { ...p, deck: p.deck.map(c => c.id === base.id ? merged : c).filter(c => !restIds.has(c.id)) };
+    });
+  }
+
   return (
     <GameContext.Provider value={{
       player, jwc, hasPendingCombat, pendingTileAction,
@@ -1214,10 +1296,13 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       effectiveMaxHp,
       recordDCCWin, getPendingCardUpgrades, pendingCardUpgrades,
       addCardToDeck, removeCardFromDeck,
-      debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugGiveOpKit, debugStartFightSequence,
+      debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugPrepareRebirth, debugGiveOpKit, debugStartFightSequence,
       maxUpgradeCard,
       performRebirth,
       upgradeNpcLevel,
+      gameOverSignal,
+      sellCard,
+      mergePoolDuplicates,
     }}>
       {children}
     </GameContext.Provider>

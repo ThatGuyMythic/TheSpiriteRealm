@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { GameProvider } from "@/game/state";
+import { GameProvider, useGame } from "@/game/state";
 import BoardScreen     from "@/pages/BoardScreen";
 import CardsScreen     from "@/pages/CardsScreen";
 import BunkerScreen    from "@/pages/BunkerScreen";
@@ -45,19 +45,23 @@ function TitleScreen({ onContinue, hasSave, onNewGame, onTutorial }: {
         zIndex: 1,
       }} />
 
-      {/* Stars bg */}
-      <div style={{ position: "absolute", inset: 0, overflow: "hidden", zIndex: 0 }}>
-        {Array.from({ length: 40 }).map((_, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            left: `${(i * 37 + 11) % 100}%`,
-            top:  `${(i * 53 + 7) % 100}%`,
-            width: i % 5 === 0 ? 2 : 1,
-            height: i % 5 === 0 ? 2 : 1,
-            backgroundColor: `rgba(255,255,255,${0.2 + (i % 5) * 0.1})`,
-          }} />
-        ))}
-      </div>
+      {/* Medieval fantasy background */}
+      <img
+        src={`${import.meta.env.BASE_URL}art/title-bg.png`}
+        alt=""
+        style={{
+          position: "absolute", inset: 0,
+          width: "100%", height: "100%",
+          objectFit: "cover",
+          zIndex: 0,
+          imageRendering: "pixelated",
+        }}
+      />
+      {/* Dark overlay for readability */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 0,
+        background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.6) 100%)",
+      }} />
 
       <div style={{ position: "relative", zIndex: 2, display: "flex", flexDirection: "column", alignItems: "center", gap: 32, padding: "0 24px", width: "100%" }}>
         {/* Title */}
@@ -158,14 +162,20 @@ function TitleScreen({ onContinue, hasSave, onNewGame, onTutorial }: {
   );
 }
 
-function Inner({ startTab }: { startTab: Tab }) {
+function Inner({ startTab, onGameOver }: { startTab: Tab; onGameOver: () => void }) {
   const [tab, setTab] = useState<Tab>(startTab);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 700);
+  const { gameOverSignal } = useGame();
+
   useEffect(() => {
     const handler = () => setIsDesktop(window.innerWidth >= 700);
     window.addEventListener("resize", handler);
     return () => window.removeEventListener("resize", handler);
   }, []);
+
+  useEffect(() => {
+    if (gameOverSignal > 0) onGameOver();
+  }, [gameOverSignal]); // eslint-disable-line
 
   function handleTabChange(t: Tab) {
     setTab(t);
@@ -298,7 +308,7 @@ export default function App() {
 
   return (
     <GameProvider>
-      <Inner startTab={startTab} />
+      <Inner startTab={startTab} onGameOver={() => setScreen("title")} />
     </GameProvider>
   );
 }

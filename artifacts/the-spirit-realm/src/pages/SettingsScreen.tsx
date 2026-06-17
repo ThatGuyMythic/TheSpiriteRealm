@@ -41,7 +41,7 @@ function InfoRow({ label, desc }: { label: string; desc: string }) {
 const SAVE_KEY = "nolife.game.v5";
 
 export default function SettingsScreen() {
-  const { player, setPlayer, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugRebirth, debugGiveOpKit, debugStartFightSequence, performRebirth } = useGame();
+  const { player, setPlayer, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugPrepareRebirth, debugGiveOpKit, debugStartFightSequence, performRebirth } = useGame();
   const [msg, setMsg]                   = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
   const [tab, setTab]                   = useState<SettingsTab>(_lastSettingsTab);
@@ -439,10 +439,12 @@ export default function SettingsScreen() {
                   Swamp ready: {player.rebirthReadySwamp ? "✓" : "✗"} · DCC ready: {player.rebirthReadyDCC ? "✓" : "✗"}
                 </span>
                 <PixelButton small color="#001830" textColor="#60C8FF"
-                  style={rebirthReady ? { animation: "rebirth-glow 1.5s ease-in-out infinite" } : {}}
-                  onClick={() => { debugRebirth(); flash(`⟳ Reborn! Count: ${player.rebirthCount + 1}`); }}>
-                  ⟳ FORCE REBIRTH
+                  onClick={() => { debugPrepareRebirth(); flash("⟳ Teleported to final biome — rebirth ready!"); }}>
+                  ⟳ GO TO FINAL BIOME
                 </PixelButton>
+                <span className="pixel-text" style={{ color: C.textDim, fontSize: 11, display: "block", marginTop: 4 }}>
+                  Sets bossKills=19 + DCC Lv20. Unlocks rebirth without resetting.
+                </span>
               </div>
               <div style={{ borderTop: `1px solid #FF606033`, paddingTop: 8 }}>
                 <span className="pixel-text" style={{ color: C.redBright, fontSize: 13, display: "block", marginBottom: 6 }}>

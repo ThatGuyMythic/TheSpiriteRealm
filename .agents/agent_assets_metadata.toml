@@ -36,6 +36,48 @@ uri = "file://artifacts/the-spirit-realm/public/art/jwc/inventory_player_model_f
 type = "image"
 title = "hooded adventurer inventory model"
 
+[[generated]]
+id = "yhMINRuo6oVh7A3-UzUMs"
+uri = "file://artifacts/the-spirit-realm/public/art/title-bg.png"
+type = "image"
+title = "title screen medieval fantasy bg"
+
+[[generated]]
+id = "O0UvsXt8XNnTtYJHh-Zic"
+uri = "file://artifacts/the-spirit-realm/public/art/weapon-sword.png"
+type = "image"
+title = "sword weapon pixel art"
+
+[[generated]]
+id = "G65mh3cVUI2NNIOeW6dzE"
+uri = "file://artifacts/the-spirit-realm/public/art/weapon-spear.png"
+type = "image"
+title = "spear weapon pixel art"
+
+[[generated]]
+id = "V6ezQ8NExPTe6x46N6TEt"
+uri = "file://artifacts/the-spirit-realm/public/art/weapon-club.png"
+type = "image"
+title = "club mace weapon pixel art"
+
+[[generated]]
+id = "KZWz1_Gu43DIaDUfes8nY"
+uri = "file://artifacts/the-spirit-realm/public/art/weapon-fists.png"
+type = "image"
+title = "knuckle fists weapon pixel art"
+
+[[generated]]
+id = "Zp9Qz0k5XGWkYbL6Up7JE"
+uri = "file://artifacts/the-spirit-realm/public/art/weapon-bow.png"
+type = "image"
+title = "bow weapon pixel art"
+
+[[generated]]
+id = "P3hBToMy9stf-78gNfIeS"
+uri = "file://artifacts/the-spirit-realm/public/art/weapon-axe.png"
+type = "image"
+title = "axe weapon pixel art"
+
 [[outputs]]
 id = "LJm8QQA9dm-vdxfV9jOui"
 uri = "file://the-spirit-realm-itch.zip"

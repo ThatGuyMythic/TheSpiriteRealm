@@ -124,7 +124,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           fontSize: compact ? 14 : 17,
           cursor: "pointer", width: "100%",
         }}>{hasActions ? "END TURN ▶" : "END TURN"}</button>
-        {!jwc.started && !jwc.finished && (
+        {!jwc.started && !jwc.finished && player.hardcoreMode && (
           <button onClick={jwcFlee} style={{
             padding: compact ? "2px 0" : "3px 0", flexShrink: 0,
             backgroundColor: "#080808",
@@ -182,10 +182,12 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
         {recentLog.map((line, i) => (
           <span key={i} className="pixel-text" style={{
             fontSize: i === 0 ? (compact ? 10 : 12) : (compact ? 8 : 10),
-            color: line.includes("STUN") || line.includes("[ICE]") ? "#003366"
-                 : line.includes("hit") || line.includes("collapse") ? "#550008"
-                 : line.includes("VICTORY") || line.includes("★")   ? "#003300"
-                 : line.includes("WEAK")                             ? "#443300"
+            color: line.includes("[ICE]") || line.includes("FROZEN")   ? "#003388"
+                 : line.includes("CONFUSED") || line.includes("itself") ? "#884400"
+                 : line.includes("LIGHTNING") || line.includes("⚡")    ? "#554400"
+                 : line.includes("hit") || line.includes("collapse")    ? "#550008"
+                 : line.includes("VICTORY") || line.includes("★")       ? "#003300"
+                 : line.includes("WEAK")                                 ? "#443300"
                  : "#111111",
             opacity: 1 - i * 0.1, lineHeight: 1.25,
           }}>{line}</span>
@@ -246,11 +248,11 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
                         {allQueued ? "ALL!" : `⚔×${atkN}`}
                       </span>
                     )}
-                    {(e.stunned ?? false) && (
-                      <span className="pixel-text" style={{ color: C.yellow, fontSize: compact ? 6 : 8, backgroundColor: C.yellow + "22", padding: "0 2px" }}>STUN</span>
+                    {(e.confused ?? false) && (
+                      <span className="pixel-text" style={{ color: "#FF8833", fontSize: compact ? 6 : 8, backgroundColor: "#FF883322", padding: "0 2px" }}>CONFUSED</span>
                     )}
                     {(e.iceTurns ?? 0) > 0 && (
-                      <span className="pixel-text" style={{ color: C.cyan, fontSize: compact ? 6 : 8, backgroundColor: C.cyan + "22", padding: "0 2px" }}>ICE×{e.iceTurns}</span>
+                      <span className="pixel-text" style={{ color: C.cyan, fontSize: compact ? 6 : 8, backgroundColor: C.cyan + "22", padding: "0 2px" }}>FROZEN</span>
                     )}
                   </div>
                 )}

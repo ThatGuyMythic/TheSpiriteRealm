@@ -5,6 +5,30 @@ import { PixelPortrait } from "@/components/CardArt";
 import { CHARACTER_SPRITES, ENEMY_SPRITES } from "@/assets/sprites";
 import { GearDoll } from "@/components/CharacterDoll";
 
+// ── Bestiary weakness map ────────────────────────────────────────────────────────
+const ENEMY_WEAKNESS: Record<string, { type: string; color: string }> = {
+  "Goblin":               { type: "Slash",  color: "#88FF88" },
+  "Slime":                { type: "Slash",  color: "#88FF88" },
+  "Orc":                  { type: "Slash",  color: "#88FF88" },
+  "Goblin King":          { type: "Slash",  color: "#88FF88" },
+  "Frost Salamander":     { type: "Pierce", color: "#88CCFF" },
+  "Snow Wolf":            { type: "Pierce", color: "#88CCFF" },
+  "Yeti":                 { type: "Pierce", color: "#88CCFF" },
+  "The Great Dragon":     { type: "Pierce", color: "#88CCFF" },
+  "Skeleton":             { type: "Blunt",  color: "#FFBB55" },
+  "Skeleton Wolf":        { type: "Blunt",  color: "#FFBB55" },
+  "Skeleton Knight":      { type: "Blunt",  color: "#FFBB55" },
+  "Firegaunt":            { type: "Blunt",  color: "#FFBB55" },
+  "Fire Lich":            { type: "Slash",  color: "#88FF88" },
+  "Burning Snae":         { type: "Slash",  color: "#88FF88" },
+  "Lava Golem":           { type: "Slash",  color: "#88FF88" },
+  "Fire Demon":           { type: "Slash",  color: "#88FF88" },
+  "Swamp Slug":           { type: "Pierce", color: "#88CCFF" },
+  "Snake":                { type: "Pierce", color: "#88CCFF" },
+  "Troll":                { type: "Pierce", color: "#88CCFF" },
+  "Ancient Black Dragon": { type: "Pierce", color: "#88CCFF" },
+};
+
 // ── Bestiary lore ───────────────────────────────────────────────────────────────
 const ENEMY_LORE: Record<string, string> = {
   "Goblin":               "Weak but cunning. Travels in raiding packs.",
@@ -758,10 +782,20 @@ function BestiarySection({ bestiary }: { bestiary: Record<string, { seen: number
                       <span className="pixel-text" style={{ color: "#706050", fontSize: 9, display: "block", marginTop: 1 }}>
                         {ENEMY_LORE[name] ?? "Unknown creature."}
                       </span>
-                      <div style={{ display: "flex", gap: 10, marginTop: 3 }}>
+                      <div style={{ display: "flex", gap: 10, marginTop: 3, flexWrap: "wrap" }}>
                         <span className="pixel-text" style={{ color: "#CC4444", fontSize: 10 }}>HP: {maxHp}</span>
                         <span className="pixel-text" style={{ color: "#44AA44", fontSize: 10 }}>Kills: {killed}</span>
                         <span className="pixel-text" style={{ color: "#9060D0", fontSize: 10 }}>Seen: {seen}</span>
+                        {ENEMY_WEAKNESS[name] && (
+                          <span className="pixel-text" style={{
+                            color: ENEMY_WEAKNESS[name].color,
+                            fontSize: 10,
+                            backgroundColor: ENEMY_WEAKNESS[name].color + "22",
+                            padding: "0 3px",
+                          }}>
+                            ⚔ Weak: {ENEMY_WEAKNESS[name].type}
+                          </span>
+                        )}
                       </div>
                     </>
                   ) : (

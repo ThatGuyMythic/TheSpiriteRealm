@@ -271,6 +271,7 @@ const BIOME_BOSS_POOL: Record<Biome, { name: string; dropName: string; attackTyp
 };
 
 export interface Enemy {
+  confused?:  boolean;
   id:         string;
   name:       string;
   level:      number;
@@ -383,32 +384,32 @@ export interface EnemyPart {
   buff: {
     label:       string;
     damageBonus: number;
-    addEffect?:  "stun" | "ice";
+    addEffect?:  "ice" | "confuse" | "lightning";
   };
 }
 
-export const PART_BUFFS: Record<string, { label: string; damageBonus: number; addEffect?: "stun" | "ice" }> = {
-  "Goblin Ear":     { label: "+3 dmg",          damageBonus: 3 },
-  "Slime Core":     { label: "+2 dmg",          damageBonus: 2 },
-  "Orc Tusk":       { label: "+5 dmg, +stun",   damageBonus: 5, addEffect: "stun" },
-  "Royal Crown":    { label: "+10 dmg",          damageBonus: 10 },
-  "Frost Scale":    { label: "+3 dmg, +ice",     damageBonus: 3, addEffect: "ice" },
-  "Wolf Pelt":      { label: "+4 dmg",           damageBonus: 4 },
-  "Yeti Fur":       { label: "+6 dmg, +ice",     damageBonus: 6, addEffect: "ice" },
-  "Dragon Scale":   { label: "+8 dmg",           damageBonus: 8 },
-  "Bone Fragment":  { label: "+2 dmg, +stun",    damageBonus: 2, addEffect: "stun" },
-  "Bone Shard":     { label: "+3 dmg",           damageBonus: 3 },
-  "Knight Sigil":   { label: "+6 dmg, +stun",    damageBonus: 6, addEffect: "stun" },
-  "Gaunt Core":     { label: "+9 dmg",           damageBonus: 9 },
-  "Cinder Rune":    { label: "+4 dmg, +ice",     damageBonus: 4, addEffect: "ice" },
-  "Ashen Hide":     { label: "+3 dmg",           damageBonus: 3 },
-  "Magma Core":     { label: "+5 dmg, +stun",    damageBonus: 5, addEffect: "stun" },
-  "Demon Heart":    { label: "+12 dmg",          damageBonus: 12 },
-  "Slime Gland":    { label: "+2 dmg",           damageBonus: 2 },
-  "Venom Fang":     { label: "+3 dmg, +stun",    damageBonus: 3, addEffect: "stun" },
-  "Troll Hide":     { label: "+6 dmg",           damageBonus: 6 },
-  "Black Scale":    { label: "+10 dmg, +ice",    damageBonus: 10, addEffect: "ice" },
-  "Boss Trophy":    { label: "+10 dmg",          damageBonus: 10 },
+export const PART_BUFFS: Record<string, { label: string; damageBonus: number; addEffect?: "ice" | "confuse" | "lightning" }> = {
+  "Goblin Ear":     { label: "+3 dmg",               damageBonus: 3 },
+  "Slime Core":     { label: "+2 dmg",               damageBonus: 2 },
+  "Orc Tusk":       { label: "+5 dmg, +confuse",     damageBonus: 5, addEffect: "confuse" },
+  "Royal Crown":    { label: "+10 dmg",               damageBonus: 10 },
+  "Frost Scale":    { label: "+3 dmg, +ice",          damageBonus: 3, addEffect: "ice" },
+  "Wolf Pelt":      { label: "+4 dmg",               damageBonus: 4 },
+  "Yeti Fur":       { label: "+6 dmg, +ice",          damageBonus: 6, addEffect: "ice" },
+  "Dragon Scale":   { label: "+8 dmg",               damageBonus: 8 },
+  "Bone Fragment":  { label: "+2 dmg, +confuse",      damageBonus: 2, addEffect: "confuse" },
+  "Bone Shard":     { label: "+3 dmg",               damageBonus: 3 },
+  "Knight Sigil":   { label: "+6 dmg, +confuse",     damageBonus: 6, addEffect: "confuse" },
+  "Gaunt Core":     { label: "+9 dmg",               damageBonus: 9 },
+  "Cinder Rune":    { label: "+4 dmg, +lightning",   damageBonus: 4, addEffect: "lightning" },
+  "Ashen Hide":     { label: "+3 dmg",               damageBonus: 3 },
+  "Magma Core":     { label: "+5 dmg, +lightning",   damageBonus: 5, addEffect: "lightning" },
+  "Demon Heart":    { label: "+12 dmg",              damageBonus: 12 },
+  "Slime Gland":    { label: "+2 dmg",               damageBonus: 2 },
+  "Venom Fang":     { label: "+3 dmg, +confuse",     damageBonus: 3, addEffect: "confuse" },
+  "Troll Hide":     { label: "+6 dmg",               damageBonus: 6 },
+  "Black Scale":    { label: "+10 dmg, +ice",        damageBonus: 10, addEffect: "ice" },
+  "Boss Trophy":    { label: "+10 dmg",              damageBonus: 10 },
 };
 
 export function makeEnemyPart(dropName: string, level: number): EnemyPart {
@@ -418,15 +419,16 @@ export function makeEnemyPart(dropName: string, level: number): EnemyPart {
 
 // ── Weapons ───────────────────────────────────────────────────────────────────
 export interface Weapon {
-  id:         string;
-  kind:       "weapon";
-  weaponKind: WeaponKind;
-  damageType: DamageType;
-  name:       string;
-  damage:     number;
-  effect:     "stun" | "ice" | null;
-  level:      number;
-  mergeCount?: number;
+  id:               string;
+  kind:             "weapon";
+  weaponKind:       WeaponKind;
+  damageType:       DamageType;
+  name:             string;
+  damage:           number;
+  effect:           "ice" | "confuse" | "lightning" | null;
+  level:            number;
+  mergeCount?:      number;
+  effectMergeCount?: number;
 }
 
 const SPEAR_NAMES_BY_BIOME: Record<Biome, string[]> = {
@@ -471,7 +473,8 @@ export function genWeapon(level = 1, biome: Biome = "forest", forceKind?: Weapon
 
   const base = Math.round((8 + level * 3) * baseMultiplier);
   const dmg  = base + Math.floor(Math.random() * 4);
-  const effect: Weapon["effect"] = Math.random() < 0.4 ? (Math.random() < 0.5 ? "stun" : "ice") : null;
+  const EFFECTS: Weapon["effect"][] = ["ice", "confuse", "lightning"];
+  const effect: Weapon["effect"] = Math.random() < 0.4 ? EFFECTS[Math.floor(Math.random() * EFFECTS.length)] : null;
 
   return {
     id: uid(), kind: "weapon", weaponKind, damageType,
