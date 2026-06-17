@@ -696,7 +696,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         if (w && w.kind === "weapon") {
           const isWeakness = w.damageType === target.weakness;
           dmg = Math.round((w.damage + (isWeakness ? 8 : 0)) * pMult);
-          if (w.effect && !weaponEffect) weaponEffect = (w.effect === "stun" ? "confuse" : w.effect) as typeof weaponEffect;
+          if (w.effect && !weaponEffect) weaponEffect = w.effect;
         }
         if (targetAction === "def") dmg = Math.max(1, Math.round(dmg * 0.6));
         totalDmg += dmg;
@@ -1164,7 +1164,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   function debugGiveOpKit() {
     const opWeapon = {
-      id: `op-kit-${Date.now()}`,
+      id: `op-kit-${Date.now()}-${Math.random()}`,
       kind: "weapon" as const,
       weaponKind: "sword" as const,
       damageType: "slash" as const,
@@ -1243,29 +1243,28 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
 
   function debugPrepareRebirth() {
     setPlayerState(p => {
-      const FINAL_BIOME_BOSS_KILLS = 19;
-      const DCC_MAX_LEVEL = 20;
       const LAST_BOARD_IDX = BOARD.length - 1;
       return {
         ...p,
-        bossKills: FINAL_BIOME_BOSS_KILLS,
-        rebirthReadySwamp: true,
-        rebirthReadyDCC:   true,
-        position: LAST_BOARD_IDX,
-        rooms: { ...p.rooms, dcc: { ...p.rooms.dcc, level: DCC_MAX_LEVEL } },
+        bossKills:          19,
+        rebirthReadySwamp:  true,
+        rebirthReadyDCC:    true,
+        position:           LAST_BOARD_IDX,
+        dccLevel:           20,
       };
     });
   }
 
   function sellCard(cardId: string) {
     setPlayerState(p => {
-      const card = p.deck.find(c => c.id === cardId);
+      const card = p.deckPool.find(c => c.id === cardId) ?? p.deck.find(c => c.id === cardId);
       if (!card) return p;
       const sellValue = Math.max(1, card.power ?? 1) * 10;
       return {
         ...p,
-        deck:  p.deck.filter(c => c.id !== cardId),
-        money: p.money + sellValue,
+        deck:     p.deck.filter(c => c.id !== cardId),
+        deckPool: p.deckPool.filter(c => c.id !== cardId),
+        money:    p.money + sellValue,
       };
     });
   }

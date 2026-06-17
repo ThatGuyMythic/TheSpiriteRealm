@@ -100,15 +100,13 @@ export const WEAPON_SPRITES: Record<string, string | null> = {
   "spear": `${B}art/weapon-spear.png`,
   "club":  `${B}art/weapon-club.png`,
   "fists": `${B}art/weapon-fists.png`,
-  "bow":   `${B}art/weapon-bow.png`,
-  "axe":   `${B}art/weapon-axe.png`,
 };
 
 // ── Armor slot icons ──────────────────────────────────────────────────────────
 export const ARMOR_SPRITES: Record<string, string | null> = {
-  "helmet": null,
-  "chest":  null,
-  "cloak":  null,
+  "helmet": `${B}art/armor-helmet.png`,
+  "chest":  `${B}art/armor-chest.png`,
+  "cloak":  `${B}art/armor-cloak.png`,
 };
 
 // ── Enemy part / gear drop icons ──────────────────────────────────────────────

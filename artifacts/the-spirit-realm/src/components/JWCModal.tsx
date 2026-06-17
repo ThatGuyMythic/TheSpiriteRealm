@@ -64,8 +64,9 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
   const playerAnim  = useAnimKey();
 
   if (!jwc) return null;
+  const _j = jwc;
 
-  const { atkByEnemy, pendingDef, sp, spReserved, isBossFight } = jwc;
+  const { atkByEnemy, pendingDef, sp, spReserved, isBossFight } = _j;
   const totalAtkQueued = atkByEnemy.reduce((a, b) => a + b, 0);
   const totalPending   = totalAtkQueued + pendingDef;
   const noSp           = sp < 1;
@@ -124,7 +125,7 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
           fontSize: compact ? 14 : 17,
           cursor: "pointer", width: "100%",
         }}>{hasActions ? "END TURN ▶" : "END TURN"}</button>
-        {!jwc.started && !jwc.finished && player.hardcoreMode && (
+        {!_j.started && !_j.finished && player.hardcoreMode && (
           <button onClick={jwcFlee} style={{
             padding: compact ? "2px 0" : "3px 0", flexShrink: 0,
             backgroundColor: "#080808",
@@ -205,20 +206,20 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
 
         {/* LEFT COLUMN: all HP boxes stacked vertically — anchored to TOP */}
         <div style={{ display: "flex", flexDirection: "column", gap: compact ? 2 : 3, width: hpWidth, flexShrink: 0, justifyContent: "flex-start" }}>
-          {jwc.enemies.map((e, i) => {
+          {_j.enemies.map((e, i) => {
             const isDead   = e.hp <= 0;
-            const isTarget = i === jwc.active;
+            const isTarget = i === _j.active;
             const atkN     = atkByEnemy[i] ?? 0;
             const allQueued = atkN >= maxSp;
             return (
               <div key={e.id}
-                onClick={() => !isDead && !jwc.finished && handleAttackEnemy(i)}
+                onClick={() => !isDead && !_j.finished && handleAttackEnemy(i)}
                 onContextMenu={ev => {
                   ev.preventDefault();
                   if (atkN > 0) jwcUnqueueAtkForEnemy(i);
-                  else if (!isDead && !jwc.finished) jwcSelectTarget(i);
+                  else if (!isDead && !_j.finished) jwcSelectTarget(i);
                 }}
-                style={{ cursor: isDead || jwc.finished ? "default" : "pointer" }}>
+                style={{ cursor: isDead || _j.finished ? "default" : "pointer" }}>
                 {isDead ? (
                   <span className="pixel-text" style={{ color: "#500", fontSize: compact ? 8 : 10, padding: "0 2px" }}>✗</span>
                 ) : (
@@ -263,25 +264,25 @@ export default function JWCModal({ inline }: { inline?: boolean }) {
 
         {/* RIGHT SECTION: sprites fill right→left (first enemy rightmost) */}
         <div style={{ flex: 1, display: "flex", flexDirection: "row-reverse", gap: compact ? 1 : 4, alignItems: "flex-end", overflow: "hidden", height: "100%" }}>
-          {jwc.enemies.map((e, i) => {
+          {_j.enemies.map((e, i) => {
             const isDead    = e.hp <= 0;
-            const isTarget  = i === jwc.active;
+            const isTarget  = i === _j.active;
             const atkN      = atkByEnemy[i] ?? 0;
             const animClass = enemyAnim.getClass(e.id, "jwc-attack-hit");
             return (
               <div key={e.id}
-                onClick={() => !isDead && !jwc.finished && handleAttackEnemy(i)}
+                onClick={() => !isDead && !_j.finished && handleAttackEnemy(i)}
                 onContextMenu={ev => {
                   ev.preventDefault();
                   if (atkN > 0) jwcUnqueueAtkForEnemy(i);
-                  else if (!isDead && !jwc.finished) jwcSelectTarget(i);
+                  else if (!isDead && !_j.finished) jwcSelectTarget(i);
                 }}
                 onTouchStart={() => startHold(i)} onTouchEnd={clearHold} onTouchMove={clearHold}
                 className={animClass}
                 style={{
                   flex: isDead ? "0 0 16px" : 1,
                   height: "100%",
-                  cursor: isDead || jwc.finished ? "default" : "pointer",
+                  cursor: isDead || _j.finished ? "default" : "pointer",
                   opacity: isDead ? 0.2 : 1,
                   filter: isTarget
                     ? `drop-shadow(0 0 ${compact ? 4 : 8}px ${C.redBright}) drop-shadow(0 0 ${compact ? 8 : 16}px ${C.redBright}99)`

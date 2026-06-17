@@ -228,29 +228,6 @@ export default function SettingsScreen() {
 
         {tab === "data" && (
           <>
-            <Section title="GAME MODE" color={C.redBright}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span className="pixel-text" style={{ color: player.hardcoreMode ? C.redBright : C.textDim, fontSize: 13, flex: 1 }}>
-                  ☠ HARDCORE MODE {player.hardcoreMode ? "ON" : "OFF"}
-                </span>
-                <button
-                  onClick={() => setPlayer(p => ({ ...p, hardcoreMode: !p.hardcoreMode }))}
-                  style={{
-                    padding: "5px 14px", cursor: "pointer",
-                    backgroundColor: player.hardcoreMode ? "#3A0000" : "#001A00",
-                    border: `2px solid ${player.hardcoreMode ? C.redBright : "#333"}`,
-                    color: player.hardcoreMode ? C.redBright : "#555",
-                    fontFamily: "'VT323', monospace", fontSize: 14,
-                  }}
-                >
-                  {player.hardcoreMode ? "DISABLE" : "ENABLE"}
-                </button>
-              </div>
-              <span className="pixel-text" style={{ color: C.textDim, fontSize: 11 }}>
-                Hardcore: dying fully resets all progress. You may flee any fight before clicking END TURN.
-              </span>
-            </Section>
-
             <Section title="SAVE / LOAD — CROSS-DEVICE" color={C.green}>
               <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
                 Export your save as a JSON file to back it up or transfer to another device. Import a previously exported save to restore progress.

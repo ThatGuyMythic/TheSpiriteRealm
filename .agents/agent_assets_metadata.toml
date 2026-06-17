@@ -78,8 +78,32 @@ uri = "file://artifacts/the-spirit-realm/public/art/weapon-axe.png"
 type = "image"
 title = "axe weapon pixel art"
 
+[[generated]]
+id = "6ORbprFQ6xrph1eJfM2yI"
+uri = "file://attached_assets/generated_images/pixel_art_medieval_fantasy_42c6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "f_Qr_99E_hwBQ_AD5WLy0"
+uri = "file://attached_assets/generated_images/pixel_art_medieval_fantasy_5e6e.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "exq0K_b6xCc0c9Nw4Rmys"
+uri = "file://attached_assets/generated_images/pixel_art_dark_fantasy_e3aa.png"
+type = "image"
+title = "generated_image"
+
 [[outputs]]
 id = "LJm8QQA9dm-vdxfV9jOui"
 uri = "file://the-spirit-realm-itch.zip"
 type = "unspecified"
 title = "The Spirit Realm — itch.io build"
+
+[[outputs]]
+id = "gqWIAhzRpsY8aZgc89p4T"
+uri = "file://the-spirit-realm-v0.9.2.zip"
+type = "unspecified"
+title = "The Spirit Realm v0.9.2 — itch.io build"

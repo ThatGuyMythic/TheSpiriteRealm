@@ -3,71 +3,59 @@ import { useGame, effectiveMaxHp } from "@/game/state";
 import { C, PixelButton, StatChip, PTitle } from "@/components/PixelUI";
 import CharacterDoll from "@/components/CharacterDoll";
 import { type Weapon, type Armor, type EnemyPart } from "@/game/data";
+import { WEAPON_SPRITES, ARMOR_SPRITES } from "@/assets/sprites";
 
 function effectLabel(effect: Weapon["effect"]): string {
-  if (effect === "ice")  return "ICE";
-  if (effect === "stun") return "STUN";
-  return "";
+  if (!effect) return "";
+  return effect.toUpperCase();
 }
 
 function effectIcon(effect: string | null | undefined): string {
-  if (effect === "ice")  return "❄";
-  if (effect === "stun") return "⚡";
+  if (effect === "ice")      return "❄";
+  if (effect === "confuse")  return "?";
+  if (effect === "lightning") return "⚡";
+  if (effect === "stun")     return "⚡";
   return "";
 }
 
-const WEAPON_LABEL: Record<string, string> = {
-  sword: "SWD", spear: "SPR", club: "CLB", fists: "FST",
-};
+function effectBg(effect: string | null | undefined): string {
+  if (effect === "ice")       return "#003366";
+  if (effect === "confuse")   return "#1A0035";
+  if (effect === "lightning") return "#2A2000";
+  return "#332200";
+}
 
-function WeaponPixel({ kind, sz, col }: { kind: string; sz: number; col: string }) {
-  void WEAPON_LABEL;
-  return (
-    <svg width={sz - 6} height={sz - 14} viewBox="0 0 18 22" style={{ display:"block" }}>
-      {kind === "sword" && <>
-        <rect x="8" y="0" width="2" height="16" fill={col} />
-        <rect x="5" y="6"  width="8" height="2" fill={col} />
-        <rect x="7" y="16" width="4" height="4" fill={col + "88"} />
-      </>}
-      {kind === "spear" && <>
-        <rect x="8" y="0" width="2" height="5"  fill={col} />
-        <rect x="6" y="2" width="6" height="3"  fill={col} />
-        <rect x="8" y="5" width="2" height="15" fill={col + "88"} />
-      </>}
-      {kind === "club" && <>
-        <rect x="7" y="0" width="4" height="8"  fill={col} />
-        <rect x="5" y="0" width="8" height="4"  fill={col} />
-        <rect x="8" y="8" width="2" height="14" fill={col + "88"} />
-      </>}
-      {(kind === "fists" || !["sword","spear","club"].includes(kind)) && <>
-        <rect x="5" y="4" width="8" height="6" fill={col} />
-        <rect x="4" y="6" width="10" height="4" fill={col} />
-        <rect x="6" y="10" width="6" height="4" fill={col + "88"} />
-      </>}
-    </svg>
-  );
+function effectBorderColor(effect: string | null | undefined): string {
+  if (effect === "ice")       return C.cyan;
+  if (effect === "confuse")   return "#CC66FF";
+  if (effect === "lightning") return C.yellow;
+  return C.yellow;
 }
 
 function WeaponIcon({ weapon, small }: { weapon: Weapon; small?: boolean }) {
   const sz  = small ? 32 : 44;
   const col = weapon.damageType === "slash" ? C.yellow : weapon.damageType === "pierce" ? C.cyan : "#D0A060";
+  const src = WEAPON_SPRITES[weapon.weaponKind];
   return (
     <div style={{
       width: sz, height: sz, flexShrink: 0,
       backgroundColor: "#0A0A0A", border: `2px solid ${col}`,
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      position: "relative", gap: 2,
+      position: "relative", gap: 1, overflow: "hidden",
     }}>
-      <WeaponPixel kind={weapon.weaponKind} sz={sz} col={col} />
+      {src
+        ? <img src={src} alt={weapon.weaponKind} style={{ width: sz - 8, height: sz - 14, objectFit: "contain", imageRendering: "pixelated" }} />
+        : <span className="pixel-text" style={{ fontSize: 9, color: col }}>{weapon.weaponKind.slice(0,3).toUpperCase()}</span>
+      }
       {weapon.effect && (
         <div style={{
           position: "absolute", bottom: 1, right: 1,
-          backgroundColor: weapon.effect === "ice" ? "#003366" : "#332200",
-          border: `1px solid ${weapon.effect === "ice" ? C.cyan : C.yellow}`,
+          backgroundColor: effectBg(weapon.effect),
+          border: `1px solid ${effectBorderColor(weapon.effect)}`,
           padding: "0 2px",
         }}>
-          <span className="pixel-text" style={{ fontSize: 6, color: weapon.effect === "ice" ? C.cyan : C.yellow, lineHeight: 1 }}>
+          <span className="pixel-text" style={{ fontSize: 6, color: effectBorderColor(weapon.effect), lineHeight: 1 }}>
             {effectLabel(weapon.effect)}
           </span>
         </div>
@@ -80,31 +68,18 @@ function WeaponIcon({ weapon, small }: { weapon: Weapon; small?: boolean }) {
 function ArmorIcon({ armor, small }: { armor: Armor; small?: boolean }) {
   const sz  = small ? 32 : 44;
   const col = C.cyan;
-  const cell = Math.floor((sz - 14) / 4);
+  const src = ARMOR_SPRITES[armor.slot];
   return (
     <div style={{
       width: sz, height: sz, flexShrink: 0,
       backgroundColor: "#0A0A0A", border: `2px solid ${col}`,
       display: "flex", flexDirection: "column",
-      alignItems: "center", justifyContent: "center", gap: 2,
+      alignItems: "center", justifyContent: "center", gap: 1, overflow: "hidden",
     }}>
-      <svg width={cell*4} height={cell*4} viewBox="0 0 4 4" style={{ imageRendering:"pixelated" }}>
-        {armor.slot === "helmet" && <>
-          <rect x="1" y="0" width="2" height="1" fill={col} />
-          <rect x="0" y="1" width="4" height="2" fill={col} />
-          <rect x="1" y="3" width="2" height="1" fill={col + "88"} />
-        </>}
-        {armor.slot === "chest" && <>
-          <rect x="0" y="0" width="4" height="1" fill={col} />
-          <rect x="0" y="1" width="4" height="3" fill={col} />
-          <rect x="1" y="1" width="2" height="1" fill={col + "44"} />
-        </>}
-        {armor.slot === "cloak" && <>
-          <rect x="1" y="0" width="2" height="4" fill={col} />
-          <rect x="0" y="1" width="4" height="2" fill={col} />
-          <rect x="0" y="3" width="4" height="1" fill={col + "44"} />
-        </>}
-      </svg>
+      {src
+        ? <img src={src} alt={armor.slot} style={{ width: sz - 8, height: sz - 14, objectFit: "contain", imageRendering: "pixelated" }} />
+        : <span className="pixel-text" style={{ fontSize: 9, color: col }}>{armor.slot.slice(0,3).toUpperCase()}</span>
+      }
       <span className="pixel-text" style={{ fontSize: 7, color: col, lineHeight: 1 }}>Lv{armor.level}</span>
     </div>
   );

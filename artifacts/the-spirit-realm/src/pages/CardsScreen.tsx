@@ -218,9 +218,10 @@ export default function CardsScreen() {
     upgradeCard, addCardToDeck, removeCardFromDeck, maxUpgradeCard,
     sellCard, mergePoolDuplicates,
   } = useGame();
-  const [dcc, setDCC]         = useState<DCCState | null>(null);
-  const [dccTab, setDccTab]   = useState<DccTab>("table");
-  const [cardMsg, setCardMsg] = useState<string | null>(null);
+  const [dcc, setDCC]             = useState<DCCState | null>(null);
+  const [dccTab, setDccTab]       = useState<DccTab>("table");
+  const [cardMsg, setCardMsg]     = useState<string | null>(null);
+  const [inspectCard, setInspectCard] = useState<Card | null>(null);
 
   const cardScale = useCardScale();
   const themeInfo = getDCCThemeInfo(player.dccLevel);
@@ -873,35 +874,13 @@ export default function CardsScreen() {
                               ♠ DECK
                             </span>
                           )}
-                          <div onClick={e => e.stopPropagation()} style={{ display: "flex", gap: 1, width: "100%", flexDirection: "column" }}>
-                            <div style={{ display: "flex", gap: 1, width: "100%" }}>
-                              <PixelButton small
-                                color={maxLvl ? C.bg3 : C.yellow} textColor="#000"
-                                disabled={maxLvl || player.money < upgCost}
-                                onClick={() => handleUpgradeCard(c.name)}
-                                style={{ flex: 1, fontSize: 8 }}
-                              >
-                                {maxLvl ? "MAX" : `↑$${upgCost}`}
-                              </PixelButton>
-                              {!maxLvl && canAffordAll && (
-                                <PixelButton small color="#6040C0" textColor="#fff"
-                                  onClick={() => { maxUpgradeCard(c.name); setCardMsg(`${c.name} maxed!`); setTimeout(() => setCardMsg(null), 2000); }}
-                                  style={{ flex: 1, fontSize: 8 }}
-                                >
-                                  MAX
-                                </PixelButton>
-                              )}
-                            </div>
-                            <PixelButton small color="#440000" textColor="#FF7766"
-                              onClick={() => {
-                                const sellVal = Math.max(1, c.power ?? 1) * 10;
-                                sellCard(c.id);
-                                setCardMsg(`Sold ${c.name} for $${sellVal}`);
-                                setTimeout(() => setCardMsg(null), 2000);
-                              }}
-                              style={{ width: "100%", fontSize: 7 }}
+                          <div onClick={e => e.stopPropagation()} style={{ width: "100%" }}>
+                            <PixelButton small
+                              color={themeInfo.color + "33"} textColor={themeInfo.color}
+                              onClick={() => setInspectCard(c)}
+                              style={{ width: "100%", fontSize: 8 }}
                             >
-                              SELL ${Math.max(1, c.power ?? 1) * 10}
+                              INSPECT
                             </PixelButton>
                           </div>
                         </div>
@@ -973,6 +952,85 @@ export default function CardsScreen() {
           })()
         )}
       </div>
+
+      {/* ── INSPECT card modal ─────────────────────────────────────────────── */}
+      {inspectCard && (() => {
+        const lvl      = player.collection[inspectCard.name] || 1;
+        const maxLvl   = lvl >= 5;
+        const upgCost  = 50 * lvl;
+        const canAfford = player.money >= upgCost;
+        const dupCount = upgradeOptions.filter(c => c.name === inspectCard.name).length;
+        const sellVal  = Math.max(1, inspectCard.power ?? 1) * 10;
+        return (
+          <div style={{
+            position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100,
+          }} onClick={() => setInspectCard(null)}>
+            <div style={{
+              backgroundColor: "#0A0A1A", border: `2px solid ${themeInfo.color}`,
+              maxWidth: 300, width: "90%", padding: 16,
+              display: "flex", flexDirection: "column", gap: 10,
+            }} onClick={e => e.stopPropagation()}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span className="pixel-text" style={{ color: themeInfo.color, fontSize: 18 }}>♠ INSPECT</span>
+                <button onClick={() => setInspectCard(null)} style={{
+                  background: "none", border: `1px solid ${themeInfo.color}55`, color: themeInfo.color,
+                  cursor: "pointer", fontFamily: "'VT323', monospace", fontSize: 18, padding: "0 8px",
+                }}>✕</button>
+              </div>
+              <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                <FullCard card={inspectCard} scale={1.0} />
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <span className="pixel-text" style={{ color: C.text, fontSize: 16 }}>{inspectCard.name}</span>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>Power: {inspectCard.power}</span>
+                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>Cost: {inspectCard.cost}sp</span>
+                  <span className="pixel-text" style={{ color: C.yellow, fontSize: 12 }}>Level: {lvl}/5</span>
+                  {inspectCard.text && (
+                    <span className="pixel-text" style={{ color: "#A080D0", fontSize: 11, maxWidth: 150, lineHeight: 1.3 }}>
+                      {inspectCard.text}
+                    </span>
+                  )}
+                </div>
+              </div>
+              {maxLvl
+                ? <PixelButton color={C.bg3} textColor={C.textDim} disabled>FULLY UPGRADED (MAX)</PixelButton>
+                : <PixelButton
+                    color={canAfford ? C.yellow : C.bg3}
+                    textColor={canAfford ? "#000" : C.textDim}
+                    disabled={!canAfford}
+                    onClick={() => {
+                      handleUpgradeCard(inspectCard.name);
+                      setCardMsg(`Upgraded ${inspectCard.name}!`);
+                      setTimeout(() => setCardMsg(null), 2000);
+                    }}
+                  >
+                    ↑ UPGRADE — ${upgCost}
+                  </PixelButton>
+              }
+              {dupCount >= 2 && (
+                <PixelButton color="#3A1060" textColor="#CC88FF"
+                  onClick={() => {
+                    mergePoolDuplicates(inspectCard.name);
+                    setCardMsg(`Merged ${dupCount}× ${inspectCard.name}!`);
+                    setTimeout(() => setCardMsg(null), 2000);
+                    setInspectCard(null);
+                  }}>
+                  ⇒ MERGE ×{dupCount} COPIES
+                </PixelButton>
+              )}
+              <PixelButton color="#440000" textColor="#FF7766"
+                onClick={() => {
+                  sellCard(inspectCard.id);
+                  setCardMsg(`Sold ${inspectCard.name} for $${sellVal}`);
+                  setTimeout(() => setCardMsg(null), 2000);
+                  setInspectCard(null);
+                }}>
+                SELL — ${sellVal}
+              </PixelButton>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

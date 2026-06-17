@@ -31,7 +31,7 @@ function tilePos(idx: number) {
 function itemDesc(item: Weapon | Armor): string {
   if (item.kind === "weapon") {
     const w   = item as Weapon;
-    const eff = w.effect ? ` · ${w.effect === "ice" ? "[ICE]" : "[STUN]"}` : "";
+    const eff = w.effect ? ` · [${w.effect.toUpperCase()}]` : "";
     return `[${w.weaponKind}] ${w.damage}dmg Lv${w.level}${eff}`;
   }
   const a = item as Armor;
@@ -119,7 +119,7 @@ function ShopOverlay({ items, onClose, inline }: { items: Item[]; onClose: () =>
         <div style={{ flex: 1, overflowY: "auto", padding: "8px 12px", display: "flex", flexDirection: "column", gap: 6 }}>
           {gearItems.map(item => {
             const hasNorra = player.characters.find(c => c.id === "norra")?.unlocked ?? false;
-            const price = shopPrice(item, hasNorra);
+            const price = shopPrice(item, hasNorra ? 1 : 0);
             const canBuy = player.money >= price;
             const w = item as Weapon | Armor;
             return (
@@ -161,7 +161,7 @@ function ShopOverlay({ items, onClose, inline }: { items: Item[]; onClose: () =>
               <span className="pixel-text" style={{ color: C.yellow, fontSize: 13, display: "block", marginBottom: 6 }}>
                 ◈ SELL DROPS
               </span>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: "30vh", overflowY: "auto" }}>
                 {Array.from(groups.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([name, group]) => {
                   const avgLevel  = Math.round(group.reduce((s, p) => s + p.level, 0) / group.length);
                   const priceEach = Math.max(5, 8 + avgLevel * 2);
@@ -653,63 +653,63 @@ export default function BoardScreen() {
             );
           })}
 
-          {/* Player token — 3 pixel art variants based on rebirth */}
-          <div style={{
-            position: "absolute",
-            left:  curPos.col * TILE_SIZE + TILE_SIZE / 2 - 8,
-            top:   curPos.row * TILE_SIZE + TILE_SIZE / 2 - 10,
-            zIndex: 10, pointerEvents: "none",
-          }}>
-            {player.rebirthCount === 0 && (
-              <svg width="16" height="20" viewBox="0 0 8 10" style={{ imageRendering: "pixelated", display: "block" }}>
-                <rect x="2" y="0" width="4" height="3" fill="#4DBBCC" />
-                <rect x="1" y="1" width="6" height="2" fill="#4DBBCC" />
-                <rect x="2" y="3" width="4" height="4" fill="#3A8899" />
-                <rect x="1" y="3" width="2" height="3" fill="#4DBBCC" />
-                <rect x="5" y="3" width="2" height="3" fill="#4DBBCC" />
-                <rect x="2" y="7" width="2" height="3" fill="#2A6677" />
-                <rect x="4" y="7" width="2" height="3" fill="#2A6677" />
-                <rect x="3" y="1" width="1" height="1" fill="#1A3344" />
-                <rect x="4" y="1" width="1" height="1" fill="#1A3344" />
-                <rect x="2" y="9" width="2" height="1" fill="#1A4455" />
-                <rect x="4" y="9" width="2" height="1" fill="#1A4455" />
-              </svg>
-            )}
-            {player.rebirthCount === 1 && (
-              <svg width="16" height="20" viewBox="0 0 8 10" style={{ imageRendering: "pixelated", display: "block" }}>
-                <rect x="2" y="0" width="4" height="3" fill="#B060FF" />
-                <rect x="1" y="1" width="6" height="2" fill="#C080FF" />
-                <rect x="2" y="3" width="4" height="4" fill="#7040BB" />
-                <rect x="1" y="3" width="2" height="3" fill="#9050DD" />
-                <rect x="5" y="3" width="2" height="3" fill="#9050DD" />
-                <rect x="2" y="7" width="2" height="3" fill="#502090" />
-                <rect x="4" y="7" width="2" height="3" fill="#502090" />
-                <rect x="3" y="1" width="1" height="1" fill="#FF80FF" />
-                <rect x="4" y="1" width="1" height="1" fill="#FF80FF" />
-                <rect x="1" y="0" width="1" height="1" fill="#E0A0FF" />
-                <rect x="6" y="0" width="1" height="1" fill="#E0A0FF" />
-                <rect x="2" y="9" width="2" height="1" fill="#3A1070" />
-                <rect x="4" y="9" width="2" height="1" fill="#3A1070" />
-              </svg>
-            )}
-            {player.rebirthCount >= 2 && (
-              <svg width="16" height="20" viewBox="0 0 8 10" style={{ imageRendering: "pixelated", display: "block" }}>
-                <rect x="2" y="0" width="4" height="3" fill="#FFD700" />
-                <rect x="1" y="1" width="6" height="2" fill="#FFE840" />
-                <rect x="2" y="3" width="4" height="4" fill="#CC9900" />
-                <rect x="1" y="3" width="2" height="3" fill="#E8B000" />
-                <rect x="5" y="3" width="2" height="3" fill="#E8B000" />
-                <rect x="2" y="7" width="2" height="3" fill="#AA7700" />
-                <rect x="4" y="7" width="2" height="3" fill="#AA7700" />
-                <rect x="3" y="1" width="1" height="1" fill="#FFFFFF" />
-                <rect x="4" y="1" width="1" height="1" fill="#FFFFFF" />
-                <rect x="0" y="0" width="2" height="1" fill="#FFD700" />
-                <rect x="6" y="0" width="2" height="1" fill="#FFD700" />
-                <rect x="2" y="9" width="2" height="1" fill="#886600" />
-                <rect x="4" y="9" width="2" height="1" fill="#886600" />
-              </svg>
-            )}
-          </div>
+          {/* Player token — adventurer pixel art, prestige color by rebirth */}
+          {(() => {
+            const rc = player.rebirthCount;
+            const MAIN  = rc === 0 ? "#3A9AAA" : rc === 1 ? "#9944EE" : "#CCA000";
+            const BODY  = rc === 0 ? "#2A7080" : rc === 1 ? "#6622BB" : "#AA7700";
+            const CAPE  = rc === 0 ? "#1E5A6A" : rc === 1 ? "#4A1A99" : "#886600";
+            const LEGS  = rc === 0 ? "#1E5A6A" : rc === 1 ? "#4A1A99" : "#886600";
+            const BOOTS = rc === 0 ? "#0F3340" : rc === 1 ? "#2A0A55" : "#553E00";
+            const SWORD = rc === 0 ? "#C0C0C0" : rc === 1 ? "#CC88FF" : "#FFE840";
+            const FACE  = "#C09070";
+            const EYE   = rc === 0 ? "#003344" : rc === 1 ? "#1A0030" : "#1A0800";
+            return (
+              <div style={{
+                position: "absolute",
+                left:  curPos.col * TILE_SIZE + TILE_SIZE / 2 - 8,
+                top:   curPos.row * TILE_SIZE + TILE_SIZE / 2 - 12,
+                zIndex: 10, pointerEvents: "none",
+              }}>
+                <svg width="18" height="26" viewBox="0 0 9 13" style={{ imageRendering: "pixelated", display: "block" }}>
+                  {/* Hood */}
+                  <rect x="2" y="0" width="4" height="1" fill={MAIN} />
+                  <rect x="1" y="1" width="6" height="2" fill={MAIN} />
+                  {/* Face */}
+                  <rect x="2" y="3" width="4" height="2" fill={FACE} />
+                  <rect x="2" y="4" width="1" height="1" fill={EYE} />
+                  <rect x="5" y="4" width="1" height="1" fill={EYE} />
+                  {/* Shoulders + body */}
+                  <rect x="1" y="5" width="1" height="1" fill={MAIN} />
+                  <rect x="7" y="5" width="1" height="1" fill={MAIN} />
+                  <rect x="1" y="6" width="6" height="3" fill={BODY} />
+                  {/* Cape sides */}
+                  <rect x="0" y="6" width="1" height="4" fill={CAPE} />
+                  <rect x="8" y="6" width="1" height="4" fill={CAPE} />
+                  {/* Belt */}
+                  <rect x="1" y="8" width="6" height="1" fill={EYE} />
+                  {/* Sword — right side, pointing up */}
+                  <rect x="8" y="1" width="1" height="5" fill={SWORD} />
+                  <rect x="7" y="5" width="2" height="1" fill={SWORD} />
+                  {/* Legs */}
+                  <rect x="2" y="9" width="2" height="2" fill={LEGS} />
+                  <rect x="5" y="9" width="2" height="2" fill={LEGS} />
+                  {/* Boots */}
+                  <rect x="1" y="11" width="3" height="1" fill={BOOTS} />
+                  <rect x="5" y="11" width="3" height="1" fill={BOOTS} />
+                  {/* Prestige glows for rebirth 1+ */}
+                  {rc >= 1 && <>
+                    <rect x="0" y="0" width="1" height="1" fill={MAIN + "CC"} />
+                    <rect x="8" y="0" width="1" height="1" fill={MAIN + "CC"} />
+                  </>}
+                  {rc >= 2 && <>
+                    <rect x="1" y="0" width="1" height="1" fill={MAIN + "88"} />
+                    <rect x="7" y="0" width="1" height="1" fill={MAIN + "88"} />
+                  </>}
+                </svg>
+              </div>
+            );
+          })()}
         </div>
 
         {/* Tile info strip */}
