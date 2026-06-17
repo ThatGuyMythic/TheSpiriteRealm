@@ -1,7 +1,7 @@
 import React from "react";
 import { C } from "./PixelUI";
 import type { Card } from "@/game/data";
-import { CARD_SPRITES } from "@/assets/sprites";
+import { CARD_SPRITES, PART_SPRITES } from "@/assets/sprites";
 
 // ── Category detection ────────────────────────────────────────────────────────
 function detectCategory(name: string): string {
@@ -83,111 +83,319 @@ export function PixelPortrait({ name, size, isPlayer }: { name: string; size: nu
 }
 
 // ── Part pixel art ────────────────────────────────────────────────────────────
-interface PartSpec {
-  bg: string; main: string; accent: string;
-  mainRows: number[]; accentRows: number[];
+// For parts with generated PNG images, render the image directly.
+// For the remaining 11 items, use high-quality 16×16 SVG pixel art.
+
+interface PartDef16 {
+  bg: string;
+  pal: readonly string[]; // up to 5 colors for chars '1'–'5'
+  rows: readonly string[]; // exactly 16 strings of 16 chars each
 }
 
-const PART_SPECS: Record<string, PartSpec> = {
-  "Goblin Ear":    { bg:"#050A05", main:"#3A7030", accent:"#70C060",
-    mainRows:   [0x3C,0x7E,0x7E,0xFE,0xFE,0x7C,0x38,0x08],
-    accentRows: [0x10,0x34,0x34,0x20,0x00,0x00,0x00,0x00] },
-  "Slime Core":    { bg:"#030A03", main:"#30C030", accent:"#90FF80",
-    mainRows:   [0x3C,0x7E,0xFF,0xFF,0xFF,0x7E,0x3C,0x00],
-    accentRows: [0x00,0x10,0x28,0x00,0x00,0x00,0x00,0x00] },
-  "Orc Tusk":      { bg:"#0A0804", main:"#C8B068", accent:"#FFFFA0",
-    mainRows:   [0xC0,0xE0,0x70,0x3C,0x1E,0x0F,0x06,0x02],
-    accentRows: [0x80,0x80,0x00,0x00,0x00,0x01,0x01,0x00] },
-  "Royal Crown":   { bg:"#08060A", main:"#C89010", accent:"#FFD050",
-    mainRows:   [0xB5,0xFF,0xFF,0x7E,0x7E,0x00,0x00,0x00],
-    accentRows: [0x00,0x00,0x81,0x18,0x00,0x00,0x00,0x00] },
-  "Frost Scale":   { bg:"#010810", main:"#3080C0", accent:"#80D0FF",
-    mainRows:   [0x3C,0x7E,0xFF,0xFF,0x7E,0x3C,0x00,0x00],
-    accentRows: [0x00,0x18,0x24,0x24,0x18,0x00,0x00,0x00] },
-  "Wolf Pelt":     { bg:"#080604", main:"#7A6050", accent:"#A09080",
-    mainRows:   [0xDB,0xFF,0xFF,0x7E,0xFE,0xED,0x4A,0x00],
-    accentRows: [0x24,0x00,0x22,0x81,0x20,0x00,0x00,0x00] },
-  "Yeti Fur":      { bg:"#060810", main:"#C0C8D8", accent:"#FFFFFF",
-    mainRows:   [0x66,0xFF,0xFF,0xFF,0x7E,0x3C,0x10,0x00],
-    accentRows: [0x99,0x00,0x00,0x42,0x00,0x00,0x00,0x00] },
-  "Dragon Scale":  { bg:"#0A0600", main:"#B07010", accent:"#FFD050",
-    mainRows:   [0x3C,0x7E,0xFF,0xFF,0xFF,0x7E,0x3C,0x18],
-    accentRows: [0x00,0x18,0x24,0x24,0x18,0x00,0x00,0x00] },
-  "Bone Fragment": { bg:"#080808", main:"#C8C0A0", accent:"#FFFFF0",
-    mainRows:   [0x06,0x0E,0x1C,0x38,0x70,0xE0,0xC0,0x80],
-    accentRows: [0x02,0x04,0x08,0x10,0x00,0x00,0x00,0x00] },
-  "Bone Shard":    { bg:"#080808", main:"#B0A888", accent:"#E8E8D0",
-    mainRows:   [0x03,0x06,0x0C,0x18,0x30,0x60,0xC0,0x80],
-    accentRows: [0x01,0x02,0x00,0x00,0x00,0x00,0x00,0x00] },
-  "Knight Sigil":  { bg:"#0A0A10", main:"#8090A0", accent:"#D04040",
-    mainRows:   [0x7E,0xFF,0xFF,0xFF,0x7E,0x3C,0x18,0x00],
-    accentRows: [0x00,0x18,0xFF,0x18,0x18,0x00,0x00,0x00] },
-  "Gaunt Core":    { bg:"#0A0510", main:"#7030A0", accent:"#D070FF",
-    mainRows:   [0x18,0x3C,0x7E,0xFF,0xFF,0x7E,0x3C,0x18],
-    accentRows: [0x00,0x00,0x18,0x3C,0x18,0x00,0x00,0x00] },
-  "Cinder Rune":   { bg:"#100400", main:"#C04010", accent:"#FF8020",
-    mainRows:   [0xFE,0x06,0x0C,0x18,0x30,0x60,0xC0,0xFF],
-    accentRows: [0x81,0x00,0x00,0x08,0x00,0x00,0x00,0x81] },
-  "Ashen Hide":    { bg:"#0C0C0C", main:"#7A7A7A", accent:"#B0B0B0",
-    mainRows:   [0xFE,0xB7,0xFF,0xB7,0xFF,0xB7,0xFE,0x00],
-    accentRows: [0x7E,0x00,0x42,0x00,0x42,0x00,0x00,0x00] },
-  "Magma Core":    { bg:"#140000", main:"#D04010", accent:"#FF8000",
-    mainRows:   [0x18,0x7E,0xFF,0xFF,0x7E,0x3C,0x18,0x08],
-    accentRows: [0x00,0x18,0x3C,0x18,0x00,0x00,0x00,0x00] },
-  "Demon Heart":   { bg:"#0A0005", main:"#8B0020", accent:"#FF2040",
-    mainRows:   [0x66,0xFF,0xFF,0x7E,0x3C,0x18,0x08,0x00],
-    accentRows: [0x18,0x42,0x00,0x00,0x00,0x00,0x00,0x00] },
-  "Slime Gland":   { bg:"#020A02", main:"#20A030", accent:"#70FF60",
-    mainRows:   [0x3C,0x7E,0xFF,0xFF,0x7E,0x3E,0x1C,0x08],
-    accentRows: [0x00,0x18,0x24,0x00,0x00,0x00,0x08,0x08] },
-  "Venom Fang":    { bg:"#040800", main:"#80A000", accent:"#E0FF00",
-    mainRows:   [0xE0,0x70,0x38,0x1C,0x0C,0x06,0x03,0x01],
-    accentRows: [0x00,0x00,0x00,0x00,0x00,0x04,0x02,0x00] },
-  "Troll Hide":    { bg:"#060A04", main:"#6A7040", accent:"#A0A860",
-    mainRows:   [0x7E,0xFF,0xDB,0xFF,0xDB,0xFF,0x7E,0x00],
-    accentRows: [0x24,0x00,0x00,0x24,0x00,0x00,0x24,0x00] },
-  "Black Scale":   { bg:"#05020A", main:"#2A1A40", accent:"#6030A0",
-    mainRows:   [0x3C,0x7E,0xFF,0xFF,0xFF,0x7E,0x3C,0x18],
-    accentRows: [0x00,0x10,0x22,0x41,0x22,0x10,0x00,0x00] },
-  "Boss Trophy":   { bg:"#0A0800", main:"#C09010", accent:"#FFD060",
-    mainRows:   [0x3C,0x7E,0xFF,0xA5,0xFF,0x5A,0x7E,0x3C],
-    accentRows: [0x00,0x18,0x00,0x00,0x00,0x00,0x18,0x00] },
+// char '_' = transparent, '1'=pal[0] (darkest) … '5'=pal[4] (brightest/accent)
+const PART_DEFS_16: Record<string, PartDef16> = {
+  "Knight Sigil": {
+    bg: "#070810",
+    pal: ["#1A1C28","#404860","#7A8EA8","#B8CCE0","#C83030"],
+    rows: [
+      "________________",
+      "_____11111______",
+      "____1333331_____",
+      "___133333321____",
+      "___133535221____",
+      "___133535221____",
+      "___135555521____",
+      "___133535221____",
+      "___133535221____",
+      "___133333221____",
+      "____1333321_____",
+      "____1333221_____",
+      "_____13321______",
+      "______131_______",
+      "_______1________",
+      "________________",
+    ],
+  },
+  "Gaunt Core": {
+    bg: "#060318",
+    pal: ["#150A28","#2E1450","#5E28A0","#9640D0","#D862FF"],
+    rows: [
+      "________________",
+      "______151_______",
+      "_____15551______",
+      "____155451______",
+      "____154441______",
+      "___1554441______",
+      "___1544441______",
+      "___1544441______",
+      "___1544441______",
+      "___1544421______",
+      "___1533321______",
+      "___1333321______",
+      "___1222221______",
+      "____12221_______",
+      "_____1111_______",
+      "________________",
+    ],
+  },
+  "Cinder Rune": {
+    bg: "#0C0402",
+    pal: ["#2A1808","#4A3018","#8A7038","#B89850","#FF5020"],
+    rows: [
+      "___111111111____",
+      "__12222222221___",
+      "__12333333321___",
+      "__12345554321___",
+      "__12355555321___",
+      "__12345554321___",
+      "__12354554321___",
+      "__12355555321___",
+      "__12354554321___",
+      "__12345554321___",
+      "__12355555321___",
+      "__12345554321___",
+      "__12333333321___",
+      "__12222222221___",
+      "___111111111____",
+      "________________",
+    ],
+  },
+  "Ashen Hide": {
+    bg: "#0C0C0C",
+    pal: ["#181818","#303030","#606060","#989898","#C8C8C8"],
+    rows: [
+      "_11__11__11_____",
+      "_12121_12121____",
+      "_123232323221___",
+      "_123333333221___",
+      "_123434343221___",
+      "_123344443221___",
+      "_123444443221___",
+      "_123444443221___",
+      "_123344443221___",
+      "_123434343221___",
+      "_123333333221___",
+      "_123232323221___",
+      "_12222222221____",
+      "__122222222221__",
+      "___1222222221___",
+      "____111111111___",
+    ],
+  },
+  "Magma Core": {
+    bg: "#140200",
+    pal: ["#300600","#700E00","#C02010","#E05000","#FF9000"],
+    rows: [
+      "________________",
+      "_____11111______",
+      "____1222221_____",
+      "___123333221____",
+      "___123444321____",
+      "___124554321____",
+      "__12455543221___",
+      "__12455543221___",
+      "__12445443221___",
+      "__12344443221___",
+      "___1244432221___",
+      "___1234332221___",
+      "____123332221___",
+      "____12332221____",
+      "_____12221______",
+      "______111_______",
+    ],
+  },
+  "Demon Heart": {
+    bg: "#080005",
+    pal: ["#1A0010","#440018","#880028","#CC2040","#FF5060"],
+    rows: [
+      "________________",
+      "___11___11______",
+      "__12211_12221___",
+      "_1222211122221__",
+      "_1222221222221__",
+      "_12222222222221_",
+      "__1222244222221_",
+      "___12222442221__",
+      "___12222442221__",
+      "___12222222221__",
+      "____122222221___",
+      "____12222222221_",
+      "_____122222221__",
+      "______122221____",
+      "_______1221_____",
+      "________11______",
+    ],
+  },
+  "Slime Gland": {
+    bg: "#020A02",
+    pal: ["#041404","#103018","#20682A","#40B844","#80FF88"],
+    rows: [
+      "________________",
+      "_____11111______",
+      "____1233321_____",
+      "____1244421_____",
+      "____1244421_____",
+      "____1245421_____",
+      "____1244421_____",
+      "____1244421_____",
+      "____1244421_____",
+      "____1244421_____",
+      "____1244421_____",
+      "____1244421_____",
+      "____1234421_____",
+      "____1234321_____",
+      "_____12221______",
+      "______111_______",
+    ],
+  },
+  "Venom Fang": {
+    bg: "#040800",
+    pal: ["#0C1C00","#283C00","#608C10","#A8C830","#E0FF00"],
+    rows: [
+      "______________1_",
+      "_____________121",
+      "____________1221",
+      "___________12321",
+      "__________123421",
+      "_________1234321",
+      "_________1243221",
+      "________12432221",
+      "________12443221",
+      "_______124433221",
+      "_______124433221",
+      "_______124433221",
+      "_______124433221",
+      "_______124332221",
+      "_______123322221",
+      "________1222221_",
+    ],
+  },
+  "Troll Hide": {
+    bg: "#060A04",
+    pal: ["#0C1A08","#1E3818","#3A6030","#609048","#88C068"],
+    rows: [
+      "__11__11__11____",
+      "_1212112121211__",
+      "_123232323221___",
+      "_123434444221___",
+      "_123444444221___",
+      "_123444444221___",
+      "_123444444221___",
+      "_123444443221___",
+      "_123334433221___",
+      "_123333333221___",
+      "_12333333322221_",
+      "_12222333222221_",
+      "_12222222222221_",
+      "__122222222221__",
+      "___1222222221___",
+      "____111111111___",
+    ],
+  },
+  "Black Scale": {
+    bg: "#050208",
+    pal: ["#0D0618","#1C1030","#401858","#702888","#B040E0"],
+    rows: [
+      "________________",
+      "_______1________",
+      "______141_______",
+      "_____14441______",
+      "____1444441_____",
+      "___144455441____",
+      "___14455544221__",
+      "___14455443221__",
+      "___1444443221___",
+      "___1444433221___",
+      "___1443332221___",
+      "___1443222221___",
+      "___144322221____",
+      "___143222221____",
+      "___132222221____",
+      "____1111111_____",
+    ],
+  },
+  "Boss Trophy": {
+    bg: "#0A0800",
+    pal: ["#1E1200","#4A3000","#A07010","#E0A820","#FFE060"],
+    rows: [
+      "____1111111_____",
+      "___122222221____",
+      "___123444321____",
+      "___124455421____",
+      "___124444421____",
+      "___123333321____",
+      "___123113321____",
+      "___123113321____",
+      "___123333321____",
+      "___123434321____",
+      "___123434321____",
+      "___123333321____",
+      "____1222221_____",
+      "____1224221_____",
+      "____1222221_____",
+      "_____11111______",
+    ],
+  },
 };
 
-function getPartSpec(name: string): PartSpec {
-  if (PART_SPECS[name]) return PART_SPECS[name];
+function getPartDef16(name: string): PartDef16 | null {
+  if (PART_DEFS_16[name]) return PART_DEFS_16[name];
   const n = name.toLowerCase();
-  if (/scale|hide|pelt|fur/.test(n))  return PART_SPECS["Wolf Pelt"];
-  if (/core|gland/.test(n))           return PART_SPECS["Slime Core"];
-  if (/fang|tusk|shard/.test(n))      return PART_SPECS["Venom Fang"];
-  if (/bone|fragment/.test(n))        return PART_SPECS["Bone Fragment"];
-  if (/crown|sigil|trophy/.test(n))   return PART_SPECS["Boss Trophy"];
-  if (/heart/.test(n))                return PART_SPECS["Demon Heart"];
-  if (/rune/.test(n))                 return PART_SPECS["Cinder Rune"];
-  return PART_SPECS["Slime Core"];
+  if (/scale|hide|pelt|fur/.test(n))  return PART_DEFS_16["Troll Hide"];
+  if (/core|gland/.test(n))           return PART_DEFS_16["Slime Gland"];
+  if (/fang|tusk|shard/.test(n))      return PART_DEFS_16["Venom Fang"];
+  if (/bone|fragment/.test(n))        return null;
+  if (/crown|sigil|trophy/.test(n))   return PART_DEFS_16["Boss Trophy"];
+  if (/heart/.test(n))                return PART_DEFS_16["Demon Heart"];
+  if (/rune/.test(n))                 return PART_DEFS_16["Cinder Rune"];
+  return PART_DEFS_16["Slime Gland"];
 }
 
 export function PartPixelArt({ name, size = 32 }: { name: string; size?: number }) {
-  const spec = getPartSpec(name);
-  const cell = size / 8;
+  const imgSrc = PART_SPRITES[name] ?? null;
+  if (imgSrc) {
+    return (
+      <div style={{ width: size, height: size, flexShrink: 0, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <img
+          src={imgSrc}
+          alt={name}
+          style={{ width: "100%", height: "100%", objectFit: "cover", imageRendering: "pixelated" }}
+        />
+      </div>
+    );
+  }
+
+  const def = getPartDef16(name);
+  if (!def) {
+    return (
+      <div style={{ width: size, height: size, backgroundColor: "#0A0A14", flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <span style={{ color: "#606080", fontSize: size * 0.4, fontFamily: "monospace" }}>?</span>
+      </div>
+    );
+  }
+
+  const cell = size / 16;
   return (
     <svg width={size} height={size} style={{ display: "block", imageRendering: "pixelated" }}>
-      <rect width={size} height={size} fill={spec.bg} />
-      {spec.mainRows.map((rowBits, ri) =>
-        Array.from({ length: 8 }, (_, ci) => {
-          if (!((rowBits >> (7 - ci)) & 1)) return null;
-          return <rect key={`m-${ri}-${ci}`} x={ci*cell} y={ri*cell} width={cell} height={cell} fill={spec.main} />;
+      <rect width={size} height={size} fill={def.bg} />
+      {def.rows.flatMap((row, ri) =>
+        Array.from({ length: 16 }, (_, ci) => {
+          const ch = row[ci] ?? "_";
+          if (ch === "_") return null;
+          const idx = parseInt(ch, 10) - 1;
+          const color = def.pal[idx];
+          if (!color) return null;
+          return (
+            <rect
+              key={`${ri}-${ci}`}
+              x={ci * cell} y={ri * cell}
+              width={cell} height={cell}
+              fill={color}
+            />
+          );
         })
       )}
-      {spec.accentRows.map((rowBits, ri) =>
-        Array.from({ length: 8 }, (_, ci) => {
-          if (!((rowBits >> (7 - ci)) & 1)) return null;
-          return <rect key={`a-${ri}-${ci}`} x={ci*cell} y={ri*cell} width={cell} height={cell} fill={spec.accent} />;
-        })
-      )}
-      {Array.from({ length: 8 }, (_, ri) => (
-        <rect key={`sl-${ri}`} x={0} y={ri*cell + cell*0.85} width={size} height={cell*0.15} fill="#00000030" />
-      ))}
     </svg>
   );
 }

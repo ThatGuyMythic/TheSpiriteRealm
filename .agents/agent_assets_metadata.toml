@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "WefDGjRyxgck5sZmsF45i"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-goblin-ear.png"
+type = "image"
+title = "goblin ear drop"
+
+[[generated]]
+id = "uASeFjpss4FPjDsJn-Fj_"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-slime-core.png"
+type = "image"
+title = "slime core drop"
+
+[[generated]]
+id = "nmC6GZRwz1ELjNyyXs7z8"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-orc-tusk.png"
+type = "image"
+title = "orc tusk drop"
+
+[[generated]]
+id = "9ZbJ57k6pgMkV-J89oJnc"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-royal-crown.png"
+type = "image"
+title = "royal crown drop"
+
+[[generated]]
+id = "_VwICWRyKKIEUb8wCE2Mv"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-frost-scale.png"
+type = "image"
+title = "frost scale drop"
+
+[[generated]]
+id = "ffF8Gs9A8g0oKDEb4Y5-c"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-wolf-pelt.png"
+type = "image"
+title = "wolf pelt drop"
+
+[[generated]]
+id = "yvOOiautbU_HddRiHtw2y"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-yeti-fur.png"
+type = "image"
+title = "yeti fur drop"
+
+[[generated]]
+id = "oC382on4Zklz4aE8tZA9Z"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-dragon-scale.png"
+type = "image"
+title = "dragon scale drop"
+
+[[generated]]
+id = "lMOu1XdZaPhmDG1L-89Cb"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-bone-fragment.png"
+type = "image"
+title = "bone fragment drop"
+
+[[generated]]
+id = "c1QDvHXVdK6RpMC3KtXSJ"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-bone-shard.png"
+type = "image"
+title = "bone shard drop"
