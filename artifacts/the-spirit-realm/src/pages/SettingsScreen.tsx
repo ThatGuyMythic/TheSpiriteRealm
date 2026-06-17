@@ -41,7 +41,7 @@ function InfoRow({ label, desc }: { label: string; desc: string }) {
 const SAVE_KEY = "nolife.game.v5";
 
 export default function SettingsScreen() {
-  const { player, setPlayer, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugPrepareRebirth, debugGiveOpKit, debugStartFightSequence, performRebirth } = useGame();
+  const { player, setPlayer, resetAll, debugGiveMoney, debugGiveMetals, debugMoveToTile, debugPrepareRebirth, debugGiveOpKit, debugStartFightSequence, debugGiveAllDCCCards } = useGame();
   const [msg, setMsg]                   = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
   const [tab, setTab]                   = useState<SettingsTab>(_lastSettingsTab);
@@ -105,7 +105,6 @@ export default function SettingsScreen() {
 
   const biome        = getBiome(player.bossKills);
   const stars        = getStarDisplay(player.bossKills);
-  const rebirthReady = player.rebirthReadySwamp && player.rebirthReadyDCC;
   const activeTab    = TABS.find(t => t.id === tab)!;
 
   return (
@@ -145,20 +144,28 @@ export default function SettingsScreen() {
 
         {tab === "beginner" && (
           <>
-            <Section title="★ BEGINNER GUIDE — QUICK START" color="#80C040">
-              <InfoRow label="Goal"         desc="Roll the dice, move around the board, defeat enemies, grow stronger, and beat the boss at the end of each lap to progress to new biomes." />
-              <InfoRow label="Rolling"      desc="Press ROLL on the Board screen. You move 2–12 tiles. Landing on a Camp, Elite, or Boss tile starts a fight. Roll again after resolving each tile." />
-              <InfoRow label="Combat"       desc="Each fight round you get 3 SP. Spend them: STRIKE to deal damage (costs 1 SP each), BLOCK to reduce incoming hits (costs 1 SP), RESERVE to carry SP to next round. Then END TURN." />
-              <InfoRow label="Enemies"      desc="Target the enemy you want to attack by tapping their card. Multiple enemies means multiple targets — queue attacks to different enemies." />
-              <InfoRow label="Loot"         desc="Enemies drop gold, metals, and parts. Gold buys gear at shops. Metals let you forge new gear. Parts merge into weapons/armor to boost them." />
-              <InfoRow label="Gear"         desc="In the GEAR tab, equip weapons and armor. Higher level = stronger. Sell or melt unwanted gear. Merging parts (at the Forge tile) improves existing gear." />
-              <InfoRow label="Boss Den ☠"  desc="Land near the end of the board to fight the Boss. Beating the boss advances the biome and increases enemy difficulty. Enemies stay at the same power once scaled." />
-              <InfoRow label="Shop ◈"      desc="Buy weapons and armor from the shop tile. Items scale to your current biome level." />
-              <InfoRow label="Forge"        desc="Forge tile: spend 3 metals to craft a weapon or armor, OR merge a monster part into existing gear to improve its damage, HP, or add effects (ICE/STUN)." />
-              <InfoRow label="Cache B"      desc="Deposits money each lap automatically. Land here to collect your accumulated bank balance." />
-              <InfoRow label="Bunker ⌂"   desc="Upgrade rooms in the Bunker tab to unlock NPCs. Dr. Mundo heals you, Ornn forges gear, Norra improves shops." />
-              <InfoRow label="Black Rose ♠" desc="Optional card duel in the BLACK ROSE tab. Win for bonus gold and XP. Manage your deck in the CARDS tab. It's separate from board combat." />
-              <InfoRow label="Auto-Save"    desc="The game saves every 0.5 seconds to your browser. Safe to close and return anytime." />
+            <Section title="★ QUICK START" color="#80C040">
+              <InfoRow label="Goal"      desc="Roll dice → fight enemies → get loot → beat boss → new biome. Repeat across 5 biomes." />
+              <InfoRow label="Combat"    desc="3 SP per round. STRIKE = deal damage (1 SP each). BLOCK = reduce incoming hits. RESERVE = save SP for next round." />
+              <InfoRow label="Loot"      desc="Gold → buy gear at shops. Metals → forge gear. Parts → merge into weapons at Forge tiles to boost damage/effects." />
+              <InfoRow label="Biomes"    desc="5 biomes in order: Forest → Snowy → Underworld → Volcano → Swamp. Each boss kill advances you. ★ = full cycle completed." />
+              <InfoRow label="Rebirth"   desc="Beat the Swamp boss + reach DCC Lv20 → Rebirth button appears on the BOARD tab. Grants +10% permanent power forever." />
+            </Section>
+            <Section title="TILE TYPES" color="#80C040">
+              <InfoRow label="⚔ Camp"   desc="Fight 2–4 enemies. Drop gold, metals, parts." />
+              <InfoRow label="★ Elite"  desc="1 powerful enemy. Better loot, high drop rate." />
+              <InfoRow label="☠ Boss"   desc="Kill to advance biome." />
+              <InfoRow label="◈ Shop"   desc="Buy biome-scaled gear." />
+              <InfoRow label="⚒ Forge"  desc="3 metals = craft gear. Merge a part into gear = upgrade it." />
+              <InfoRow label="B Cache"  desc="Earns gold each lap. Land to collect." />
+              <InfoRow label="⬡ Warp"   desc="Teleports you instantly to the Boss Den." />
+              <InfoRow label="$ Land"   desc="Claim it for passive income per lap." />
+            </Section>
+            <Section title="BLACK ROSE ♠" color={C.cyan}>
+              <InfoRow label="What"     desc="Optional 3-lane card duel. 6 rounds. Win 2 of 3 lanes." />
+              <InfoRow label="Win"      desc="Earn gold + DCC XP + a new card. Level up to upgrade cards or unlock stronger ones." />
+              <InfoRow label="Merge ★"  desc="CARDS → MERGE tab: combine 2 identical cards → 1 powered-up ★ version. Max ★★★★★." />
+              <InfoRow label="Cycles"   desc="Higher DCC levels reward ★-starred cards with bigger power." />
             </Section>
           </>
         )}
@@ -304,43 +311,21 @@ export default function SettingsScreen() {
 
             <Section title="⟳ REBIRTH" color="#60C8FF">
               <span className="pixel-text" style={{ color: C.textDim, fontSize: 12 }}>
-                Rebirth resets your run but carries over a permanent power multiplier (+10% per rebirth). All loot, rooms, and progress reset — only your rebirth count carries forward.
+                Rebirth resets your run but carries over a permanent power multiplier (+10% per rebirth). Use the Rebirth button on the BOARD tab when ready.
               </span>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <span className="pixel-text" style={{ color: player.rebirthReadySwamp ? "#60C8FF" : C.textDim, fontSize: 13 }}>
-                    {player.rebirthReadySwamp ? "✓" : "✗"} Beat the Swamp boss (boss kill #19)
+                <span className="pixel-text" style={{ color: player.rebirthReadySwamp ? "#60C8FF" : C.textDim, fontSize: 13 }}>
+                  {player.rebirthReadySwamp ? "✓" : "✗"} Beat the Swamp boss
+                </span>
+                <span className="pixel-text" style={{ color: player.rebirthReadyDCC ? "#60C8FF" : C.textDim, fontSize: 13 }}>
+                  {player.rebirthReadyDCC ? "✓" : "✗"} Reach DCC Level 20 (current: Lv{player.dccLevel})
+                </span>
+                {player.rebirthCount > 0 && (
+                  <span className="pixel-text" style={{ color: "#60C8FF", fontSize: 12 }}>
+                    Rebirths: ×{player.rebirthCount} · Multiplier: ×{(1 + 0.1 * player.rebirthCount).toFixed(1)}
                   </span>
-                </div>
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                  <span className="pixel-text" style={{ color: player.rebirthReadyDCC ? "#60C8FF" : C.textDim, fontSize: 13 }}>
-                    {player.rebirthReadyDCC ? "✓" : "✗"} Reach DCC Level 20 (current: Lv{player.dccLevel})
-                  </span>
-                </div>
+                )}
               </div>
-              {rebirthReady ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                  <span className="pixel-text" style={{ color: "#60C8FF", fontSize: 13 }}>
-                    ★ Both requirements met — you are ready to rebirth!
-                  </span>
-                  <PixelButton
-                    color="#001830" textColor="#60C8FF"
-                    style={{ animation: "rebirth-glow 1.5s ease-in-out infinite" }}
-                    onClick={() => { if (window.confirm("Rebirth? All progress resets. Power multiplier increases permanently.")) { performRebirth(); flash("⟳ Reborn! Welcome to the next cycle."); } }}
-                  >
-                    ⟳ PERFORM REBIRTH
-                  </PixelButton>
-                </div>
-              ) : (
-                <span className="pixel-text" style={{ color: "#444", fontSize: 12 }}>
-                  Complete both requirements above to unlock rebirth.
-                </span>
-              )}
-              {player.rebirthCount > 0 && (
-                <span className="pixel-text" style={{ color: "#60C8FF", fontSize: 12 }}>
-                  Current rebirths: ×{player.rebirthCount} · Power multiplier: ×{(1 + 0.1 * player.rebirthCount).toFixed(1)}
-                </span>
-              )}
             </Section>
 
             <Section title="DEBUG TOOLS" color="#8060C0">
@@ -432,6 +417,15 @@ export default function SettingsScreen() {
                 <PixelButton small color="#200808" textColor={C.redBright}
                   onClick={() => { debugStartFightSequence(); flash("⚔ Fight sequence started!"); }}>
                   ⚔ TEST ALL ENEMIES
+                </PixelButton>
+              </div>
+              <div style={{ borderTop: `1px solid #CC88FF33`, paddingTop: 8 }}>
+                <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 13, display: "block", marginBottom: 6 }}>
+                  ♠ CARDS — Give 2× unstarred + 2× ★ of every biome card
+                </span>
+                <PixelButton small color="#1A0830" textColor="#CC88FF"
+                  onClick={() => { debugGiveAllDCCCards(); flash("♠ All DCC cards added to pool!"); }}>
+                  ♠ GIVE ALL CARDS
                 </PixelButton>
               </div>
                 </>

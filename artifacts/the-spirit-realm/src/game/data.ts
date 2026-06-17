@@ -311,7 +311,7 @@ export function rollEncounter(bossKills: number, elite = false): Enemy[] {
     return [{
       id: uid(), name: tmpl.name, level,
       hp, maxHp: hp,
-      damage: Math.round(5 + level * 1.8),
+      damage: Math.round(8 + level * 2.4),
       attackType: tmpl.attackType, weakness,
       stunned: false, iceTurns: 0, isElite: true,
       loot: {
@@ -389,27 +389,32 @@ export interface EnemyPart {
 }
 
 export const PART_BUFFS: Record<string, { label: string; damageBonus: number; addEffect?: "ice" | "confuse" | "lightning" }> = {
-  "Goblin Ear":     { label: "+3 dmg",               damageBonus: 3 },
-  "Slime Core":     { label: "+2 dmg",               damageBonus: 2 },
-  "Orc Tusk":       { label: "+5 dmg, +confuse",     damageBonus: 5, addEffect: "confuse" },
-  "Royal Crown":    { label: "+10 dmg",               damageBonus: 10 },
-  "Frost Scale":    { label: "+3 dmg, +ice",          damageBonus: 3, addEffect: "ice" },
-  "Wolf Pelt":      { label: "+4 dmg",               damageBonus: 4 },
-  "Yeti Fur":       { label: "+6 dmg, +ice",          damageBonus: 6, addEffect: "ice" },
-  "Dragon Scale":   { label: "+8 dmg",               damageBonus: 8 },
-  "Bone Fragment":  { label: "+2 dmg, +confuse",      damageBonus: 2, addEffect: "confuse" },
-  "Bone Shard":     { label: "+3 dmg",               damageBonus: 3 },
-  "Knight Sigil":   { label: "+6 dmg, +confuse",     damageBonus: 6, addEffect: "confuse" },
-  "Gaunt Core":     { label: "+9 dmg",               damageBonus: 9 },
-  "Cinder Rune":    { label: "+4 dmg, +lightning",   damageBonus: 4, addEffect: "lightning" },
-  "Ashen Hide":     { label: "+3 dmg",               damageBonus: 3 },
-  "Magma Core":     { label: "+5 dmg, +lightning",   damageBonus: 5, addEffect: "lightning" },
-  "Demon Heart":    { label: "+12 dmg",              damageBonus: 12 },
-  "Slime Gland":    { label: "+2 dmg",               damageBonus: 2 },
-  "Venom Fang":     { label: "+3 dmg, +confuse",     damageBonus: 3, addEffect: "confuse" },
-  "Troll Hide":     { label: "+6 dmg",               damageBonus: 6 },
-  "Black Scale":    { label: "+10 dmg, +ice",        damageBonus: 10, addEffect: "ice" },
-  "Boss Trophy":    { label: "+10 dmg",              damageBonus: 10 },
+  // Forest (level 0) — base tier
+  "Goblin Ear":     { label: "+3 dmg",                damageBonus: 3 },
+  "Slime Core":     { label: "+2 dmg",                damageBonus: 2 },
+  "Orc Tusk":       { label: "+8 dmg, +confuse",      damageBonus: 8,  addEffect: "confuse" },
+  "Royal Crown":    { label: "+14 dmg",               damageBonus: 14 },
+  // Snowy (level 10) — tier 2 (~2x forest)
+  "Frost Scale":    { label: "+6 dmg, +ice",          damageBonus: 6,  addEffect: "ice" },
+  "Wolf Pelt":      { label: "+7 dmg",                damageBonus: 7 },
+  "Yeti Fur":       { label: "+13 dmg, +ice",         damageBonus: 13, addEffect: "ice" },
+  "Dragon Scale":   { label: "+18 dmg",               damageBonus: 18 },
+  // Underworld (level 20) — tier 3 (~4x forest)
+  "Bone Fragment":  { label: "+9 dmg, +confuse",      damageBonus: 9,  addEffect: "confuse" },
+  "Bone Shard":     { label: "+9 dmg",                damageBonus: 9 },
+  "Knight Sigil":   { label: "+18 dmg, +confuse",     damageBonus: 18, addEffect: "confuse" },
+  "Gaunt Core":     { label: "+22 dmg",               damageBonus: 22 },
+  // Volcano (level 30) — tier 4 (~6x forest)
+  "Cinder Rune":    { label: "+12 dmg, +lightning",   damageBonus: 12, addEffect: "lightning" },
+  "Ashen Hide":     { label: "+11 dmg",               damageBonus: 11 },
+  "Magma Core":     { label: "+22 dmg, +lightning",   damageBonus: 22, addEffect: "lightning" },
+  "Demon Heart":    { label: "+28 dmg",               damageBonus: 28 },
+  // Swamp (level 40) — tier 5 (~8x forest, best drops)
+  "Slime Gland":    { label: "+15 dmg",               damageBonus: 15 },
+  "Venom Fang":     { label: "+17 dmg, +confuse",     damageBonus: 17, addEffect: "confuse" },
+  "Troll Hide":     { label: "+28 dmg",               damageBonus: 28 },
+  "Black Scale":    { label: "+35 dmg, +ice",         damageBonus: 35, addEffect: "ice" },
+  "Boss Trophy":    { label: "+14 dmg",               damageBonus: 14 },
 };
 
 export function makeEnemyPart(dropName: string, level: number): EnemyPart {
@@ -429,6 +434,7 @@ export interface Weapon {
   level:            number;
   mergeCount?:      number;
   effectMergeCount?: number;
+  effectCounts?:    { ice: number; confuse: number; lightning: number };
 }
 
 const SPEAR_NAMES_BY_BIOME: Record<Biome, string[]> = {
@@ -705,13 +711,15 @@ export function getDCCThemeInfo(dccLevel: number): {
 
 export function pickDCCRewardCard(dccLevel: number): Card {
   const { theme, cycle } = getDCCThemeInfo(dccLevel);
-  const pool = DCC_CARD_POOL[theme];
-  const t    = pool[Math.floor(Math.random() * pool.length)];
+  const pool    = DCC_CARD_POOL[theme];
+  const t       = pool[Math.floor(Math.random() * pool.length)];
+  const starStr = cycle > 0 ? " " + "★".repeat(cycle) : "";
+  const power   = t.power + Math.floor(dccLevel * 0.8) + cycle * 3;
   return {
     id:    `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    name:  t.name,
+    name:  t.name + starStr,
     cost:  t.cost,
-    power: t.power + Math.floor(dccLevel * 0.8) + cycle * 2,
+    power,
     text:  t.text,
   };
 }

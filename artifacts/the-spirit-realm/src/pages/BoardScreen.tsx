@@ -443,7 +443,7 @@ function CombatPrompt({ isElite, onFight }: { isElite: boolean; onFight: () => v
 export default function BoardScreen() {
   const {
     player, jwc, hasPendingCombat, pendingTileAction,
-    rollDice, triggerPendingCombat, closeTileAction, collectProperties,
+    rollDice, triggerPendingCombat, closeTileAction, collectProperties, performRebirth,
   } = useGame();
 
   const biome      = getBiome(player.bossKills);
@@ -454,6 +454,7 @@ export default function BoardScreen() {
 
   const [rolling, setRolling] = useState(false);
   const [diceVal, setDiceVal] = useState<number | null>(null);
+  const [showTeleportPopup, setShowTeleportPopup] = useState(false);
   const [animPos, setAnimPos] = useState<{ row: number; col: number } | null>(null);
   const [isDesktop, setIsDesktop] = useState(() => window.innerWidth >= 700);
   const [, _forceBoard] = useState(0);
@@ -494,10 +495,13 @@ export default function BoardScreen() {
     if (rolling || hasPendingCombat || jwc || pendingTileAction) return;
     const prevPos = player.position;
     setRolling(true);
-    const { roll, tile } = rollDice();
+    const { roll, tile, teleported } = rollDice();
     setDiceVal(roll);
     animateTo(prevPos, tile);
-    setTimeout(() => setRolling(false), 600);
+    setTimeout(() => {
+      setRolling(false);
+      if (teleported) setShowTeleportPopup(true);
+    }, 600);
   }
 
   // Total pending property income
@@ -513,6 +517,27 @@ export default function BoardScreen() {
       display: "flex", flexDirection: "column", height: "100%",
       backgroundColor: biomeBg, overflow: "hidden", position: "relative",
     }}>
+      {/* Teleport popup */}
+      {showTeleportPopup && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 999,
+          backgroundColor: "#00000088", display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <div style={{
+            backgroundColor: "#0A0820", border: "3px solid #A860FF",
+            padding: "24px 28px", maxWidth: 320, textAlign: "center",
+            display: "flex", flexDirection: "column", gap: 14,
+          }}>
+            <span className="pixel-text" style={{ color: "#A860FF", fontSize: 22 }}>⬡ TELEPORT!</span>
+            <span className="pixel-text" style={{ color: "#C090FF", fontSize: 14 }}>
+              You've been warped to the Boss Den. Prepare for battle!
+            </span>
+            <PixelButton color="#A860FF" textColor="#000" onClick={() => setShowTeleportPopup(false)}>
+              ⚔ FACE THE BOSS
+            </PixelButton>
+          </div>
+        </div>
+      )}
       {/* Rebirth ready banner */}
       {player.rebirthReadySwamp && player.rebirthReadyDCC && (
         <div style={{
@@ -521,12 +546,25 @@ export default function BoardScreen() {
           borderBottom: "2px solid #60C8FF66",
           display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8,
         }}>
-          <span className="pixel-text" style={{ color: "#60C8FF", fontSize: 13 }}>
-            ⟳ REBIRTH READY — go to Settings to ascend
-          </span>
-          <span className="pixel-text" style={{ color: "#4090AA", fontSize: 10 }}>
-            +10% permanent power
-          </span>
+          <div>
+            <span className="pixel-text" style={{ color: "#60C8FF", fontSize: 13 }}>
+              ⟳ REBIRTH READY
+            </span>
+            <span className="pixel-text" style={{ color: "#4090AA", fontSize: 10, display: "block" }}>
+              +10% permanent power · all progress resets
+            </span>
+          </div>
+          <PixelButton
+            color="#001830" textColor="#60C8FF"
+            style={{ animation: "rebirth-glow 1.5s ease-in-out infinite", flexShrink: 0 }}
+            onClick={() => {
+              if (window.confirm("Rebirth? All progress resets. Your power multiplier increases permanently.")) {
+                performRebirth();
+              }
+            }}
+          >
+            ⟳ REBIRTH
+          </PixelButton>
         </div>
       )}
       {/* Header */}

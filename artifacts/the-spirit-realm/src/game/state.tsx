@@ -226,7 +226,7 @@ interface GameContextType {
   hasPendingCombat: boolean;
   pendingTileAction: TileAction | null;
   setPlayer: (p: Player | ((prev: Player) => Player)) => void;
-  rollDice: () => { roll: number; tile: number; enemies: Enemy[] | null };
+  rollDice: () => { roll: number; tile: number; enemies: Enemy[] | null; teleported: boolean };
   triggerPendingCombat: () => void;
   jwcAttack: () => void;
   jwcDefend: () => void;
@@ -276,6 +276,7 @@ interface GameContextType {
   sellCard: (cardId: string) => void;
   mergePoolDuplicates: (cardName: string) => void;
   mergeTwoCards: (cardName: string) => void;
+  debugGiveAllDCCCards: () => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -481,7 +482,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       setPendingTileAction(pendingAction);
     }
 
-    return { roll, tile: teleportTo ?? after, enemies };
+    return { roll, tile: teleportTo ?? after, enemies, teleported: teleportTo !== null };
   }
 
   function triggerPendingCombat() {
@@ -520,16 +521,24 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
         };
         const wp = findWeapon();
         if (!wp) return pl;
-        const newEffect = partItem.buff.addEffect ? partItem.buff.addEffect : wp.effect;
+        const prevCounts = wp.effectCounts ?? { ice: 0, confuse: 0, lightning: 0 };
+        const newCounts  = partItem.buff.addEffect
+          ? { ...prevCounts, [partItem.buff.addEffect]: prevCounts[partItem.buff.addEffect] + 1 }
+          : prevCounts;
+        const dominantEffect = (["ice", "confuse", "lightning"] as const).reduce<"ice"|"confuse"|"lightning">(
+          (best, k) => newCounts[k] > newCounts[best] ? k : best, "ice"
+        );
+        const newEffect: Weapon["effect"] = (newCounts.ice > 0 || newCounts.confuse > 0 || newCounts.lightning > 0)
+          ? dominantEffect : null;
+        const newEffectMergeCount = partItem.buff.addEffect ? (wp.effectMergeCount ?? 0) + 1 : (wp.effectMergeCount ?? 0);
         const upgraded: Weapon = {
           ...wp,
           damage:           wp.damage + partItem.buff.damageBonus,
-          effect:           newEffect as Weapon["effect"],
+          effect:           newEffect,
           level:            wp.level + 1,
           mergeCount:       (wp.mergeCount ?? 0) + 1,
-          effectMergeCount: partItem.buff.addEffect
-            ? (wp.effectMergeCount ?? 0) + 1
-            : (wp.effectMergeCount ?? 0),
+          effectMergeCount: newEffectMergeCount,
+          effectCounts:     newCounts,
         };
         if (pl.equipped.weapon?.id === targetId) {
           return { ...pl, equipped: { ...pl.equipped, weapon: upgraded }, inventory: newInv };
@@ -731,8 +740,9 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           logs.push(`[ICE] ${target.name} is FROZEN — skips next turn!`);
         }
 
-        if (weaponEffect === "lightning" && Math.random() < procChance) {
-          const chainDmg = Math.max(1, Math.round(totalDmg * 0.3));
+        if (weaponEffect === "lightning" && Math.random() < 0.95) {
+          const chainPct = Math.min(0.8, 0.3 + ((w?.effectMergeCount ?? 0) / 20) * 0.5);
+          const chainDmg = Math.max(1, Math.round(totalDmg * chainPct));
           const enemies2 = [...next.enemies];
           for (let ci = 0; ci < enemies2.length; ci++) {
             if (ci !== ei && enemies2[ci].hp > 0) {
@@ -740,7 +750,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
             }
           }
           next = { ...next, enemies: enemies2 };
-          logs.push(`⚡ LIGHTNING chains ${chainDmg} dmg to all others!`);
+          logs.push(`⚡ LIGHTNING chains ${chainDmg} dmg (${Math.round(chainPct*100)}%) to all!`);
         }
       }
     }
@@ -1284,6 +1294,42 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
     });
   }
 
+  function debugGiveAllDCCCards() {
+    const allRaw = [
+      { name: "Slimeling",     cost: 1, power: 3,  text: "+1 per ally here" },
+      { name: "Acid Blob",     cost: 2, power: 6,  text: "Bleed: foe −3" },
+      { name: "Goo Titan",     cost: 4, power: 11, text: "Surge: +5 if last round" },
+      { name: "Blob King",     cost: 5, power: 16, text: "Lone: ×2 power" },
+      { name: "Bone Walker",   cost: 1, power: 3,  text: "Brawler: +2 per foe here" },
+      { name: "Skull Mage",    cost: 2, power: 6,  text: "Curse: Bleed foe −4" },
+      { name: "Risen Guard",   cost: 3, power: 9,  text: "Brawler: +3 per foe here" },
+      { name: "Lich Spawn",    cost: 5, power: 15, text: "Lone: ×2 power" },
+      { name: "Goblin Runt",   cost: 1, power: 3,  text: "+1 per ally here" },
+      { name: "Goblin Shaman", cost: 2, power: 6,  text: "Hex: Bleed foe −3" },
+      { name: "Goblin Bomb",   cost: 3, power: 9,  text: "BOOM: if paired +6" },
+      { name: "Warchief",      cost: 5, power: 14, text: "Rally: +3 per ally here" },
+      { name: "Vine Lurker",   cost: 1, power: 3,  text: "Vanguard: +3 if outnumber" },
+      { name: "Thorn Sprite",  cost: 2, power: 6,  text: "Thorns: Bleed foe −3" },
+      { name: "Root Golem",    cost: 4, power: 11, text: "Vanguard: +5 if outnumber" },
+      { name: "Ancient Sprout",cost: 5, power: 15, text: "Ancient: Surge +6 if last round" },
+      { name: "Fire Imp",      cost: 1, power: 4,  text: "Bleed: foe −3" },
+      { name: "Shadow Fiend",  cost: 2, power: 7,  text: "Lone: ×2 power" },
+      { name: "Demon Knight",  cost: 4, power: 12, text: "+2 per ally here" },
+      { name: "Pit Lord",      cost: 6, power: 19, text: "BOOM: if paired +8 power" },
+    ];
+    setPlayerState(p => {
+      const newCards: Card[] = [];
+      for (const t of allRaw) {
+        const mk = (n: string, pw: number) => ({ id: `dbg-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, name: n, cost: t.cost, power: pw, text: t.text } as Card);
+        newCards.push(mk(t.name, t.power));
+        newCards.push(mk(t.name, t.power));
+        newCards.push(mk(`${t.name} ★`, t.power * 2));
+        newCards.push(mk(`${t.name} ★`, t.power * 2));
+      }
+      return { ...p, deckPool: [...p.deckPool, ...newCards] };
+    });
+  }
+
   function mergeTwoCards(cardName: string) {
     setPlayerState(p => {
       const cardsWithName = p.deckPool.filter(c => c.name === cardName);
@@ -1330,6 +1376,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       sellCard,
       mergePoolDuplicates,
       mergeTwoCards,
+      debugGiveAllDCCCards,
     }}>
       {children}
     </GameContext.Provider>

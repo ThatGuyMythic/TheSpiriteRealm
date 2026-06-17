@@ -192,18 +192,18 @@ function FeltArea({ children, highlight }: { children: React.ReactNode; highligh
 function useCardScale(): number {
   const [scale, setScale] = useState(() => {
     const w = window.innerWidth;
-    if (w >= 1400) return 1.15;
-    if (w >= 1000) return 1.0;
-    if (w >= 700)  return 0.95;
-    return 0.85;
+    if (w >= 1400) return 1.4;
+    if (w >= 1000) return 1.25;
+    if (w >= 700)  return 1.1;
+    return 1.0;
   });
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w >= 1400) setScale(1.15);
-      else if (w >= 1000) setScale(1.0);
-      else if (w >= 700)  setScale(0.95);
-      else setScale(0.85);
+      if (w >= 1400) setScale(1.4);
+      else if (w >= 1000) setScale(1.25);
+      else if (w >= 700)  setScale(1.1);
+      else setScale(1.0);
     };
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
@@ -999,65 +999,121 @@ export default function CardsScreen() {
           </div>
         ) : dccTab === "merge" ? (
           /* ── MERGE tab ──────────────────────────────────────────────────────── */
-          <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ backgroundColor: "#1A0830", border: "1px solid #3A1060", padding: "6px 10px" }}>
-              <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 13 }}>⇒ MERGE DUPLICATES</span>
-              <span className="pixel-text" style={{ color: C.textDim, fontSize: 11, display: "block", marginTop: 2 }}>
-                Combine 2 copies of the same card into 1 stronger starred version. Max ★★★★★.
-              </span>
+          <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 10 }}>
+            {/* Header banner */}
+            <div style={{
+              background: "linear-gradient(135deg, #1A0830 0%, #2A1050 50%, #1A0830 100%)",
+              border: "2px solid #8844CC", padding: "10px 14px",
+              display: "flex", alignItems: "center", gap: 10,
+            }}>
+              <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 18 }}>⇒</span>
+              <div>
+                <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 15 }}>CARD FUSION FORGE</span>
+                <span className="pixel-text" style={{ color: C.textDim, fontSize: 11, display: "block", marginTop: 1 }}>
+                  Fuse 2 identical cards → 1 powered-up ★ version · Max ★★★★★
+                </span>
+              </div>
             </div>
+
             {(() => {
               const nameCounts: Record<string, number> = {};
               upgradeOptions.forEach(c => { nameCounts[c.name] = (nameCounts[c.name] ?? 0) + 1; });
               const dupeNames = Object.entries(nameCounts).filter(([, cnt]) => cnt >= 2).map(([n]) => n);
+
               if (dupeNames.length === 0) {
                 return (
-                  <span className="pixel-text" style={{ color: C.textDim, fontSize: 13 }}>
-                    No duplicate cards to merge. Win DCC games to earn more cards.
-                  </span>
+                  <div style={{ backgroundColor: C.bg2, border: "1px solid #333", padding: "20px 16px", textAlign: "center" }}>
+                    <span className="pixel-text" style={{ color: "#8844CC", fontSize: 20, display: "block", marginBottom: 6 }}>⇒ ⊕ ⇐</span>
+                    <span className="pixel-text" style={{ color: C.textDim, fontSize: 13 }}>
+                      No duplicates to fuse yet.
+                    </span>
+                    <span className="pixel-text" style={{ color: "#666", fontSize: 11, display: "block", marginTop: 4 }}>
+                      Win DCC matches to collect cards — 2 copies of the same card can be fused.
+                    </span>
+                  </div>
                 );
               }
+
               return dupeNames.map(name => {
                 const cnt = nameCounts[name];
                 const example = upgradeOptions.find(c => c.name === name)!;
                 const starCount = (name.match(/★/g) || []).length;
                 const canMerge = starCount < 5;
                 const newName = name.trimEnd() + " ★";
+                const newPower = example.power * 2;
+                const starBar = (filled: number, total: number) =>
+                  Array.from({ length: total }, (_, i) => (
+                    <span key={i} className="pixel-text" style={{ color: i < filled ? "#FFD700" : "#333", fontSize: 12 }}>★</span>
+                  ));
+
                 return (
                   <div key={name} style={{
-                    backgroundColor: C.bg2, border: `1px solid ${canMerge ? "#3A1060" : "#333"}`,
-                    padding: "8px 10px", display: "flex", alignItems: "center", gap: 10,
+                    backgroundColor: canMerge ? "#160828" : "#0E0E0E",
+                    border: `2px solid ${canMerge ? "#6633AA" : "#2A2A2A"}`,
+                    padding: "10px 12px",
+                    position: "relative", overflow: "hidden",
                   }}>
-                    <FullCard card={example} scale={Math.min(cardScale, 0.85)} />
-                    <div style={{ flex: 1 }}>
-                      <span className="pixel-text" style={{ color: C.text, fontSize: 14 }}>{name}</span>
-                      <span className="pixel-text" style={{ color: C.textDim, fontSize: 11, display: "block" }}>
-                        ×{cnt} copies · p{example.power} each
-                      </span>
-                      {canMerge ? (
-                        <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 11 }}>
-                          → {newName} · p{example.power * 2}
+                    {canMerge && (
+                      <div style={{
+                        position: "absolute", inset: 0, opacity: 0.04,
+                        background: "repeating-linear-gradient(45deg, #CC88FF 0px, #CC88FF 1px, transparent 1px, transparent 8px)",
+                        pointerEvents: "none",
+                      }} />
+                    )}
+
+                    {/* Top row: card + info + button */}
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <FullCard card={example} scale={Math.min(cardScale, 0.9)} />
+
+                      {/* Center arrow */}
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, color: canMerge ? "#8844CC" : "#333" }}>
+                        <span className="pixel-text" style={{ fontSize: 16 }}>×{cnt}</span>
+                        <span className="pixel-text" style={{ fontSize: 10, color: C.textDim }}>copies</span>
+                      </div>
+
+                      {/* Info */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 3 }}>
+                          {starBar(starCount, 5)}
+                        </div>
+                        <span className="pixel-text" style={{ color: C.text, fontSize: 13 }}>{name}</span>
+                        <span className="pixel-text" style={{ color: C.textDim, fontSize: 10, display: "block" }}>
+                          p{example.power} each
                         </span>
-                      ) : (
-                        <span className="pixel-text" style={{ color: C.yellow, fontSize: 11 }}>MAX STARS (★★★★★)</span>
+                        {canMerge ? (
+                          <div style={{ marginTop: 4, backgroundColor: "#2A1050", border: "1px solid #6633AA", padding: "3px 6px", display: "inline-block" }}>
+                            <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 11 }}>
+                              ⇒ {newName} · p{newPower} (+{newPower - example.power})
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="pixel-text" style={{ color: C.yellow, fontSize: 11, display: "block", marginTop: 4 }}>
+                            ★ MAX STARS REACHED ★
+                          </span>
+                        )}
+                      </div>
+
+                      {canMerge && (
+                        <PixelButton color="#6633AA" textColor="#EEB0FF"
+                          style={{ flexShrink: 0 }}
+                          onClick={() => {
+                            mergeTwoCards(name);
+                            setCardMsg(`⇒ Fused 2× ${name} → ${newName} (p${newPower})!`);
+                            setTimeout(() => setCardMsg(null), 3000);
+                          }}>
+                          ⇒ FUSE
+                        </PixelButton>
                       )}
                     </div>
-                    {canMerge && (
-                      <PixelButton color="#3A1060" textColor="#CC88FF"
-                        onClick={() => {
-                          mergeTwoCards(name);
-                          setCardMsg(`Merged 2× ${name} → ${newName}!`);
-                          setTimeout(() => setCardMsg(null), 2500);
-                        }}>
-                        ⇒ MERGE ×2
-                      </PixelButton>
-                    )}
                   </div>
                 );
               });
             })()}
+
             {cardMsg && (
-              <span className="pixel-text" style={{ color: C.green, fontSize: 13 }}>{cardMsg}</span>
+              <div style={{ backgroundColor: "#0A1A0A", border: `1px solid ${C.green}`, padding: "6px 10px" }}>
+                <span className="pixel-text" style={{ color: C.green, fontSize: 13 }}>{cardMsg}</span>
+              </div>
             )}
           </div>
         ) : (
