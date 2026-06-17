@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "The Spirit Realm"
+version = "1.0.0"
+id = "artifacts/the-spirit-realm"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26090
+
+[services.development]
+run = "pnpm --filter @workspace/the-spirit-realm run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/the-spirit-realm", "run", "build" ]
+publicDir = "artifacts/the-spirit-realm/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26090"
+BASE_PATH = "/"
