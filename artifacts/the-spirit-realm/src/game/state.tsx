@@ -277,6 +277,7 @@ interface GameContextType {
   mergePoolDuplicates: (cardName: string) => void;
   mergeTwoCards: (cardName: string) => void;
   debugGiveAllDCCCards: () => void;
+  toggleItemStar: (itemId: string) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -707,7 +708,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
           const isWeakness = w.damageType === target.weakness;
           const RESIST_TRIANGLE: Record<string, string> = { slash: "pierce", pierce: "blunt", blunt: "slash" };
           const isResisted = !!(target.weakness && RESIST_TRIANGLE[target.weakness] === w.damageType);
-          dmg = Math.round((w.damage + (isWeakness ? 8 : 0) - (isResisted ? 4 : 0)) * pMult);
+          dmg = Math.round((w.damage * (isResisted ? 0.5 : 1) + (isWeakness ? 8 : 0)) * pMult);
           if (w.effect && !weaponEffect) weaponEffect = w.effect;
         }
         if (targetAction === "def") dmg = Math.max(1, Math.round(dmg * 0.6));
@@ -1321,12 +1322,35 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       const newCards: Card[] = [];
       for (const t of allRaw) {
         const mk = (n: string, pw: number) => ({ id: `dbg-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, name: n, cost: t.cost, power: pw, text: t.text } as Card);
-        newCards.push(mk(t.name, t.power));
-        newCards.push(mk(t.name, t.power));
-        newCards.push(mk(`${t.name} ★`, t.power * 2));
-        newCards.push(mk(`${t.name} ★`, t.power * 2));
+        newCards.push(mk(t.name,              t.power));
+        newCards.push(mk(`${t.name} ★`,       t.power * 2));
+        newCards.push(mk(`${t.name} ★ ★`,     t.power * 4));
+        newCards.push(mk(`${t.name} ★ ★ ★`,   t.power * 8));
+        newCards.push(mk(`${t.name} ★ ★ ★ ★`, t.power * 16));
+        newCards.push(mk(`${t.name} ★ ★ ★ ★ ★`, t.power * 32));
       }
       return { ...p, deckPool: [...p.deckPool, ...newCards] };
+    });
+  }
+
+  function toggleItemStar(itemId: string) {
+    setPlayerState(p => {
+      const togW = (item: Weapon | null): Weapon | null =>
+        item?.id === itemId ? { ...item, starred: !item.starred } : item;
+      const togA = (item: Armor | null): Armor | null =>
+        item?.id === itemId ? { ...item, starred: !item.starred } : item;
+      return {
+        ...p,
+        inventory: p.inventory.map(item =>
+          item.id === itemId ? { ...item, starred: !(item as Weapon | Armor).starred } : item
+        ),
+        equipped: {
+          weapon: togW(p.equipped.weapon),
+          helmet: togA(p.equipped.helmet),
+          chest:  togA(p.equipped.chest),
+          cloak:  togA(p.equipped.cloak),
+        },
+      };
     });
   }
 
@@ -1377,6 +1401,7 @@ export function GameProvider({ children }: { children: React.ReactNode }) {
       mergePoolDuplicates,
       mergeTwoCards,
       debugGiveAllDCCCards,
+      toggleItemStar,
     }}>
       {children}
     </GameContext.Provider>

@@ -421,7 +421,7 @@ export default function SettingsScreen() {
               </div>
               <div style={{ borderTop: `1px solid #CC88FF33`, paddingTop: 8 }}>
                 <span className="pixel-text" style={{ color: "#CC88FF", fontSize: 13, display: "block", marginBottom: 6 }}>
-                  ♠ CARDS — Give 2× unstarred + 2× ★ of every biome card
+                  ♠ CARDS — Give base through ★★★★★ of every card (120 total)
                 </span>
                 <PixelButton small color="#1A0830" textColor="#CC88FF"
                   onClick={() => { debugGiveAllDCCCards(); flash("♠ All DCC cards added to pool!"); }}>

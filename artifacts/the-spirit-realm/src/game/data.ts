@@ -435,6 +435,7 @@ export interface Weapon {
   mergeCount?:      number;
   effectMergeCount?: number;
   effectCounts?:    { ice: number; confuse: number; lightning: number };
+  starred?:         boolean;
 }
 
 const SPEAR_NAMES_BY_BIOME: Record<Biome, string[]> = {
@@ -501,6 +502,7 @@ export interface Armor {
   bonusHP:   number;
   level:     number;
   mergeCount?: number;
+  starred?:  boolean;
 }
 
 type DefLean = "blunt" | "slash" | "pierce";
@@ -651,6 +653,14 @@ export const DCC_THEME_NAMES: Record<DCCTheme, string> = {
   plants:    "Ancient Grove",
   demons:    "Demon Rift",
 };
+export const BIOME_DCC_THEME: Record<Biome, DCCTheme> = {
+  forest:     "goblins",
+  snowy:      "skeletons",
+  underworld: "skeletons",
+  volcano:    "demons",
+  swamp:      "slimes",
+};
+
 export const DCC_THEME_COLORS: Record<DCCTheme, string> = {
   slimes:    "#50D890",
   skeletons: "#B8C0CC",
@@ -724,8 +734,9 @@ export function pickDCCRewardCard(dccLevel: number): Card {
   };
 }
 
-export function buildDCCEnemyDeck(dccLevel: number): Card[] {
-  const { theme, cycle } = getDCCThemeInfo(dccLevel);
+export function buildDCCEnemyDeck(dccLevel: number, biome?: Biome): Card[] {
+  const { cycle } = getDCCThemeInfo(dccLevel);
+  const theme = biome ? BIOME_DCC_THEME[biome] : getDCCThemeInfo(dccLevel).theme;
   const pool  = DCC_CARD_POOL[theme];
   const scale = dccLevel;
   return pool.flatMap((t, i) => {

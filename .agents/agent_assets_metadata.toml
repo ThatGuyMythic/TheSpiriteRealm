@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "WefDGjRyxgck5sZmsF45i"
@@ -60,3 +59,69 @@ id = "c1QDvHXVdK6RpMC3KtXSJ"
 uri = "file://artifacts/the-spirit-realm/public/art/drop-bone-shard.png"
 type = "image"
 title = "bone shard drop"
+
+[[generated]]
+id = "8AI2jGOzaVJMRcMJKt2hZ"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-knight-sigil.png"
+type = "image"
+title = "knight sigil drop"
+
+[[generated]]
+id = "Ttt3353b0VFLi79V5nhOv"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-gaunt-core.png"
+type = "image"
+title = "gaunt core drop"
+
+[[generated]]
+id = "DkFyaZygRyLq7bIPCFLMz"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-cinder-rune.png"
+type = "image"
+title = "cinder rune drop"
+
+[[generated]]
+id = "67IppRS8-y00xpLo0ZdNW"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-ashen-hide.png"
+type = "image"
+title = "ashen hide drop"
+
+[[generated]]
+id = "RTBSaU5pBadJTgPnD5bcL"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-magma-core.png"
+type = "image"
+title = "magma core drop"
+
+[[generated]]
+id = "tKjeMKaCnvjDvCUH7jZVC"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-demon-heart.png"
+type = "image"
+title = "demon heart drop"
+
+[[generated]]
+id = "yxwJLwsx3twol7ypMZV2Z"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-slime-gland.png"
+type = "image"
+title = "slime gland drop"
+
+[[generated]]
+id = "Y5hN2eU7JMh6ubTrQI6_j"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-venom-fang.png"
+type = "image"
+title = "venom fang drop"
+
+[[generated]]
+id = "KoSw2jqXizZ_uWy0c1Ygj"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-troll-hide.png"
+type = "image"
+title = "troll hide drop"
+
+[[generated]]
+id = "Ax2YsEQAG49DiX54pvlMq"
+uri = "file://artifacts/the-spirit-realm/public/art/drop-black-scale.png"
+type = "image"
+title = "black scale drop"
+
+[[outputs]]
+id = "zt7tv_qjxain9s7BsqgAq"
+uri = "file://the-spirit-realm-itch.zip"
+type = "unspecified"
+title = "The Spirit Realm v1.0.2 — itch.io build"

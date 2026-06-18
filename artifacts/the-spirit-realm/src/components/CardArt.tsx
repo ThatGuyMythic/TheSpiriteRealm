@@ -400,6 +400,20 @@ export function PartPixelArt({ name, size = 32 }: { name: string; size?: number 
   );
 }
 
+// ── Star tier backgrounds ─────────────────────────────────────────────────────
+const STAR_STYLES: readonly { bg: string; border: string }[] = [
+  { bg: "#0C0C18", border: "" },        // 0★  default — use nameColor
+  { bg: "#081A08", border: "#30A830" }, // 1★  green
+  { bg: "#080820", border: "#3060C8" }, // 2★  blue
+  { bg: "#100818", border: "#8030C0" }, // 3★  purple
+  { bg: "#180E04", border: "#C06010" }, // 4★  orange
+  { bg: "#181400", border: "#C09800" }, // 5★  gold
+];
+
+function starCount(name: string): number {
+  return (name.match(/★/g) || []).length;
+}
+
 // ── Deterministic card color from name ───────────────────────────────────────
 function nameColor(name: string): string {
   const palette = [
@@ -419,12 +433,14 @@ function baseCardName(name: string): string {
 // ── Small card art thumbnail ──────────────────────────────────────────────────
 export default function CardArt({ name, size = 40 }: { name: string; size?: number }) {
   const col    = nameColor(name);
+  const stars  = starCount(name);
+  const sc     = STAR_STYLES[Math.min(stars, 5)];
   const imgSrc = CARD_SPRITES[name] ?? CARD_SPRITES[baseCardName(name)] ?? null;
   return (
     <div style={{
       width:size, height:size, flexShrink:0,
-      border:`2px solid ${col}`,
-      backgroundColor: "#0A0A14",
+      border:`2px solid ${stars > 0 ? sc.border : col}`,
+      backgroundColor: sc.bg,
       overflow:"hidden",
       display:"flex", alignItems:"center", justifyContent:"center",
     }}>
@@ -449,6 +465,10 @@ interface FullCardProps {
 
 export function FullCard({ card, selected, onClick, dimmed, isEnemy, scale = 1, ghosted }: FullCardProps) {
   const col    = nameColor(card.name);
+  const stars  = starCount(card.name);
+  const sc     = STAR_STYLES[Math.min(stars, 5)];
+  const starBorder = stars > 0 ? sc.border : col;
+  const cardBg = isEnemy ? "#150505" : sc.bg;
   const frameW = Math.round(60 * scale);
   const frameH = Math.round(92 * scale);
   const artH   = frameH - Math.round(22 * scale);
@@ -461,9 +481,9 @@ export function FullCard({ card, selected, onClick, dimmed, isEnemy, scale = 1, 
         width:frameW, height:frameH, flexShrink:0,
         cursor: onClick ? "pointer" : "default",
         display:"flex", flexDirection:"column",
-        border:`2px solid ${selected ? C.yellow : isEnemy ? "#600" : col}`,
-        backgroundColor: isEnemy ? "#150505" : "#0C0C18",
-        boxShadow: selected ? `0 0 8px ${C.yellow}80` : undefined,
+        border:`2px solid ${selected ? C.yellow : isEnemy ? "#600" : starBorder}`,
+        backgroundColor: cardBg,
+        boxShadow: selected ? `0 0 8px ${C.yellow}80` : (stars > 0 && !isEnemy ? `0 0 6px ${sc.border}40` : undefined),
         opacity: ghosted ? 0.38 : dimmed ? 0.55 : 1,
         transition:"border-color 0.15s, box-shadow 0.15s, opacity 0.15s",
         overflow:"hidden",
@@ -473,8 +493,8 @@ export function FullCard({ card, selected, onClick, dimmed, isEnemy, scale = 1, 
       {/* Header: cost | name | power */}
       <div style={{
         display:"flex", alignItems:"center",
-        backgroundColor: isEnemy ? "#200000" : "#0A0A22",
-        borderBottom:`1px solid ${col}44`,
+        backgroundColor: isEnemy ? "#200000" : (stars > 0 ? sc.bg : "#0A0A22"),
+        borderBottom:`1px solid ${(isEnemy ? col : starBorder)}44`,
         padding:`${Math.round(2*scale)}px ${Math.round(3*scale)}px`, gap:Math.round(2*scale),
       }}>
         <div style={{
@@ -504,7 +524,7 @@ export function FullCard({ card, selected, onClick, dimmed, isEnemy, scale = 1, 
         }
         <div style={{
           position:"absolute", inset:0,
-          background:`linear-gradient(to bottom, transparent 50%, ${isEnemy ? "#150505" : "#0C0C18"} 100%)`,
+          background:`linear-gradient(to bottom, transparent 50%, ${cardBg} 100%)`,
         }} />
         <div style={{
           position:"absolute", bottom: card.text ? Math.round(14*scale) : 0, left:0, right:0,

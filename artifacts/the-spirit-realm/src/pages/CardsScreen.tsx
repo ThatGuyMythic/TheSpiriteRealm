@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useGame, MAX_DECK_SIZE } from "@/game/state";
 import { C, PixelButton, StatChip } from "@/components/PixelUI";
 import CardArt, { FullCard } from "@/components/CardArt";
-import { getDCCThemeInfo, buildDCCEnemyDeck, getAllDCCCardTemplates, type Card } from "@/game/data";
+import { getDCCThemeInfo, buildDCCEnemyDeck, getAllDCCCardTemplates, getBiome, type Card } from "@/game/data";
 
 type DccTab = "table" | "deck" | "collection" | "merge";
 const LANE_COUNT  = 3;
@@ -233,7 +233,7 @@ export default function CardsScreen() {
     if (player.deck.length === 0) return;
     const playerDeck = shuffleArr(player.deck);
     const { drawn: hand, remaining: deck } = drawCards(playerDeck, 4);
-    const enemyDeck = shuffleArr(buildDCCEnemyDeck(player.dccLevel));
+    const enemyDeck = shuffleArr(buildDCCEnemyDeck(player.dccLevel, getBiome(player.bossKills)));
     setDCC({
       round: 1, sp: 2, enemySp: 2,
       lanes: initLanes(), hand, deck, enemyDeck,

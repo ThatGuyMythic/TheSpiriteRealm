@@ -122,12 +122,13 @@ function StatDiff({ label, current, equipped }: { label: string; current: number
   );
 }
 
-function InspectPopup({ item, equipped, onEquip, onMelt, onSell, onClose }: {
+function InspectPopup({ item, equipped, onEquip, onMelt, onSell, onStar, onClose }: {
   item: Weapon | Armor;
   equipped: ReturnType<typeof useGame>["player"]["equipped"];
   onEquip: () => void;
   onMelt: () => void;
   onSell: () => void;
+  onStar: () => void;
   onClose: () => void;
 }) {
   const equippedInSlot =
@@ -242,17 +243,29 @@ function InspectPopup({ item, equipped, onEquip, onMelt, onSell, onClose }: {
         {/* Actions */}
         <div style={{
           display: "flex", gap: 8, padding: "8px 12px",
-          borderTop: "1px solid #222",
+          borderTop: "1px solid #222", flexWrap: "wrap",
         }}>
           <PixelButton color="#001A00" textColor={C.green} onClick={() => { onEquip(); onClose(); }}>
             EQUIP
           </PixelButton>
-          <PixelButton small color="#1A0A00" textColor={C.textDim} onClick={() => { onMelt(); onClose(); }}>
-            MELT
+          <PixelButton small color={item.starred ? "#1A1400" : "#0A0A14"} textColor={item.starred ? "#C09800" : C.textDim}
+            onClick={onStar}>
+            {item.starred ? "⭐ STARRED" : "☆ STAR"}
           </PixelButton>
-          <PixelButton small color="#0A0A00" textColor={C.textDim} onClick={() => { onSell(); onClose(); }}>
-            SELL
-          </PixelButton>
+          {!item.starred ? (
+            <>
+              <PixelButton small color="#1A0A00" textColor={C.textDim} onClick={() => { onMelt(); onClose(); }}>
+                MELT
+              </PixelButton>
+              <PixelButton small color="#0A0A00" textColor={C.textDim} onClick={() => { onSell(); onClose(); }}>
+                SELL
+              </PixelButton>
+            </>
+          ) : (
+            <span className="pixel-text" style={{ color: "#C09800", fontSize: 10, alignSelf: "center" }}>
+              ★ Protected — unstar to sell/melt
+            </span>
+          )}
           <div style={{ flex: 1 }} />
           <PixelButton small color="#110011" textColor={C.textDim} onClick={onClose}>
             CLOSE
@@ -272,15 +285,17 @@ function WeaponRow({ w, equipped, onClick }: {
       onClick={onClick}
       style={{
         display: "flex", gap: 8, alignItems: "center",
-        backgroundColor: equipped ? "#0A1A0A" : C.bg3,
-        border: `2px solid ${equipped ? C.green : "#000"}`,
+        backgroundColor: equipped ? "#0A1A0A" : (w.starred ? "#181400" : C.bg3),
+        border: `2px solid ${equipped ? C.green : (w.starred ? "#C09800" : "#000")}`,
         padding: "6px 8px", cursor: "pointer",
       }}
     >
       <WeaponIcon weapon={w} />
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-          <span className="pixel-text" style={{ color: C.yellow, fontSize: 14 }}>{equipped ? "★ " : ""}{w.name}</span>
+          <span className="pixel-text" style={{ color: C.yellow, fontSize: 14 }}>
+            {w.starred ? "⭐ " : ""}{equipped ? "✦ " : ""}{w.name}
+          </span>
           {equipped
             ? <span className="pixel-text" style={{ color: C.green, fontSize: 10 }}>✦ EQUIPPED</span>
             : <span className="pixel-text" style={{ color: C.textDim, fontSize: 9 }}>tap to inspect</span>
@@ -304,15 +319,17 @@ function ArmorRow({ a, equipped, onClick }: {
       onClick={onClick}
       style={{
         display: "flex", gap: 8, alignItems: "center",
-        backgroundColor: equipped ? "#0A1A1A" : C.bg3,
-        border: `2px solid ${equipped ? C.cyan : "#000"}`,
+        backgroundColor: equipped ? "#0A1A1A" : (a.starred ? "#181400" : C.bg3),
+        border: `2px solid ${equipped ? C.cyan : (a.starred ? "#C09800" : "#000")}`,
         padding: "6px 8px", cursor: "pointer",
       }}
     >
       <ArmorIcon armor={a} />
       <div style={{ flex: 1 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
-          <span className="pixel-text" style={{ color: C.cyan, fontSize: 14 }}>{equipped ? "★ " : ""}{a.name}</span>
+          <span className="pixel-text" style={{ color: C.cyan, fontSize: 14 }}>
+            {a.starred ? "⭐ " : ""}{equipped ? "✦ " : ""}{a.name}
+          </span>
           {equipped
             ? <span className="pixel-text" style={{ color: C.cyan, fontSize: 10 }}>✦ EQUIPPED</span>
             : <span className="pixel-text" style={{ color: C.textDim, fontSize: 9 }}>tap to inspect</span>
@@ -327,7 +344,7 @@ function ArmorRow({ a, equipped, onClick }: {
 }
 
 export default function InventoryScreen() {
-  const { player, equipItem, unequipSlot, meltItem, sellItem } = useGame();
+  const { player, equipItem, unequipSlot, meltItem, sellItem, toggleItemStar } = useGame();
   const [tab, setTab] = useState<"bag" | "parts">("bag");
   const [msg, setMsg] = useState("");
   const [inspectItem, setInspectItem] = useState<Weapon | Armor | null>(null);
@@ -336,7 +353,11 @@ export default function InventoryScreen() {
 
   const eq     = player.equipped;
   const eMax   = effectiveMaxHp(player);
-  const invGear   = (player.inventory.filter(i => i.kind !== "part") as (Weapon | Armor)[]).sort((a, b) => a.name.localeCompare(b.name));
+  const invGear   = (player.inventory.filter(i => i.kind !== "part") as (Weapon | Armor)[]).sort((a, b) => {
+    const sa = a.starred ? 1 : 0, sb = b.starred ? 1 : 0;
+    if (sb !== sa) return sb - sa;
+    return a.name.localeCompare(b.name);
+  });
   const invParts  = (player.inventory.filter(i => i.kind === "part") as EnemyPart[]).sort((a, b) => a.name.localeCompare(b.name));
 
   const equippedGear: (Weapon | Armor)[] = [
@@ -377,6 +398,7 @@ export default function InventoryScreen() {
           onEquip={() => handleEquipItem(inspectItem)}
           onMelt={() => { meltItem(inspectItem.id); flash("Melted into metals."); }}
           onSell={() => { sellItem(inspectItem.id); flash(`Sold ${inspectItem.name}.`); }}
+          onStar={() => toggleItemStar(inspectItem.id)}
           onClose={() => setInspectItem(null)}
         />
       )}
